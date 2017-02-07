@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Issue_return_slip" pageWidth="556" pageHeight="1040" whenNoDataType="NoDataSection" columnWidth="553" leftMargin="1" rightMargin="2" topMargin="2" bottomMargin="0">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="style1" mode="Opaque" lineSpacing="Single">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 ==0)]]></conditionExpression>
+			<style backcolor="#E6F3F7" lineSpacing="Single" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="IssueReturnNoPrompt" class="java.lang.String"/>
+	<parameter name="IssueReturnNoNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{IssueReturnNoPrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT b.Branch_NAME
+, b.Branch_ADDRESS
+, issue.issue_return_number
+, DATE_FORMAT(CAST(issue.issue_return_date AS DATE),'%d-%m-%Y') AS issue_return_date
+, issue.issued_return_by
+, issue.issue_return_time
+, IFNULL(depart.NAME,'') AS depart
+, UPPER(IFNULL(i.item_name,'')) AS item_name
+, IFNULL(m.NAME,'') AS UOM
+, IFNULL(d.issue_return_quantity,0) AS issue_return_quantity
+, store.STORE_LOCATION
+, IFNULL(d.issue_number,'') AS issue_number
+, IFNULL(issue.issue_return_remark,'') AS issue_return_remark
+FROM
+m_branch AS b, m_item AS i,m_store_location AS store,
+t_issue_return_detail AS d
+LEFT JOIN (SELECT m.masters_id, m.NAME FROM m_masters AS m
+WHERE m.deleted_flag = 0 AND m.m_form_name = 'Measurement Unit') AS m
+ON d.measurement_Unit_id = m.masters_id,
+t_issue_return_mast AS issue
+LEFT JOIN (SELECT m.masters_id, m.NAME FROM m_masters AS m
+WHERE m.deleted_flag = 0 AND m.m_form_name = 'Department') AS depart
+ON issue.department_id = depart.masters_id
+WHERE issue.deleted_flag = 0 AND d.deleted_flag = 0
+AND store.DELETED_FLAG = 0
+AND b.DELETED_FLAG = 0 AND
+i.deleted_flag = 0 AND
+issue.issue_return_number = d.issue_return_number AND
+b.Branch_ID = issue.branch_id AND
+i.item_id = d.item_id AND
+d.store_location_id = store.STORE_LOCATION_ID AND
+(issue.issue_return_number = $P{IssueReturnNoPrompt} OR 1 = $P{IssueReturnNoNull_FlagPrompt})
+ORDER BY d.sno]]>
+	</queryString>
+	<field name="Branch_NAME" class="java.lang.String"/>
+	<field name="Branch_ADDRESS" class="java.lang.String"/>
+	<field name="issue_return_number" class="java.lang.String"/>
+	<field name="issue_return_date" class="java.lang.String"/>
+	<field name="issued_return_by" class="java.lang.String"/>
+	<field name="issue_return_time" class="java.lang.String"/>
+	<field name="depart" class="java.lang.String"/>
+	<field name="item_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="UOM" class="java.lang.String"/>
+	<field name="issue_return_quantity" class="java.lang.Double"/>
+	<field name="STORE_LOCATION" class="java.lang.String"/>
+	<field name="issue_number" class="java.lang.String"/>
+	<field name="issue_return_remark" class="java.lang.String"/>
+	<variable name="s_no" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$V{REPORT_COUNT}]]></variableExpression>
+	</variable>
+	<pageHeader>
+		<band height="130">
+			<staticText>
+				<reportElement x="0" y="1" width="552" height="20" forecolor="#000000"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Issue Return]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="68" width="110" height="15"/>
+				<textElement lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Issue Return Number :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="85" width="110" height="15"/>
+				<textElement lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Issue By                       :]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="22" width="552" height="20"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font size="14" isBold="true" isUnderline="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{Branch_NAME}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="119" y="68" width="123" height="15"/>
+				<textElement verticalAlignment="Top" lineSpacing="Single"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{issue_return_number}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="119" y="85" width="178" height="15"/>
+				<textElement lineSpacing="Single"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{issued_return_by}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="65" width="552" height="1"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="298" y="66" width="1" height="64"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="0" y="0" width="1" height="130"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="552" y="0" width="1" height="130"/>
+			</line>
+			<line>
+				<reportElement x="0" y="0" width="552" height="1"/>
+			</line>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="405" y="68" width="85" height="15"/>
+				<textElement lineSpacing="Single"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{issue_return_date}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="300" y="68" width="100" height="15"/>
+				<textElement lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Issue Return Date   :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="405" y="86" width="85" height="15"/>
+				<textElement lineSpacing="Single"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{issue_return_time}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="300" y="86" width="100" height="15"/>
+				<textElement lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Issue Time               :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="101" width="110" height="15"/>
+				<textElement lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Department                 :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="119" y="102" width="178" height="15"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{depart}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="43" width="552" height="20"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font size="14" isBold="true" isUnderline="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{Branch_ADDRESS}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="29">
+			<line>
+				<reportElement x="0" y="0" width="552" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="2" y="1" width="16" height="26" isPrintWhenDetailOverflows="true" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top" lineSpacing="Single">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[S.No.]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="28" width="552" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="18" y="1" width="210" height="26" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top" lineSpacing="Single">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Item Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="228" y="1" width="54" height="26" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top" lineSpacing="Single">
+					<font fontName="SansSerif" size="10" isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[UOM]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="282" y="1" width="80" height="26" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Return Qty.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="362" y="1" width="110" height="26" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" lineSpacing="Single">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Store Location]]></text>
+			</staticText>
+			<line direction="BottomUp">
+				<reportElement x="552" y="0" width="1" height="29"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="0" y="0" width="1" height="29"/>
+			</line>
+			<staticText>
+				<reportElement x="472" y="1" width="80" height="26" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" lineSpacing="Single">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ref. Issue Slip No]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="18">
+			<frame>
+				<reportElement style="style1" stretchType="RelativeToBandHeight" x="0" y="0" width="553" height="18" isPrintWhenDetailOverflows="true"/>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement isPrintRepeatedValues="false" x="2" y="0" width="16" height="17" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$V{s_no}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement isPrintRepeatedValues="false" x="18" y="0" width="210" height="17" isPrintWhenDetailOverflows="true"/>
+					<textElement verticalAlignment="Top" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{item_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="228" y="0" width="54" height="17"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{UOM}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement x="282" y="0" width="80" height="17"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[( ($F{issue_return_quantity}.doubleValue()-$F{issue_return_quantity}.intValue())> new Double(0) ? $F{issue_return_quantity} :
+new DecimalFormat("###0").format($F{issue_return_quantity}) )]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="###0.00;-###0.00" isBlankWhenNull="true">
+					<reportElement x="362" y="0" width="110" height="17" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{STORE_LOCATION}]]></textFieldExpression>
+				</textField>
+				<line direction="BottomUp">
+					<reportElement stretchType="RelativeToBandHeight" x="552" y="0" width="1" height="18" isPrintWhenDetailOverflows="true"/>
+				</line>
+				<textField isStretchWithOverflow="true" pattern="###0.00;-###0.00" isBlankWhenNull="true">
+					<reportElement x="472" y="0" width="80" height="17" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{issue_number}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement positionType="FixRelativeToBottom" x="0" y="17" width="552" height="1"/>
+				</line>
+				<line direction="BottomUp">
+					<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="1" height="18" isPrintWhenDetailOverflows="true"/>
+				</line>
+			</frame>
+		</band>
+	</detail>
+	<summary>
+		<band height="85">
+			<line>
+				<reportElement x="0" y="32" width="552" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="2" y="2" width="50" height="19"/>
+				<textElement lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Remark :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="54" y="2" width="148" height="30"/>
+				<textElement lineSpacing="Single"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{issue_return_remark}]]></textFieldExpression>
+			</textField>
+			<line direction="BottomUp">
+				<reportElement x="552" y="0" width="1" height="33"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="0" y="0" width="1" height="32"/>
+			</line>
+			<line>
+				<reportElement x="0" y="35" width="552" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="84" width="552" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="2" y="69" width="163" height="14"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Signature Of Receiver]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="369" y="69" width="178" height="14"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Store Incharge]]></text>
+			</staticText>
+			<line direction="BottomUp">
+				<reportElement x="0" y="35" width="1" height="50"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="552" y="35" width="1" height="50"/>
+			</line>
+		</band>
+	</summary>
+	<noData>
+		<band height="29">
+			<staticText>
+				<reportElement x="0" y="0" width="552" height="29" forecolor="#FF3300"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="SansSerif" size="20"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>

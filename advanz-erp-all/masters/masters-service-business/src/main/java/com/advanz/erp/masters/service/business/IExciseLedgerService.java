@@ -1,0 +1,18 @@
+package com.advanz.erp.masters.service.business;
+
+import com.advanz.erp.common.service.business.IAdvanzErpBaseSerivce;
+import com.advanz.erp.masters.model.msg.ExciseLedgerInputMessage;
+import com.advanz.erp.masters.model.msg.ExciseLedgerOutputMessage;
+
+public interface IExciseLedgerService extends IAdvanzErpBaseSerivce
+{
+	public ExciseLedgerOutputMessage findAllExciseLedger();
+	public ExciseLedgerOutputMessage createExciseLedger(ExciseLedgerInputMessage exciseLedgerInputMessage);
+	public ExciseLedgerOutputMessage updateExciseLedger(ExciseLedgerInputMessage exciseLedgerInputMessage);
+	public ExciseLedgerOutputMessage removeExciseLedgerByGrn(ExciseLedgerInputMessage exciseLedgerInputMessage);
+	public ExciseLedgerOutputMessage removeExciseLedgerByInvoice(ExciseLedgerInputMessage exciseLedgerInputMessage);
+	public ExciseLedgerOutputMessage removeExciseLedgerByIssue(ExciseLedgerInputMessage exciseLedgerInputMessage);
+	public ExciseLedgerOutputMessage updateExciseLedgerByIssue(ExciseLedgerInputMessage exciseLedgerInputMessage);
+	public ExciseLedgerOutputMessage updateExciseLedgerByGrn(ExciseLedgerInputMessage exciseLedgerInputMessage);
+	public ExciseLedgerOutputMessage updateExciseLedgerByInvoice(ExciseLedgerInputMessage exciseLedgerInputMessage);
+}

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<!-- Appenders -->
+	<appender name="consoleAppender" class="org.apache.log4j.ConsoleAppender">
+		<param name="Target" value="System.out" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{MM-dd-yyyy HH:mm:ss,SSS} %5p %c{1}:%L - %m%n" />
+		</layout>
+	</appender>
+	<appender name="rollingFileAppender" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="home\shree\whiteroom\JAVA_LOG\client_online.log"/>
+  		<param name="MaxFileSize" value="10MB"/>
+    	<param name="MaxBackupIndex" value="10"/>
+    	<param name="Append" value="true"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{MM-dd-yyyy HH:mm:ss,SSS} %5p %c{1}:%L - %m%n" />
+		</layout>
+	</appender>
+
+	<logger name="org.springframework">
+		<level value="info" />
+	</logger>
+	
+	<!-- WARN:  not turn Channel log level to DEBUG -->
+	<!-- It hangs if sending a binary or huge message -->
+	<logger name="org.springframework.integration.channel">
+		<level value="error" />
+	</logger>
+	
+	<logger name="com.advanz.erp">
+		<level value="error" />
+	</logger>
+	
+	<!-- Root Logger -->
+	<root>
+		<priority value="error" />
+		<appender-ref ref="consoleAppender" />
+	</root>
+	
+</log4j:configuration>

@@ -1,0 +1,38 @@
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>advanz-erp-all</artifactId>
+		<groupId>com.advanz.erp</groupId>
+		<version>1_0_0</version>
+	</parent>
+	<artifactId>sales</artifactId>
+	<version>${sales.version}</version>
+	<packaging>pom</packaging>
+	<name>Advanz ERP Services</name>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<properties>
+	</properties>
+	<modules>
+		<module>sales-service</module>
+		<module>sales-service-business</module>
+		<module>sales-http</module>
+		<module>sales-entity</module>
+		<module>sales-storage</module>
+		<module>sales-model</module>
+	</modules>
+</project>

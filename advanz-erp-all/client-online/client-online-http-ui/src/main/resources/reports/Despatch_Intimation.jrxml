@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Despatch_Intimation" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="0" bottomMargin="0" uuid="55c70abd-ba41-420d-ae48-522324078ca1">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="InvNoMedPrompt" class="java.lang.String"/>
+	<parameter name="Image_Loc" class="java.lang.String"/>
+	<parameter name="Image_Loc_1" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT comp_name,concat(comp_name,'Regd Off.:',regi_office_add) AS regi_office_add,cin,invoice_number AS inv_no,bill_net_amount AS net_amt,CAST(invoice_date AS DATE) AS inv_dt,buyer_po_no,CAST(buyer_po_date AS DATE) AS podate,despatch_through,motor_vehicle_no AS vch_no,lr_no,CAST(lr_date AS DATE) AS lr_date
+,CONCAT('M/S. ',UPPER(prt.party_name), ',' , IFNULL(prt.billing_address,'')) AS party
+,CONCAT('M/S. ',UPPER(cons.party_name), ',' , IFNULL(cons.billing_address,'')) AS consignee
+FROM t_bill_mast
+AS bill,m_party AS prt
+, m_party AS cons, m_branch AS b,m_company
+WHERE invoice_number=$P{InvNoMedPrompt}
+AND bill.party_id=prt.party_id AND prt.deleted_flag=0
+AND bill.branch_id=b.Branch_ID AND b.DELETED_FLAG=0
+AND bill.consignee_id=cons.party_id AND cons.deleted_flag=0]]>
+	</queryString>
+	<field name="comp_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="regi_office_add" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cin" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="inv_no" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="net_amt" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="inv_dt" class="java.util.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="buyer_po_no" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="podate" class="java.util.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="despatch_through" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="vch_no" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="lr_no" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="lr_date" class="java.util.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="party" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="consignee" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<group name="INV_GRP" isStartNewPage="true">
+		<groupExpression><![CDATA[$F{inv_no}]]></groupExpression>
+		<groupHeader>
+			<band height="212">
+				<staticText>
+					<reportElement uuid="d18aa8f9-6019-4f6a-964b-976d81ad6c94" x="0" y="156" width="555" height="56"/>
+					<textElement verticalAlignment="Middle">
+						<font size="13" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Dear Sir / Madam,
+
+Confirm having dispatched the material as per below details:]]></text>
+				</staticText>
+				<rectangle radius="10">
+					<reportElement uuid="95434343-822b-4a46-b184-a5c53ab107b1" stretchType="RelativeToBandHeight" x="-2" y="0" width="485" height="118"/>
+					<graphicElement>
+						<pen lineWidth="0.25"/>
+					</graphicElement>
+				</rectangle>
+				<textField isStretchWithOverflow="true">
+					<reportElement uuid="6215391f-f2fc-4a27-835c-011b6b676628" x="14" y="20" width="346" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{party}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="d18aa8f9-6019-4f6a-964b-976d81ad6c94" x="14" y="0" width="100" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Buyer :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="d18aa8f9-6019-4f6a-964b-976d81ad6c94" x="14" y="60" width="100" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Consignee :]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true">
+					<reportElement uuid="1c1bd23e-7b75-40fd-921a-a2937f57c7b2" x="14" y="80" width="346" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{consignee}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="372">
+				<staticText>
+					<reportElement uuid="d18aa8f9-6019-4f6a-964b-976d81ad6c94" x="0" y="248" width="555" height="84"/>
+					<textElement verticalAlignment="Middle">
+						<font size="13" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Invoice and LR being mailed by Courier.
+
+For Shree Ceramic Fibers Pvt. Ltd.
+
+
+]]></text>
+				</staticText>
+				<rectangle radius="10">
+					<reportElement uuid="95434343-822b-4a46-b184-a5c53ab107b1" stretchType="RelativeToBandHeight" x="0" y="0" width="555" height="217"/>
+					<graphicElement>
+						<pen lineWidth="0.25"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement uuid="d18aa8f9-6019-4f6a-964b-976d81ad6c94" x="18" y="141" width="70" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Cust.PO.No. :]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="8abe9c1a-d576-41d9-8fa6-1d8648feacfd" x="88" y="59" width="170" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{lr_no}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="f843de30-0a7b-4945-a42b-930ad723e5f1" x="310" y="20" width="65" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{inv_dt})]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="cffa4f60-0986-4af4-8398-f379d60e70a2" stretchType="RelativeToTallestObject" x="445" y="100" width="100" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{vch_no}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="fdd547e2-4b27-4192-a20e-eadb0d231eae" x="88" y="178" width="100" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{podate})]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="e84cf66a-1948-4992-815e-b18cca40dafc" stretchType="RelativeToTallestObject" x="375" y="100" width="70" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Truck No. :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="3fdaad9e-554e-45bf-a649-e3f866642596" stretchType="RelativeToTallestObject" x="258" y="100" width="52" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[LR Date :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="3fdaad9e-554e-45bf-a649-e3f866642596" x="18" y="59" width="70" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[LR No. :]]></text>
+				</staticText>
+				<textField>
+					<reportElement uuid="33e50752-a1e6-4f9e-839b-704ef3478f65" x="87" y="20" width="170" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{inv_no}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="79e61131-e4a4-434a-a376-f8277b4fe3a7" x="18" y="178" width="70" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Cust PO Date:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="c47772be-3751-444c-be7d-b8e82fddb187" x="375" y="20" width="70" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Inv.Value:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="5cc8b324-4f5b-4270-b5c7-856db40e63c8" stretchType="RelativeToTallestObject" x="310" y="100" width="65" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{lr_date})]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="38cd9761-eaa1-4e32-aaba-4b51d8b2a404" x="88" y="141" width="274" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{buyer_po_no}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="3fdaad9e-554e-45bf-a649-e3f866642596" stretchType="RelativeToTallestObject" x="18" y="100" width="70" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Transport :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="2ac2bc5b-dae4-4704-8e2c-9965dbe5ef46" x="17" y="20" width="70" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Inv.No. :]]></text>
+				</staticText>
+				<textField pattern="###0.00">
+					<reportElement uuid="67107836-c27b-41a7-8e25-2683ab197ecb" x="445" y="20" width="100" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{net_amt}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="5eb882b3-b4e2-4332-93e5-e1173c333d92" stretchType="RelativeToTallestObject" x="88" y="100" width="170" height="20"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{despatch_through}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="302f5a02-c3ce-4e55-8b52-c1ff549aae6a" x="258" y="20" width="52" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Inv.Date :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="9c1682de-7e4b-4f58-8792-48f62c856349" x="0" y="332" width="137" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Authorized Signatory]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="125" splitType="Stretch">
+			<textField>
+				<reportElement uuid="2811334f-5b8b-400c-927c-ec6b86ae980d" x="104" y="48" width="316" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="13" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{comp_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="cdb8d5bc-88b1-413f-b040-a4df4e1a3c2c" x="376" y="94" width="179" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="13" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cin}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="99c921b2-d912-43e0-bcea-3889fb97860c" x="0" y="94" width="309" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{regi_office_add}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="d18aa8f9-6019-4f6a-964b-976d81ad6c94" x="0" y="0" width="555" height="26"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DISPATCH INTIMATION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="2ac2bc5b-dae4-4704-8e2c-9965dbe5ef46" x="347" y="94" width="29" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CIN :]]></text>
+			</staticText>
+			<image scaleImage="RetainShape">
+				<reportElement uuid="3ecfe66f-7483-4df9-b9ed-f55d32974edb" x="0" y="26" width="92" height="68"/>
+				<imageExpression><![CDATA[$P{Image_Loc}]]></imageExpression>
+			</image>
+			<image scaleImage="RetainShape">
+				<reportElement uuid="3ecfe66f-7483-4df9-b9ed-f55d32974edb" x="420" y="36" width="135" height="58"/>
+				<imageExpression><![CDATA[$P{Image_Loc_1}]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<noData>
+		<band height="50">
+			<staticText>
+				<reportElement uuid="d18aa8f9-6019-4f6a-964b-976d81ad6c94" x="-2" y="0" width="557" height="26"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DISPATCH INTIMATION]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>

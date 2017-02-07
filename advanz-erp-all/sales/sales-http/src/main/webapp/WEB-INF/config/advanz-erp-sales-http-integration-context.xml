@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<!-- URL Mapping to forward to controller... -->
+	<bean id="remoteMapping"
+		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="mappings">
+			<props>
+				<!-- Example : <prop key="/SalesOrderMasterService">/SalesOrderMasterService</prop> -->
+			</props>
+		</property>
+	</bean>
+
+	<!-- Put service exporters here -->
+	
+	<!-- Example :<bean name="/SalesOrderMasterService"
+					class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+					<property name="service" ref="salesOrderMasterService" />
+					<property name="serviceInterface"
+						value="com.advanz.erp.masters.service.business.ISalesOrderMasterService" />
+				</bean> -->
+</beans>

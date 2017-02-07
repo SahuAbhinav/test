@@ -1,0 +1,785 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Issue_Detail_report" pageWidth="1890" pageHeight="842" columnWidth="1890" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="9c08f3d9-b273-44fa-b6f8-f4801f8ec796">
+	<property name="ireport.zoom" value="1.5000000000000009"/>
+	<property name="ireport.x" value="1180"/>
+	<property name="ireport.y" value="112"/>
+	<parameter name="YearPrompt" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["2013"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="FromDatePrompt" class="java.util.Date">
+		<defaultValueExpression><![CDATA["2013-01-01"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ToDatePrompt" class="java.util.Date">
+		<defaultValueExpression><![CDATA["2013-01-01"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="GroupNamePrompt" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="GroupNameNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{GroupNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="GradePrompt" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="GradeNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{GradePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ItemNamePrompt" class="java.lang.String"/>
+	<parameter name="ItemNameNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ItemNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="GroupFlagPrompt" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="GroupFlagNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{GroupFlagPrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="BranchPrompt" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT  stock_data.sno as sno,comp_name,branch_name,Branch_exciseeccno,branch_range_add,branch_division
+,itemcode,UPPER(item_name) AS item_name,
+(IFNULL(opening_stock,0)+IFNULL(stock_data.qty,0)) AS opening_stock,
+IFNULL(grn_data.grn_qty,0) AS purchase_qty,IFNULL(issue_data.issue_qty,0) AS issue_qty
+,(((IFNULL(opening_stock,0)+IFNULL(stock_data.qty,0))+IFNULL(grn_data.grn_qty,0))+IFNULL(issue_data.issue_qty,0) +IFNULL(sales_data.invoice_qty,0)) AS closing_stock
+,stock_data.tran_date  AS tran_date
+,issue_data.issue_number,issue_data.tran_date  AS issue_date
+,grn_data.grn_number,grn_data.tran_date  AS grn_date ,grn_data.supplier,grn_data.supplier_bill_no
+,grn_data.supplier_bill_date,grn_data.exciseeccno AS supplier_exciseeccno
+,grn_data.range_add AS supplier_range_add,grn_data.division AS supplier_division
+,sales_data.invoice_number,sales_data.tran_date  AS invoice_date
+,sales_data.invoice_qty,stock_data.approved_date AS approved_date
+ FROM
+(SELECT item_id,itemcode,item_name,item_group_name,
+IFNULL(OPENING_STOCK,0) AS opening_stock,ut.name AS unit_name
+,comp_name,branch_name,branch_id,Branch_exciseeccno,branch_range_add,branch_division
+FROM m_item AS i,m_item_category AS c,m_item_group AS g,
+m_item_group_flag AS f,m_masters AS ut,
+(SELECT cmp.comp_name,branch_id,branch_name,Branch_EXCISEECCNO,Branch_RANGE_ADD,branch_division FROM m_branch,
+(SELECT comp_name FROM m_company WHERE deleted_flag=0) AS cmp
+WHERE deleted_flag=0 AND branch_name=$P{BranchPrompt}) AS cmp_detail
+WHERE i.deleted_flag=0
+AND i.item_category_id=c.item_category_id AND c.deleted_flag=0
+AND c.item_group_id=g.item_group_id AND g.deleted_flag=0
+AND g.item_group_flag_id=f.item_group_flag_id
+AND i.measurement_Unit_id=ut.masters_id
+AND ut.m_form_name='Measurement Unit' AND ut.deleted_flag=0
+AND (i.item_name=$P{ItemNamePrompt} OR 1=$P{ItemNameNull_FlagPrompt})
+) AS item
+LEFT JOIN
+(SELECT sno,item_id,transaction_date AS tran_date,approved_date,branch_id,
+(SELECT (SUM(IFNULL(grn_qty,0))+SUM(IFNULL(issue_qty,0))+SUM(IFNULL(invoice_qty,0)))
+ FROM t_excise_ledger
+WHERE transaction_date<st.transaction_date
+AND branch_id=st.branch_id
+AND item_id=st.item_id
+AND deleted_flag=0
+) AS qty
+FROM t_excise_ledger AS st
+WHERE transaction_date>=$P{FromDatePrompt} AND transaction_date<=DATE_ADD($P{ToDatePrompt},INTERVAL 1 DAY)
+and deleted_flag=0
+GROUP BY item_id,transaction_date,branch_id
+ORDER BY item_id,approved_date,transaction_date) AS stock_data
+ON item.item_id=stock_data.item_id
+and item.branch_id=stock_data.branch_id
+LEFT JOIN
+(
+  SELECT item_id,issue_number,transaction_date AS tran_date,issue_qty,branch_id
+  FROM t_excise_ledger
+  WHERE transaction_date>=$P{FromDatePrompt} AND transaction_date<=DATE_ADD($P{ToDatePrompt},INTERVAL 1 DAY)
+  AND transaction_series='MI' AND deleted_flag=0
+) AS issue_data
+ON item.item_id=issue_data.item_id
+AND stock_data.tran_date=issue_data.tran_date
+AND item.branch_id=issue_data.branch_id
+LEFT JOIN
+(
+  SELECT item_id,invoice_number,transaction_date AS tran_date,invoice_qty,branch_id
+  FROM t_excise_ledger
+  WHERE transaction_date>=$P{FromDatePrompt} AND transaction_date<=DATE_ADD($P{ToDatePrompt},INTERVAL 1 DAY)
+  AND transaction_series='SCF' AND deleted_flag=0
+) AS sales_data
+ON item.item_id=sales_data.item_id
+AND stock_data.tran_date=sales_data.tran_date
+AND item.branch_id=sales_data.branch_id
+LEFT JOIN
+(SELECT item_id,ex.branch_id,ex.grn_number,gn.grn_date AS tran_date,ex.grn_qty,prt.party_name AS supplier,gn.SUPPLIER_BILL_NO,
+GN.SUPPLIER_BILL_DATE AS SUPPLIER_BILL_DATE,prt.exciseeccno,prt.range_add,prt.division FROM t_excise_ledger AS ex,t_grn_mast AS gn,
+m_party AS prt
+WHERE ex.transaction_series='GN' AND ex.grn_number=gn.grn_number
+AND gn.supplier_id=prt.party_id AND prt.deleted_flag=0
+AND ex.transaction_date>=$P{FromDatePrompt} AND transaction_date<=DATE_ADD($P{ToDatePrompt},INTERVAL 1 DAY)
+AND ex.deleted_flag=0 AND gn.deleted_flag=0) AS grn_data
+ON item.item_id=grn_data.item_id
+AND stock_data.tran_date=grn_data.tran_date
+and item.branch_id=grn_data.branch_id
+ORDER BY approved_date,sno]]>
+	</queryString>
+	<field name="comp_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="branch_name" class="java.lang.String"/>
+	<field name="Branch_exciseeccno" class="java.lang.String"/>
+	<field name="branch_range_add" class="java.lang.String"/>
+	<field name="branch_division" class="java.lang.String"/>
+	<field name="itemcode" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="item_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="opening_stock" class="java.lang.Double"/>
+	<field name="purchase_qty" class="java.lang.Double"/>
+	<field name="issue_qty" class="java.lang.Double"/>
+	<field name="closing_stock" class="java.lang.Double"/>
+	<field name="tran_date" class="java.sql.Timestamp"/>
+	<field name="issue_number" class="java.lang.String"/>
+	<field name="issue_date" class="java.sql.Timestamp"/>
+	<field name="grn_number" class="java.lang.String"/>
+	<field name="grn_date" class="java.sql.Timestamp"/>
+	<field name="supplier" class="java.lang.String"/>
+	<field name="supplier_bill_no" class="java.lang.String"/>
+	<field name="supplier_bill_date" class="java.sql.Timestamp"/>
+	<field name="supplier_exciseeccno" class="java.lang.String"/>
+	<field name="supplier_range_add" class="java.lang.String"/>
+	<field name="supplier_division" class="java.lang.String"/>
+	<field name="invoice_number" class="java.lang.String"/>
+	<field name="invoice_date" class="java.sql.Timestamp"/>
+	<field name="invoice_qty" class="java.lang.Double"/>
+	<field name="sno" class="java.lang.String"/>
+	<field name="approved_date" class="java.sql.Timestamp"/>
+	<variable name="s_no" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$V{REPORT_COUNT}]]></variableExpression>
+	</variable>
+	<variable name="Excise_detail" class="java.lang.String">
+		<variableExpression><![CDATA[]]></variableExpression>
+	</variable>
+	<background>
+		<band/>
+	</background>
+	<pageHeader>
+		<band height="140">
+			<textField>
+				<reportElement uuid="235ba6f9-70ab-4541-8071-e648f0a9f83e" x="0" y="82" width="784" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[("NAME OF THE MANUFACTURE  :-" + $F{comp_name})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="6ad35656-7f77-496b-9b47-ee1724cd21ce" x="0" y="102" width="365" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["REGISTRATION NO.                    :-" + $F{Branch_exciseeccno}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="3e0f80b8-e3f0-4dd4-a090-82cb52a8eb89" x="0" y="53" width="1890" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["From Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{FromDatePrompt})+"</style>"
++" , To Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{ToDatePrompt})+"</style>"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="5bd4a6ff-000d-40c8-9b97-c35f33dd7102" x="0" y="0" width="1890" height="33" forecolor="#3333FF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="17" isBold="true" isUnderline="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[FORM R.G. 23 A PART I]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="85ee7e16-440a-4b10-921e-0a6d40ccc9b6" x="1596" y="80" width="293" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[(" Range      :-" + $F{branch_range_add})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="e3adb103-319c-421b-b3a5-4f9b6bb39bd3" x="0" y="33" width="1890" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="13" isBold="true" isUnderline="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Stock Account of Inputs for use if relation of manufacture of final Product's]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="bda93b8d-5573-44d9-a864-3e84dd8f09e6" x="1596" y="120" width="293" height="20" forecolor="#000000"/>
+				<textElement verticalAlignment="Middle" markup="styled">
+					<font fontName="SansSerif" size="10" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" Comodity :- " + ($P{ItemNameNull_FlagPrompt}.intValue()==1?"All":$P{ItemNamePrompt})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="af094e76-07a0-4ba9-b52b-24a5bac4a28c" x="1596" y="100" width="293" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[(" Division    :-" + $F{branch_division})]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="92">
+			<line>
+				<reportElement uuid="a3a9fe1a-183d-4366-a528-1ed08d78401a" x="0" y="1" width="1890" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="2cee30c3-7ad5-447c-83f8-d9479ed192f0" x="34" y="2" width="60" height="89" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Approved Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="2c7de6cb-460b-416e-9f97-2b917d03b929" x="175" y="2" width="169" height="89" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Description of Inputs Received]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="9ed8426d-ab5d-4a05-a57c-2e8c348344f7" x="0" y="2" width="33" height="89" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[S.No.]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="ab7fb1fa-b957-4216-9578-219f53ba6246" x="0" y="91" width="1890" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="ceb0ffc0-0ad0-435d-b839-7aac03779f9d" x="94" y="2" width="80" height="89" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Opening Balance (A)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="050a54d4-7526-433d-aeb4-78b931a381c9" x="487" y="2" width="80" height="89" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Bill No.]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="dabbb9d9-7f65-4eb0-a911-eb274460dc42" x="33" y="2" width="1" height="89"/>
+			</line>
+			<staticText>
+				<reportElement uuid="2023f49f-b340-4737-9775-5e0dcc0022c4" x="629" y="2" width="100" height="89" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Supplier]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="97c27963-259f-436c-8b1c-c2734ddf4b10" x="1692" y="2" width="100" height="89" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Central Excise Officers Initial]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="88173989-dff5-4961-8207-3d1590ca810c" x="425" y="2" width="1" height="89"/>
+			</line>
+			<line>
+				<reportElement uuid="c852535a-4cf7-4c09-a4f7-1e6783fa8255" x="486" y="2" width="1" height="89"/>
+			</line>
+			<staticText>
+				<reportElement uuid="b9481e56-fa33-4228-aa3d-48599b44372a" x="1044" y="46" width="60" height="45" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Iss. date]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="77b5447d-ef17-46f5-9598-80d008d45bc3" x="567" y="2" width="1" height="89"/>
+			</line>
+			<staticText>
+				<reportElement uuid="1e2967d1-77a8-4f23-828a-9ecdf663288b" x="730" y="2" width="75" height="89" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[E.C.C. No.]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="fec33713-eacd-42b3-afff-0551ebfce90c" x="344" y="2" width="1" height="89"/>
+			</line>
+			<line>
+				<reportElement uuid="dfb4df6b-6864-4acf-aba6-52c6ba959c9f" x="805" y="2" width="1" height="89"/>
+			</line>
+			<staticText>
+				<reportElement uuid="79cec43d-a3da-4ff1-b303-3fe65b5722e8" x="963" y="46" width="80" height="45" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Issue No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e2ab1443-bf6f-4622-a7b2-cad8d3fe8b31" x="568" y="2" width="60" height="89" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Bill Date]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="e683dbd8-e19a-42a2-bf18-bae545ab1875" x="729" y="2" width="1" height="89"/>
+			</line>
+			<line>
+				<reportElement uuid="e2b606f9-58b4-4aa5-8bf3-872fd697c462" x="93" y="2" width="1" height="89"/>
+			</line>
+			<staticText>
+				<reportElement uuid="2b4eb0d5-0937-46b5-9326-ddb477b1c651" x="1105" y="46" width="80" height="45" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Quantity.(C)]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="b37c9531-ea27-41ff-8932-8128ddcf29c0" x="174" y="2" width="1" height="89"/>
+			</line>
+			<staticText>
+				<reportElement uuid="f0bb28e9-53ae-4258-9314-304ddb094722" x="1530" y="65" width="80" height="26" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Quantity (E)]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="4d2430b8-c002-4425-8664-35457b505790" x="628" y="2" width="1" height="89"/>
+			</line>
+			<staticText>
+				<reportElement uuid="05ffb103-c9a6-4982-b9a3-1238649195aa" x="1611" y="2" width="80" height="89" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Balance Quantity In Stock (A+B-C-D-E)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d858ea6c-a307-4332-94a4-7a0160431bf6" x="963" y="2" width="222" height="43" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[ Issued for use in or relation to manufaturers final Product]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="71cf7326-be69-4bd1-b32a-fb0d482262a7" x="1187" y="2" width="422" height="43" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Issued for clearance as such]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c832280d-a64d-4c41-9b7c-b5768f19c5ed" x="1267" y="65" width="60" height="26" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Inv. date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="1a18d592-2eb3-496c-9acc-fec0c6a50b25" x="1186" y="65" width="80" height="26" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Invoice No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="0c1478ff-cf81-43f3-acba-e91b4823306b" x="1328" y="65" width="80" height="26" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Quantity (D)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="3abc8e48-1fd5-4bb7-8e69-bc278796e4e4" x="1186" y="46" width="222" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[On Payment of duty]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="8d31fe9d-cdd0-4554-9136-9f411001b387" x="1888" y="0" width="1" height="92"/>
+			</line>
+			<staticText>
+				<reportElement uuid="cb85d4e7-b884-4d1e-840a-1e0e65c69315" x="1409" y="65" width="120" height="26" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Documents Particular ]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="6e376c2c-86ec-4e39-8356-6df306322b7e" x="1792" y="2" width="1" height="90"/>
+			</line>
+			<staticText>
+				<reportElement uuid="7607e7c2-fff8-4f81-b380-0d13bfc8198d" x="1409" y="46" width="201" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Otherwise ]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="8bd19ead-ba8f-40b5-84d0-25706d0d5b8a" x="1610" y="1" width="1" height="90"/>
+			</line>
+			<staticText>
+				<reportElement uuid="ea49ac4f-d652-4d62-9086-750c5bd69444" x="1793" y="2" width="95" height="89" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Remarks]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="61831d26-fb15-450d-a36b-7174f8acd05b" x="1185" y="2" width="1" height="89"/>
+			</line>
+			<line>
+				<reportElement uuid="b3ae44b2-33b2-4697-b3cd-553856ba1db4" x="886" y="2" width="1" height="89"/>
+			</line>
+			<line>
+				<reportElement uuid="906a67d5-675f-4cc0-9d0e-5ef468dbff22" x="963" y="45" width="647" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="70af5b4f-64f9-433c-ae5f-e37cf3be99d6" x="1186" y="64" width="424" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="cbef9cc1-66a6-4dab-9307-40829e71dd04" x="345" y="2" width="80" height="89" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Quantity Received  (B)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c66954dc-520c-4c87-8c38-c2c3d1ab0caa" x="806" y="2" width="80" height="89" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Range]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="61618111-a5b0-432f-bb50-ccbfc7bea7fc" x="887" y="2" width="75" height="89" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Division]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="cbfe9ffb-ca20-4366-97d3-a662bace4d35" x="962" y="2" width="1" height="89"/>
+			</line>
+			<line>
+				<reportElement uuid="a400b60a-12c2-4985-b691-6a29b0473385" x="1043" y="46" width="1" height="45"/>
+			</line>
+			<line>
+				<reportElement uuid="817eb4c2-9b53-4943-b049-23e43566f444" x="1408" y="46" width="1" height="45"/>
+			</line>
+			<line>
+				<reportElement uuid="98ba24c2-fe82-4fbb-ad2d-4f8c16581a4f" x="1266" y="65" width="1" height="26"/>
+			</line>
+			<line>
+				<reportElement uuid="7400fb90-78d8-428c-96ec-f679d419937c" x="1327" y="65" width="1" height="26"/>
+			</line>
+			<line>
+				<reportElement uuid="d73cb357-9d3a-437b-802f-85a9e1712d41" x="1529" y="65" width="1" height="26"/>
+			</line>
+			<line>
+				<reportElement uuid="4af0893c-f58a-40da-a0f5-1f3a34c617ec" x="1691" y="1" width="1" height="90"/>
+			</line>
+			<staticText>
+				<reportElement uuid="48462e6d-1cf5-43fe-878e-49af579a3a7c" x="426" y="2" width="60" height="89" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[GRN.Dt.]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="6e8073eb-ee28-443c-a18c-b7d8fe93c696" x="1104" y="46" width="1" height="45"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="21">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="0949721e-c5c8-4dbd-be81-00fdc883f558" stretchType="RelativeToTallestObject" isPrintRepeatedValues="false" x="0" y="0" width="33" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sno}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="c418d79a-4a62-44cc-b256-660534c79947" stretchType="RelativeToTallestObject" x="33" y="0" width="1" height="21"/>
+			</line>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="bb9330e3-d35a-43b7-8057-4aec11c6cb5a" stretchType="RelativeToTallestObject" x="1186" y="0" width="80" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{invoice_number}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="cda34e2b-1d65-4952-a756-c6d2ddd0f55c" stretchType="RelativeToTallestObject" x="1185" y="0" width="1" height="20"/>
+			</line>
+			<textField pattern="###0.000000">
+				<reportElement uuid="460ee58b-fb1f-47f6-8d23-4491952e65ea" stretchType="RelativeToTallestObject" x="94" y="0" width="79" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{opening_stock}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="39c2955d-bd78-4551-af7b-6c593e5b8c18" stretchType="RelativeToTallestObject" x="1888" y="0" width="1" height="21"/>
+			</line>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement uuid="f43659d7-0627-4e7e-ac12-d5c4feef1de5" stretchType="RelativeToTallestObject" x="33" y="0" width="60" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yy").format($F{approved_date})]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="6b831be4-7086-472b-b371-c507c1a7cf91" stretchType="RelativeToTallestObject" x="93" y="0" width="1" height="21"/>
+			</line>
+			<textField isStretchWithOverflow="true" pattern="###0.000000" isBlankWhenNull="true">
+				<reportElement uuid="c94526b4-b3bf-44ac-8207-96ee6e1d0bc8" stretchType="RelativeToTallestObject" x="345" y="0" width="79" height="20">
+					<printWhenExpression><![CDATA[$F{purchase_qty}>0.0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[( ($F{purchase_qty}.doubleValue()-$F{purchase_qty}.intValue())> new Double(0) ? $F{purchase_qty} :
+new DecimalFormat("###0").format($F{purchase_qty}) )]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="0a9c3712-5f47-4421-954d-4f8805e8e5c0" stretchType="RelativeToTallestObject" x="425" y="0" width="1" height="20"/>
+			</line>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="a5170799-a91a-41ff-ac7a-865fa98fc4ed" stretchType="RelativeToTallestObject" x="806" y="0" width="80" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{supplier_range_add}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="c606abe4-9cad-4cba-91bd-bbfc6113cacf" stretchType="RelativeToTallestObject" x="805" y="0" width="1" height="20"/>
+			</line>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="a0dfb1d0-9874-465c-b155-05e4ce2ea909" stretchType="RelativeToTallestObject" x="568" y="0" width="60" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yy").format($F{supplier_bill_date})]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="91fc8479-57f9-4f0e-b7d9-6ec0f507a079" stretchType="RelativeToTallestObject" x="567" y="0" width="1" height="20"/>
+			</line>
+			<line>
+				<reportElement uuid="8ae4e2d9-ef2f-46a7-9f67-0c0ffe18a3c8" stretchType="RelativeToTallestObject" x="486" y="0" width="1" height="20"/>
+			</line>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="0818551e-7ff5-4404-ab6b-6fb63169eebf" stretchType="RelativeToTallestObject" x="629" y="0" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{supplier}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="a4b98410-9ccd-4fbd-b45b-417b5f6acb59" stretchType="RelativeToTallestObject" x="628" y="0" width="1" height="20"/>
+			</line>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="0f12b083-a4a8-4c3c-b621-6da075789734" stretchType="RelativeToTallestObject" x="963" y="0" width="80" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{issue_number}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="20f4bcf3-344d-4500-8629-fc499f2b2dee" stretchType="RelativeToTallestObject" x="1105" y="0" width="79" height="20">
+					<printWhenExpression><![CDATA[($F{issue_qty}*-1)>0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[( ($F{issue_qty}.doubleValue()-$F{issue_qty}.intValue())> new Double(0) ? 
+$F{issue_qty}*new Double(-1):
+new DecimalFormat("###0").format($F{issue_qty}*-1) )]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="5a696612-5b5b-4d03-abb0-a2f824092964" stretchType="RelativeToTallestObject" x="176" y="0" width="168" height="20" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{item_name}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="07ee2f45-4e89-4ae3-9699-e4468f5da14c" stretchType="RelativeToTallestObject" x="344" y="0" width="1" height="20" isPrintWhenDetailOverflows="true"/>
+			</line>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="f53e22b5-5a16-4dec-84fc-38cff60f8ca9" stretchType="RelativeToTallestObject" x="730" y="0" width="75" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{supplier_exciseeccno}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="fbae76d0-c261-4c7e-9543-260b2c18fee2" stretchType="RelativeToTallestObject" x="729" y="0" width="1" height="20"/>
+			</line>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement uuid="a9f6f177-3e1f-4d96-a8d2-23ea19ce43d4" stretchType="RelativeToTallestObject" x="1044" y="0" width="60" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yy").format($F{issue_date})]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="75e5e834-9ca8-4be2-b2ee-0f1e1872c554" stretchType="RelativeToTallestObject" x="1043" y="0" width="1" height="20"/>
+			</line>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="618ee9c8-6f47-4ea7-bd21-d9d011fd0b14" stretchType="RelativeToTallestObject" x="887" y="0" width="75" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{supplier_division}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="ccc22f6f-e3a1-492a-a752-8ad0d9aba5ae" stretchType="RelativeToTallestObject" x="886" y="0" width="1" height="20"/>
+			</line>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement uuid="32ee1e5f-c857-413e-9b0e-032e5c8ac6b0" stretchType="RelativeToTallestObject" x="1267" y="0" width="60" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yy").format($F{invoice_date})]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="4ede110e-f85d-4145-8a8d-6160b1990763" stretchType="RelativeToTallestObject" x="1266" y="0" width="1" height="20"/>
+			</line>
+			<line>
+				<reportElement uuid="3ada9c49-801b-4950-bb30-7de8a857628d" stretchType="RelativeToTallestObject" x="1529" y="0" width="1" height="21"/>
+			</line>
+			<textField isStretchWithOverflow="true" pattern="###0.000000" isBlankWhenNull="true">
+				<reportElement uuid="5f6f44d8-61b0-4617-83b2-3579795635fb" stretchType="RelativeToTallestObject" x="1328" y="0" width="79" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[( ($F{invoice_qty}.doubleValue()-$F{invoice_qty}.intValue())> new Double(0) ? $F{invoice_qty} :
+new DecimalFormat("###0").format($F{invoice_qty}) )]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="1333afcc-8ede-45c4-92e5-d4a5c5cc30ac" positionType="FixRelativeToBottom" x="0" y="20" width="1888" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="62059802-b9fd-469d-96a4-8ca612884217" stretchType="RelativeToTallestObject" x="1327" y="0" width="1" height="20"/>
+			</line>
+			<line>
+				<reportElement uuid="45d61964-497c-4787-bc20-2749815889d7" stretchType="RelativeToTallestObject" x="1408" y="0" width="1" height="21"/>
+			</line>
+			<line>
+				<reportElement uuid="e64ffd45-77d1-4767-b5ae-ee2c0bc24399" stretchType="RelativeToTallestObject" x="962" y="0" width="1" height="20"/>
+			</line>
+			<line>
+				<reportElement uuid="93db633b-6d96-4dec-b0cd-7fb279612d23" stretchType="RelativeToTallestObject" x="1104" y="0" width="1" height="20"/>
+			</line>
+			<line>
+				<reportElement uuid="700f4a11-8d29-494f-9291-c4c168333dfd" stretchType="RelativeToTallestObject" x="1610" y="0" width="1" height="21"/>
+			</line>
+			<line>
+				<reportElement uuid="21ba0372-64c3-4b69-9709-a35398ea0478" stretchType="RelativeToTallestObject" x="174" y="0" width="1" height="21" isPrintWhenDetailOverflows="true"/>
+			</line>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="025fe69c-205e-4ca6-a8c7-3d4b7b573f13" stretchType="RelativeToTallestObject" x="487" y="0" width="80" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{supplier_bill_no}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="12b5cdd6-d0ef-4e3d-a3f7-d292dd9f4f53" stretchType="RelativeToTallestObject" x="1792" y="0" width="1" height="21"/>
+			</line>
+			<line>
+				<reportElement uuid="f0b3ca4c-4729-4500-800d-ff9f46c5c609" stretchType="RelativeToTallestObject" x="1691" y="0" width="1" height="21"/>
+			</line>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement uuid="6a5de092-4eff-4d29-8ef8-e61ed673e460" stretchType="RelativeToTallestObject" x="426" y="0" width="60" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yy").format($F{grn_date})]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.000000" isBlankWhenNull="true">
+				<reportElement uuid="0c9c8272-abaf-4a66-a592-75351937d1d6" stretchType="RelativeToTallestObject" x="1611" y="0" width="79" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[( ($F{closing_stock}.doubleValue()-$F{closing_stock}.intValue())> new Double(0) ? $F{closing_stock} :
+new DecimalFormat("###0").format($F{closing_stock}) )]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<noData>
+		<band height="149">
+			<staticText>
+				<reportElement uuid="f1d15996-f361-429f-9cee-c5eda675f653" x="-1" y="102" width="1890" height="20" forecolor="#0099FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[(Please Check Your Selection Criteria)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e2937428-9633-42c6-a2df-506c91be9d7c" x="0" y="73" width="1890" height="29" forecolor="#FF3300"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="20"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="fe7a5452-4438-483d-8191-925fe7855801" x="0" y="0" width="1890" height="33" forecolor="#3333FF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="17" isBold="true" isUnderline="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[FORM R.G. 23 A PART I]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="1d2c1ed0-e028-4929-a4d7-6a6df1bbcc98" x="0" y="53" width="1890" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["From Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{FromDatePrompt})+"</style>"
++" , To Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{ToDatePrompt})+"</style>"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="7bc10949-e9a5-494c-9b0a-f6fb337e0956" x="0" y="33" width="1890" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="13" isBold="true" isUnderline="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Stock Account of Inputs for use if relation of manufacture of final Product's]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>

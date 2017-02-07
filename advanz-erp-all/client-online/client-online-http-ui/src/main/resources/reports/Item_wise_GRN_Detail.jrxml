@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Item_wise_grn" pageWidth="861" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="855" leftMargin="3" rightMargin="3" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.1289478601075553"/>
+	<property name="ireport.x" value="337"/>
+	<property name="ireport.y" value="0"/>
+	<style name="style1" mode="Opaque" lineSpacing="Single">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 ==0)]]></conditionExpression>
+			<style backcolor="#E6F3F7" lineSpacing="Single" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="FromDatePrompt" class="java.util.Date">
+		<defaultValueExpression><![CDATA["2013-02-09"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ToDatePrompt" class="java.util.Date">
+		<defaultValueExpression><![CDATA["2013-02-09"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="GroupNamePrompt" class="java.lang.String"/>
+	<parameter name="GroupNameNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{GroupNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SupplierNamePrompt" class="java.lang.String"/>
+	<parameter name="SupplierNameNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{SupplierNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ItemNamePrompt" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ItemNameNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ItemNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ApprovalStatusPrompt" class="java.lang.String"/>
+	<parameter name="ApprovalStatusNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ApprovalStatusPrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ItemCategoryPrompt" class="java.lang.String"/>
+	<parameter name="ItemCategoryNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ItemCategoryPrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Item_Status_Prompt" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Item_StatusNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{Item_Status_Prompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT UCASE(item_name) AS item_name,UCASE(item_group_name) AS item_group_name,
+UCASE(ut.name) AS unit_name,grn_m.grn_number,
+DATE_FORMAT(CAST(grn_m.grn_date AS DATE),'%d-%m-%Y') AS grn_date,
+sup.party_name AS supplier,IFNULL(bill_qty,0) AS bill_qty ,IFNULL(po_qty,0) AS po_qty ,IFNULL(received_qty,0) AS received_qty ,IFNULL(shrot_qty,0) AS shrot_qty,IFNULL(rejected_qty,0) AS rejected_qty,
+IFNULL(approved_qty,0) AS approved_qty
+FROM m_item AS i,m_item_category AS c,m_item_group AS g,
+m_item_group_flag AS f,m_masters AS ut,
+t_grn_detail AS grn_d,t_grn_mast AS grn_m ,m_party AS sup
+WHERE grn_m.deleted_flag=0 AND grn_d.deleted_flag=0 AND sup.deleted_flag=0
+AND (i.item_name=$P{ItemNamePrompt} OR 1=$P{ItemNameNull_FlagPrompt}) AND i.deleted_flag=0
+AND i.item_category_id=c.item_category_id AND c.deleted_flag=0
+AND c.item_group_id=g.item_group_id AND g.deleted_flag=0
+AND g.item_group_flag_id=f.item_group_flag_id
+AND (g.item_group_name=$P{GroupNamePrompt} OR 1=$P{GroupNameNull_FlagPrompt})
+AND (c.ITEM_CATEGORY_NAME = $P{ItemCategoryPrompt} OR 1=$P{ItemCategoryNull_FlagPrompt})
+AND i.measurement_Unit_id=ut.masters_id AND ut.m_form_name='Measurement Unit'
+AND ut.deleted_flag=0 AND grn_d.item_id=i.item_id
+AND grn_m.grn_date>=$P{FromDatePrompt}
+AND grn_m.grn_date<=DATE_ADD($P{ToDatePrompt},INTERVAL 1 DAY)
+AND grn_m.supplier_id=sup.party_id
+AND (sup.party_name=$P{SupplierNamePrompt} OR 1=$P{SupplierNameNull_FlagPrompt})
+AND grn_m.grn_number=grn_d.grn_number
+AND (CASE WHEN ($P{ApprovalStatusPrompt}='' OR 1 = $P{ApprovalStatusNull_FlagPrompt})
+THEN (IFNULL(grn_d.grn_approval_flag,0) = 0 OR grn_d.grn_approval_flag = 1)
+WHEN $P{ApprovalStatusPrompt}='Approved'
+THEN grn_d.grn_approval_flag = 1
+ELSE IFNULL(grn_d.grn_approval_flag,0) = 0
+END)
+AND (i.active_status=$P{Item_Status_Prompt} OR 1=$P{Item_StatusNull_FlagPrompt})
+ORDER BY item_group_name,item_name]]>
+	</queryString>
+	<field name="item_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="item_group_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="unit_name" class="java.lang.String"/>
+	<field name="grn_number" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="grn_date" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Supplier" class="java.lang.String"/>
+	<field name="bill_qty" class="java.lang.Double"/>
+	<field name="po_qty" class="java.lang.Double"/>
+	<field name="received_qty" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="shrot_qty" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="rejected_qty" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="approved_qty" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="s_no" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$V{REPORT_COUNT}]]></variableExpression>
+	</variable>
+	<variable name="Tot_po_qty" class="java.lang.Float" resetType="Group" resetGroup="item_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{po_qty}]]></variableExpression>
+	</variable>
+	<variable name="tot_bill_qty" class="java.lang.Float" resetType="Group" resetGroup="item_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{bill_qty}]]></variableExpression>
+	</variable>
+	<variable name="tot_rec_qty" class="java.lang.Float" resetType="Group" resetGroup="item_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{received_qty}]]></variableExpression>
+	</variable>
+	<variable name="tot_short_qty" class="java.lang.Float" resetType="Group" resetGroup="item_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{shrot_qty}]]></variableExpression>
+	</variable>
+	<variable name="tot_app_qty" class="java.lang.Float" resetType="Group" resetGroup="item_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{approved_qty}]]></variableExpression>
+	</variable>
+	<variable name="tot_rej_qty" class="java.lang.Float" resetType="Group" resetGroup="item_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{rejected_qty}]]></variableExpression>
+	</variable>
+	<group name="item_group">
+		<groupExpression><![CDATA[$F{item_group_name}]]></groupExpression>
+		<groupHeader>
+			<band height="14">
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="193" height="14" forecolor="#3333FF"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{item_group_name}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="item_name">
+		<groupExpression><![CDATA[$F{item_name}]]></groupExpression>
+		<groupHeader>
+			<band height="13">
+				<textField>
+					<reportElement x="0" y="0" width="193" height="13" forecolor="#CC0000"/>
+					<textElement verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{item_name}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="193" y="0" width="80" height="13" forecolor="#CC0000"/>
+					<textElement verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{unit_name}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="23">
+				<line>
+					<reportElement x="0" y="0" width="855" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="22" width="855" height="1"/>
+				</line>
+				<textField pattern="">
+					<reportElement x="373" y="1" width="80" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Float"><![CDATA[( ($V{Tot_po_qty}.doubleValue()-$V{Tot_po_qty}.intValue())> new Double(0) ? $V{Tot_po_qty} :
+new DecimalFormat("###0").format($V{Tot_po_qty}) )]]></textFieldExpression>
+				</textField>
+				<textField pattern="">
+					<reportElement x="453" y="1" width="80" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Float"><![CDATA[( ($V{tot_bill_qty}.doubleValue()-$V{tot_bill_qty}.intValue())> new Double(0) ? $V{tot_bill_qty} :
+new DecimalFormat("###0").format($V{tot_bill_qty}) )]]></textFieldExpression>
+				</textField>
+				<textField pattern="">
+					<reportElement x="533" y="1" width="80" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Float"><![CDATA[( ($V{tot_rec_qty}.doubleValue()-$V{tot_rec_qty}.intValue())> new Double(0) ? $V{tot_rec_qty} :
+new DecimalFormat("###0").format($V{tot_rec_qty}) )]]></textFieldExpression>
+				</textField>
+				<textField pattern="">
+					<reportElement x="613" y="1" width="80" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Float"><![CDATA[( ($V{tot_short_qty}.doubleValue()-$V{tot_short_qty}.intValue())> new Double(0) ? $V{tot_short_qty} :
+new DecimalFormat("###0").format($V{tot_short_qty}) )]]></textFieldExpression>
+				</textField>
+				<textField pattern="">
+					<reportElement x="693" y="1" width="80" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Float"><![CDATA[( ($V{tot_app_qty}.doubleValue()-$V{tot_app_qty}.intValue())> new Double(0) ? $V{tot_app_qty} :
+new DecimalFormat("###0").format($V{tot_app_qty}) )]]></textFieldExpression>
+				</textField>
+				<textField pattern="">
+					<reportElement x="773" y="1" width="80" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression class="java.lang.Float"><![CDATA[( ($V{tot_rej_qty}.doubleValue()-$V{tot_rej_qty}.intValue())> new Double(0) ? $V{tot_rej_qty} :
+new DecimalFormat("###0").format($V{tot_rej_qty}) )]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="193" y="1" width="180" height="20" forecolor="#CC0000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{item_name}.concat(" Total:")]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<pageHeader>
+		<band height="60">
+			<staticText>
+				<reportElement x="0" y="0" width="855" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Item wise GRN Details]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="20" width="855" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" lineSpacing="Single" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["From Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{FromDatePrompt})+"</style>"
++" To Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{ToDatePrompt})+"</style>"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="40" width="855" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" lineSpacing="Single" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Group : " + ($P{GroupNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{GroupNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++ ", Category : " + ($P{ItemCategoryNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemCategoryPrompt}.replaceAll( "&", "&amp;" )+"</style>")
++ ", Item : " + ($P{ItemNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++ ", Supplier : " + ($P{SupplierNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{SupplierNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++ ", Approval Status : " + ($P{ApprovalStatusNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ApprovalStatusPrompt}+"</style>")
++ ", Active Status : " + ($P{Item_StatusNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+ ($P{Item_Status_Prompt}.intValue()==1?"Yes":"No") +"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="21">
+			<line>
+				<reportElement x="0" y="1" width="855" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="0" y="2" width="33" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[S.No.]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="20" width="855" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="613" y="2" width="80" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Short Qty.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="533" y="2" width="80" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Rec. Qty.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="373" y="2" width="80" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[PO.Qty.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="193" y="2" width="180" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Supplier]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="113" y="2" width="80" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[GRN Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="33" y="2" width="80" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[GRN No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="693" y="2" width="80" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[App. Qty.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="453" y="2" width="80" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Bill Qty.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="773" y="2" width="79" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Rej. Qty.]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="13">
+			<frame>
+				<reportElement style="style1" x="0" y="0" width="853" height="13"/>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="193" y="0" width="180" height="13"/>
+					<textElement lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{Supplier}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy">
+					<reportElement x="113" y="0" width="80" height="13"/>
+					<textElement lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{grn_date}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="33" y="0" width="80" height="13"/>
+					<textElement lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{grn_number}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement x="533" y="0" width="80" height="13"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[( ($F{received_qty}.doubleValue()-$F{received_qty}.intValue())> new Double(0) ? $F{received_qty} :
+new DecimalFormat("###0").format($F{received_qty}) )]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement x="613" y="0" width="80" height="13"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[( ($F{shrot_qty}.doubleValue()-$F{shrot_qty}.intValue())> new Double(0) ? $F{shrot_qty} :
+new DecimalFormat("###0").format($F{shrot_qty}) )]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement x="373" y="0" width="80" height="13"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[( ($F{po_qty}.doubleValue()-$F{po_qty}.intValue())> new Double(0) ? $F{po_qty} :
+new DecimalFormat("###0").format($F{po_qty}) )]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement x="773" y="0" width="80" height="13"/>
+					<textElement textAlignment="Right" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[( ($F{rejected_qty}.doubleValue()-$F{rejected_qty}.intValue())> new Double(0) ? $F{rejected_qty} :
+new DecimalFormat("###0").format($F{rejected_qty}) )]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement x="453" y="0" width="80" height="13"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[( ($F{bill_qty}.doubleValue()-$F{bill_qty}.intValue())> new Double(0) ? $F{bill_qty} :
+new DecimalFormat("###0").format($F{bill_qty}) )]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement x="693" y="0" width="80" height="13"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[( ($F{approved_qty}.doubleValue()-$F{approved_qty}.intValue())> new Double(0) ? $F{approved_qty} :
+new DecimalFormat("###0").format($F{approved_qty}) )]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="0" width="33" height="13"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$V{item_name_COUNT}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<noData>
+		<band height="110">
+			<staticText>
+				<reportElement x="0" y="20" width="855" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Item wise GRN Details]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="60" width="855" height="29" forecolor="#FF3300"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="SansSerif" size="20" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="89" width="855" height="20" forecolor="#0099FF"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="SansSerif" size="14" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[(Please Check Your Selection Criteria)]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="855" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" lineSpacing="Single" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["From Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{FromDatePrompt})+"</style>"
++" To Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{ToDatePrompt})+"</style>"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="40" width="855" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" lineSpacing="Single" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Group : " + ($P{GroupNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{GroupNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++ ", Category : " + ($P{ItemCategoryNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemCategoryPrompt}.replaceAll( "&", "&amp;" )+"</style>")
++ ", Item : " + ($P{ItemNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++ ", Supplier : " + ($P{SupplierNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{SupplierNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++ ", Approval Status : " + ($P{ApprovalStatusNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ApprovalStatusPrompt}+"</style>")
++ ", Active Status : " + ($P{Item_StatusNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+ ($P{Item_Status_Prompt}.intValue()==1?"Yes":"No") +"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</noData>
+</jasperReport>

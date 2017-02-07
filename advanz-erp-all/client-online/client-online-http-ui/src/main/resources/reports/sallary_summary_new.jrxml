@@ -1,0 +1,1287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="2800" pageHeight="1000" whenNoDataType="NoDataSection" columnWidth="2800" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<style name="Crosstab Data Text" isDefault="false" hAlign="Center"/>
+	<parameter name="YearPrompt" class="java.lang.String"/>
+	<parameter name="SingleMandatoryMonthPrompt" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT a.sno,a.salary_head_id
+,a.salary_head_name,a.head_amount,a.employee_id,a.Emp_name
+,b.employee_id
+,b.monthYear
+,b.closing_leave_balance,b.opening_leave_balance
+,b.availed_leave
+,b.absent_days,b.extra_work_day
+,b.hollyd_weekOff,b.loss_of_pay
+,b.payable_day,b.present_days
+,b.working_days,b.total_day_in_month
+,b.employee_code,b.join_date,b.increment_date,b.opening_cl_balance
+,b.designation
+FROM
+(SELECT 1 AS sno
+,IF(m_salary_head.head_type='E',m_salary_head.salary_head_sequence+100,m_salary_head.salary_head_sequence+200)AS salary_head_id
+,m_salary_head.salary_head_name
+,t_salary_detail.head_amount
+,m_employee.employee_id
+,CONCAT(m_employee.employee_first_name,' ',m_employee.employee_last_name)AS Emp_name
+FROM m_employee,t_salary_detail,m_salary_head,t_salary_master
+WHERE m_employee.employee_id=t_salary_detail.EMPLOYEE_ID
+AND t_salary_detail.salary_head_id=m_salary_head.salary_head_id
+AND t_salary_master.salary_tran_auto_no=t_salary_detail.salary_tran_auto_no
+AND t_salary_master.salary_month=$P{SingleMandatoryMonthPrompt} AND t_salary_master.salary_year=$P{YearPrompt}
+AND m_employee.deleted_flag=0 AND m_salary_head.deleted_flag=0
+AND t_salary_master.deleted_flag=0 AND t_salary_detail.deleted_flag=0
+UNION ALL
+SELECT 2 AS sno
+,IF(m_salary_head.head_type='E',m_salary_head.salary_head_sequence+100,m_salary_head.salary_head_sequence+200)AS salary_head_id
+,IF(m_salary_head.head_type='E',CONCAT(m_salary_head.salary_head_name,' payable'),CONCAT(m_salary_head.salary_head_name,' deduction'))AS salary_head_name
+,t_salary_detail.head_amount_payable
+,m_employee.employee_id
+,CONCAT(m_employee.employee_first_name,' ',m_employee.employee_last_name)AS Emp_name
+FROM m_employee,t_salary_detail,m_salary_head,t_salary_master
+WHERE m_employee.employee_id=t_salary_detail.EMPLOYEE_ID
+AND t_salary_detail.salary_head_id=m_salary_head.salary_head_id
+AND t_salary_master.salary_tran_auto_no=t_salary_detail.salary_tran_auto_no
+AND t_salary_master.salary_month=$P{SingleMandatoryMonthPrompt} AND t_salary_master.salary_year=$P{YearPrompt}
+AND m_employee.deleted_flag=0 AND m_salary_head.deleted_flag=0
+AND t_salary_master.deleted_flag=0 AND t_salary_detail.deleted_flag=0
+UNION ALL
+SELECT 3 AS sno,124 AS salary_head_id,'Monthly Salary'AS salary_head_name
+,t_salary_attandance.monthly_salary AS head_amount,m_employee.employee_id
+,CONCAT(m_employee.employee_first_name,' ',m_employee.employee_last_name)AS Emp_name
+FROM t_salary_attandance,m_employee,t_salary_master
+WHERE t_salary_attandance.employee_id=m_employee.employee_id
+AND t_salary_master.salary_tran_auto_no=t_salary_attandance.salary_tran_auto_no
+AND t_salary_master.salary_month=$P{SingleMandatoryMonthPrompt} AND t_salary_master.salary_year=$P{YearPrompt}
+AND m_employee.deleted_flag=0 AND t_salary_master.deleted_flag=0  AND t_salary_attandance.deleted_flag=0
+UNION ALL
+SELECT 4 AS sno,125 AS salary_head_id,'Other Allowance'AS salary_head_name
+,t_salary_attandance.other_allowance AS head_amount,m_employee.employee_id
+,CONCAT(m_employee.employee_first_name,' ',m_employee.employee_last_name)AS Emp_name
+FROM t_salary_attandance,m_employee,t_salary_master
+WHERE t_salary_attandance.employee_id=m_employee.employee_id
+AND t_salary_master.salary_tran_auto_no=t_salary_attandance.salary_tran_auto_no
+AND t_salary_master.salary_month=$P{SingleMandatoryMonthPrompt} AND t_salary_master.salary_year=$P{YearPrompt}
+AND m_employee.deleted_flag=0 AND t_salary_master.deleted_flag=0  AND t_salary_attandance.deleted_flag=0
+UNION ALL
+SELECT 5 AS sno,126 AS salary_head_id,'Net Amount'AS salary_head_name
+,t_salary_attandance.net_amount AS head_amount,m_employee.employee_id
+,CONCAT(m_employee.employee_first_name,' ',m_employee.employee_last_name)AS Emp_name
+FROM t_salary_attandance,m_employee,t_salary_master
+WHERE t_salary_attandance.employee_id=m_employee.employee_id
+AND t_salary_master.salary_tran_auto_no=t_salary_attandance.salary_tran_auto_no
+AND t_salary_master.salary_month=$P{SingleMandatoryMonthPrompt} AND t_salary_master.salary_year=$P{YearPrompt}
+AND m_employee.deleted_flag=0 AND t_salary_master.deleted_flag=0  AND t_salary_attandance.deleted_flag=0
+UNION ALL
+SELECT 6 AS sno,127 AS salary_head_id,'PF Flag'AS salary_head_name
+,t_salary_attandance.pf_flag AS head_amount,m_employee.employee_id
+,CONCAT(m_employee.employee_first_name,' ',m_employee.employee_last_name)AS Emp_name
+FROM t_salary_attandance,m_employee,t_salary_master
+WHERE t_salary_attandance.employee_id=m_employee.employee_id
+AND t_salary_master.salary_tran_auto_no=t_salary_attandance.salary_tran_auto_no
+AND t_salary_master.salary_month=$P{SingleMandatoryMonthPrompt} AND t_salary_master.salary_year=$P{YearPrompt}
+AND m_employee.deleted_flag=0 AND t_salary_master.deleted_flag=0  AND t_salary_attandance.deleted_flag=0
+UNION ALL
+SELECT 7 AS sno,128 AS salary_head_id,'Base Salary For PF'AS salary_head_name
+,t_salary_attandance.base_salary_for_pf AS head_amount,m_employee.employee_id
+,CONCAT(m_employee.employee_first_name,' ',m_employee.employee_last_name)AS Emp_name
+FROM t_salary_attandance,m_employee,t_salary_master
+WHERE t_salary_attandance.employee_id=m_employee.employee_id
+AND t_salary_master.salary_tran_auto_no=t_salary_attandance.salary_tran_auto_no
+AND t_salary_master.salary_month=$P{SingleMandatoryMonthPrompt} AND t_salary_master.salary_year=$P{YearPrompt}
+AND m_employee.deleted_flag=0 AND t_salary_master.deleted_flag=0  AND t_salary_attandance.deleted_flag=0
+UNION ALL
+SELECT 8 AS sno,332 AS salary_head_id,'Closing Balance of Advance'AS salary_head_name
+,m_advance_amnt.closing_balance AS head_amount,m_employee.employee_id
+,CONCAT(m_employee.employee_first_name,' ',m_employee.employee_last_name)AS Emp_name
+FROM m_advance_amnt,m_employee
+,(SELECT employee_id,MAX(transaction_date)AS T_date
+FROM m_advance_amnt WHERE deleted_flag=0
+GROUP BY 1)AS max_tran
+WHERE m_employee.employee_id=m_advance_amnt.employee_id
+AND max_tran.employee_id=m_advance_amnt.employee_id
+AND max_tran.T_date=m_advance_amnt.transaction_date
+AND m_employee.deleted_flag=0 AND m_advance_amnt.deleted_flag=0
+UNION ALL 
+SELECT 9 AS sno,331 AS salary_head_id,'Advance Adjustment'AS salary_head_name
+,IF(transaction_type='Deduction',CONCAT('-',m_advance_amnt.amount),CONCAT('+',m_advance_amnt.amount)) AS head_amount
+,m_employee.employee_id
+,CONCAT(m_employee.employee_first_name,' ',m_employee.employee_last_name)AS Emp_name
+FROM m_advance_amnt,m_employee
+,(SELECT employee_id,MAX(transaction_date)AS T_date
+FROM m_advance_amnt WHERE  transaction_date>=(SELECT min_date FROM t_salary_master WHERE 
+salary_month=$P{SingleMandatoryMonthPrompt} AND salary_year=$P{YearPrompt})
+AND transaction_date<=(SELECT max_date FROM t_salary_master WHERE 
+salary_month=$P{SingleMandatoryMonthPrompt} AND salary_year=$P{YearPrompt})
+AND deleted_flag=0
+GROUP BY 1)AS max_tran
+WHERE m_employee.employee_id=m_advance_amnt.employee_id
+AND max_tran.employee_id=m_advance_amnt.employee_id
+AND max_tran.T_date=m_advance_amnt.transaction_date
+AND m_employee.deleted_flag=0 AND m_advance_amnt.deleted_flag=0
+UNION ALL 
+SELECT 10 AS sno,340 AS salary_head_id,'Employee Component'AS salary_head_name
+,t_salary_attandance.employee_component AS head_amount,m_employee.employee_id
+,CONCAT(m_employee.employee_first_name,' ',m_employee.employee_last_name)AS Emp_name
+FROM t_salary_attandance,m_employee,t_salary_master
+WHERE t_salary_attandance.employee_id=m_employee.employee_id
+AND t_salary_master.salary_tran_auto_no=t_salary_attandance.salary_tran_auto_no
+AND t_salary_master.salary_month=$P{SingleMandatoryMonthPrompt} AND t_salary_master.salary_year=$P{YearPrompt}
+AND m_employee.deleted_flag=0 AND t_salary_master.deleted_flag=0  AND t_salary_attandance.deleted_flag=0
+UNION ALL
+SELECT 11 AS sno,341 AS salary_head_id,'Company component'AS salary_head_name
+,t_salary_attandance.employer_component AS head_amount,m_employee.employee_id
+,CONCAT(m_employee.employee_first_name,' ',m_employee.employee_last_name)AS Emp_name
+FROM t_salary_attandance,m_employee,t_salary_master
+WHERE t_salary_attandance.employee_id=m_employee.employee_id
+AND t_salary_master.salary_tran_auto_no=t_salary_attandance.salary_tran_auto_no
+AND t_salary_master.salary_month=$P{SingleMandatoryMonthPrompt} AND t_salary_master.salary_year=$P{YearPrompt}
+AND m_employee.deleted_flag=0 AND t_salary_master.deleted_flag=0  AND t_salary_attandance.deleted_flag=0
+UNION ALL
+SELECT 12 AS sno,342 AS salary_head_id,'Net Payable'AS salary_head_name
+,t_salary_attandance.net_payable AS head_amount,m_employee.employee_id
+,CONCAT(m_employee.employee_first_name,' ',m_employee.employee_last_name)AS Emp_name
+FROM t_salary_attandance,m_employee,t_salary_master
+WHERE t_salary_attandance.employee_id=m_employee.employee_id
+AND t_salary_master.salary_tran_auto_no=t_salary_attandance.salary_tran_auto_no
+AND t_salary_master.salary_month=$P{SingleMandatoryMonthPrompt} AND t_salary_master.salary_year=$P{YearPrompt}
+AND m_employee.deleted_flag=0 AND t_salary_master.deleted_flag=0  AND t_salary_attandance.deleted_flag=0
+ORDER BY employee_id,salary_head_id,sno) AS a
+LEFT JOIN (SELECT DISTINCT t_salary_leaves.employee_id
+,CONCAT(LEFT(t_salary_master.salary_month,3),t_salary_master.salary_year)AS monthYear
+,t_salary_leaves.closing_leave_balance,t_salary_leaves.opening_leave_balance
+,t_salary_leaves.availed_leave
+,t_salary_attandance.absent_days,t_salary_attandance.extra_work_day
+,t_salary_attandance.hollyd_weekOff,t_salary_attandance.loss_of_pay
+,t_salary_attandance.payable_day,t_salary_attandance.present_days
+,t_salary_attandance.working_days,t_salary_attandance.total_day_in_month
+,m_employee.employee_code,m_employee.join_date,m_employee.increment_date,m_employee_leaves.allow_days AS opening_cl_balance
+,m_masters.NAME AS designation
+FROM m_employee,t_salary_attandance,m_masters,m_employee_leaves
+,t_salary_leaves,t_salary_detail,t_salary_master
+WHERE m_employee.employee_id=t_salary_attandance.employee_id
+AND t_salary_leaves.employee_id=m_employee.employee_id
+AND m_employee.employee_id=t_salary_detail.EMPLOYEE_ID
+AND t_salary_detail.salary_tran_auto_no=t_salary_master.salary_tran_auto_no
+AND t_salary_master.salary_tran_auto_no=t_salary_leaves.salary_tran_auto_no
+AND t_salary_master.salary_tran_auto_no=t_salary_attandance.salary_tran_auto_no
+AND t_salary_master.salary_month=$P{SingleMandatoryMonthPrompt} AND t_salary_master.salary_year=$P{YearPrompt}
+AND m_employee.designation_id=m_masters.masters_id AND m_employee.deleted_flag=0 
+AND m_employee_leaves.employee_id=m_employee.employee_id 
+AND m_employee_leaves.leave_id=t_salary_leaves.leave_id
+AND t_salary_master.deleted_flag=0 AND t_salary_attandance.deleted_flag=0 
+AND t_salary_leaves.deleted_flag=0 AND t_salary_detail.deleted_flag=0)AS b
+ON a.employee_id=b.employee_id]]>
+	</queryString>
+	<field name="sno" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="salary_head_id" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="salary_head_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="head_amount" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="employee_id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Emp_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="monthYear" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="closing_leave_balance" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="opening_leave_balance" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="availed_leave" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="absent_days" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="extra_work_day" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="hollyd_weekOff" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="loss_of_pay" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="payable_day" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="present_days" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="working_days" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="total_day_in_month" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="employee_code" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="join_date" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="increment_date" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="opening_cl_balance" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="designation" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="variable1" class="java.lang.Integer">
+		<variableExpression><![CDATA[$F{total_day_in_month}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="23" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="2800" height="23" forecolor="#0066FF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="styled">
+					<font fontName="Arial" size="16" isBold="true" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[" Salary Summary Report "]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="16" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="2800" height="16" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Year -  " + "<style forecolor='red'>"+ $P{YearPrompt}+"</style>"
++ ", Month -  "+ "<style forecolor='red'>"+ $P{SingleMandatoryMonthPrompt}+"</style>"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="159" splitType="Stretch">
+			<crosstab>
+				<reportElement x="0" y="0" width="2800" height="159"/>
+				<crosstabParameter name="parameter1" class="java.lang.Integer">
+					<parameterValueExpression><![CDATA[$V{variable1}]]></parameterValueExpression>
+				</crosstabParameter>
+				<crosstabHeaderCell>
+					<cellContents backcolor="#F0F8FF" mode="Opaque">
+						<staticText>
+							<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="0" height="50"/>
+							<box>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<text><![CDATA[Month]]></text>
+						</staticText>
+						<staticText>
+							<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="1" y="0" width="50" height="50"/>
+							<box>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<text><![CDATA[Month]]></text>
+						</staticText>
+						<staticText>
+							<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="51" y="0" width="50" height="50"/>
+							<box>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<text><![CDATA[Total Days of Month]]></text>
+						</staticText>
+						<staticText>
+							<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="101" y="0" width="50" height="50"/>
+							<box>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<text><![CDATA[Holiday/Weekoff]]></text>
+						</staticText>
+						<staticText>
+							<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="151" y="0" width="50" height="50"/>
+							<box>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<text><![CDATA[Employee Code]]></text>
+						</staticText>
+						<staticText>
+							<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="201" y="0" width="50" height="50"/>
+							<box>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<text><![CDATA[Designation]]></text>
+						</staticText>
+						<staticText>
+							<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="251" y="0" width="50" height="50"/>
+							<box>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<text><![CDATA[Working Day]]></text>
+						</staticText>
+						<staticText>
+							<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="301" y="0" width="50" height="50"/>
+							<box>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<text><![CDATA[Name]]></text>
+						</staticText>
+						<staticText>
+							<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="351" y="0" width="50" height="50"/>
+							<box>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<text><![CDATA[Date of Joining]]></text>
+						</staticText>
+						<staticText>
+							<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="401" y="0" width="50" height="50"/>
+							<box>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<text><![CDATA[Increment Date]]></text>
+						</staticText>
+						<staticText>
+							<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="451" y="0" width="50" height="50"/>
+							<box>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<text><![CDATA[Opening Balance of CLin current month]]></text>
+						</staticText>
+						<staticText>
+							<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="501" y="0" width="50" height="50"/>
+							<box>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<text><![CDATA[CL alloted in current month]]></text>
+						</staticText>
+						<staticText>
+							<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="551" y="0" width="50" height="50"/>
+							<box>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<text><![CDATA[Regular Present day]]></text>
+						</staticText>
+						<staticText>
+							<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="601" y="0" width="50" height="50"/>
+							<box>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<text><![CDATA[Absent Day]]></text>
+						</staticText>
+						<staticText>
+							<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="651" y="0" width="50" height="50"/>
+							<box>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<text><![CDATA[CL Availed]]></text>
+						</staticText>
+						<staticText>
+							<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="701" y="0" width="50" height="50"/>
+							<box>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<text><![CDATA[Loss of Pay]]></text>
+						</staticText>
+						<staticText>
+							<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="751" y="0" width="50" height="50"/>
+							<box>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<text><![CDATA[Extra Work Days]]></text>
+						</staticText>
+						<staticText>
+							<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="801" y="0" width="50" height="50"/>
+							<box>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<text><![CDATA[Payable Days]]></text>
+						</staticText>
+						<staticText>
+							<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="851" y="0" width="50" height="50"/>
+							<box>
+								<topPen lineWidth="0.5"/>
+								<leftPen lineWidth="0.5"/>
+								<bottomPen lineWidth="0.5"/>
+								<rightPen lineWidth="0.5"/>
+							</box>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<text><![CDATA[Closing Balance of CL in current Month]]></text>
+						</staticText>
+					</cellContents>
+				</crosstabHeaderCell>
+				<rowGroup name="Emp_name" width="1" totalPosition="End">
+					<bucket>
+						<bucketExpression class="java.lang.String"><![CDATA[$F{Emp_name}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<textField>
+								<reportElement style="Crosstab Data Text" x="0" y="0" width="0" height="25"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial"/>
+								</textElement>
+								<textFieldExpression class="java.lang.String"><![CDATA[$V{Emp_name}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents backcolor="#BFE1FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<staticText>
+								<reportElement stretchType="RelativeToBandHeight" x="301" y="0" width="50" height="25"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Arial" isBold="true"/>
+								</textElement>
+								<text><![CDATA[Total ]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="monthYear" width="50">
+					<bucket>
+						<bucketExpression class="java.lang.String"><![CDATA[$F{monthYear}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="50" height="25"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial"/>
+								</textElement>
+								<textFieldExpression class="java.lang.String"><![CDATA[$V{monthYear}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="total_day_in_month" width="50">
+					<bucket>
+						<bucketExpression class="java.lang.Integer"><![CDATA[$F{total_day_in_month}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="50" height="25"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial"/>
+								</textElement>
+								<textFieldExpression class="java.lang.Integer"><![CDATA[$V{total_day_in_month}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="hollyd_weekOff" width="50">
+					<bucket>
+						<bucketExpression class="java.lang.Double"><![CDATA[$F{hollyd_weekOff}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="50" height="25"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial"/>
+								</textElement>
+								<textFieldExpression class="java.lang.Double"><![CDATA[$V{hollyd_weekOff}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="employee_code" width="50">
+					<bucket>
+						<bucketExpression class="java.lang.String"><![CDATA[$F{employee_code}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="50" height="25"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial"/>
+								</textElement>
+								<textFieldExpression class="java.lang.String"><![CDATA[$V{employee_code}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="designation" width="50">
+					<bucket>
+						<bucketExpression class="java.lang.String"><![CDATA[$F{designation}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="50" height="25"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial"/>
+								</textElement>
+								<textFieldExpression class="java.lang.String"><![CDATA[$V{designation}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="working_days" width="50">
+					<bucket>
+						<bucketExpression class="java.lang.Double"><![CDATA[$F{working_days}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="50" height="25"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial"/>
+								</textElement>
+								<textFieldExpression class="java.lang.Double"><![CDATA[$V{working_days}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="employee_id" width="50">
+					<bucket>
+						<bucketExpression class="java.lang.String"><![CDATA[$F{Emp_name}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="50" height="25"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial"/>
+								</textElement>
+								<textFieldExpression class="java.lang.String"><![CDATA[$V{employee_id}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="join_date" width="50">
+					<bucket>
+						<bucketExpression class="java.util.Date"><![CDATA[$F{join_date}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField pattern="dd/MM/yyyy">
+								<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="50" height="25"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial"/>
+								</textElement>
+								<textFieldExpression class="java.util.Date"><![CDATA[$V{join_date}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="increment_date" width="50">
+					<bucket>
+						<bucketExpression class="java.util.Date"><![CDATA[$F{increment_date}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField pattern="dd/MM/yyyy">
+								<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="50" height="25"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial"/>
+								</textElement>
+								<textFieldExpression class="java.sql.Timestamp"><![CDATA[$V{increment_date}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="opening_leave_balance" width="50">
+					<bucket>
+						<bucketExpression class="java.lang.Double"><![CDATA[$F{opening_leave_balance}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="50" height="25"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial"/>
+								</textElement>
+								<textFieldExpression class="java.lang.Double"><![CDATA[$V{opening_leave_balance}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="opening_cl_balance" width="50">
+					<bucket>
+						<bucketExpression class="java.lang.Double"><![CDATA[$F{opening_cl_balance}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="50" height="25"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial"/>
+								</textElement>
+								<textFieldExpression class="java.lang.Double"><![CDATA[$V{opening_cl_balance}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="present_days" width="50">
+					<bucket>
+						<bucketExpression class="java.lang.Double"><![CDATA[$F{present_days}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="50" height="25"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial"/>
+								</textElement>
+								<textFieldExpression class="java.lang.Double"><![CDATA[$V{present_days}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="absent_days" width="50">
+					<bucket>
+						<bucketExpression class="java.lang.Double"><![CDATA[$F{absent_days}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="50" height="25"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial"/>
+								</textElement>
+								<textFieldExpression class="java.lang.Double"><![CDATA[$V{absent_days}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="availed_leave" width="50">
+					<bucket>
+						<bucketExpression class="java.lang.Double"><![CDATA[$F{availed_leave}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="50" height="25"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial"/>
+								</textElement>
+								<textFieldExpression class="java.lang.Double"><![CDATA[$V{availed_leave}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="loss_of_pay" width="50">
+					<bucket>
+						<bucketExpression class="java.lang.Double"><![CDATA[$F{loss_of_pay}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="50" height="25"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial"/>
+								</textElement>
+								<textFieldExpression class="java.lang.Double"><![CDATA[$V{loss_of_pay}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="extra_work_day" width="50">
+					<bucket>
+						<bucketExpression class="java.lang.Double"><![CDATA[$F{extra_work_day}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="50" height="25"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial"/>
+								</textElement>
+								<textFieldExpression class="java.lang.Double"><![CDATA[$V{extra_work_day}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="payable_day" width="50">
+					<bucket>
+						<bucketExpression class="java.lang.Double"><![CDATA[$F{payable_day}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="50" height="25"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial"/>
+								</textElement>
+								<textFieldExpression class="java.lang.Double"><![CDATA[$V{payable_day}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="closing_leave_balance" width="50">
+					<bucket>
+						<bucketExpression class="java.lang.Double"><![CDATA[$F{closing_leave_balance}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="50" height="25"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial"/>
+								</textElement>
+								<textFieldExpression class="java.lang.Double"><![CDATA[$V{closing_leave_balance}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<columnGroup name="salary_head_id" height="0">
+					<bucket>
+						<bucketExpression class="java.lang.Long"><![CDATA[$F{salary_head_id}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="0"/>
+								<textElement/>
+								<textFieldExpression class="java.lang.Long"><![CDATA[$V{salary_head_id}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents/>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<columnGroup name="salary_head_name" height="50">
+					<bucket>
+						<bucketExpression class="java.lang.String"><![CDATA[$F{salary_head_name}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="60" height="50"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial"/>
+								</textElement>
+								<textFieldExpression class="java.lang.String"><![CDATA[$V{salary_head_name}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents/>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<measure name="head_amountMeasure" class="java.lang.Double" calculation="Sum">
+					<measureExpression><![CDATA[$F{head_amount}]]></measureExpression>
+				</measure>
+				<measure name="monthyear" class="java.lang.String">
+					<measureExpression><![CDATA[$F{monthYear}]]></measureExpression>
+				</measure>
+				<measure name="total_mom_days" class="java.lang.Integer">
+					<measureExpression><![CDATA[$F{total_day_in_month}]]></measureExpression>
+				</measure>
+				<crosstabCell width="60" height="25">
+					<cellContents>
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField pattern="#,##0.00">
+							<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="60" height="25"/>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<textFieldExpression class="java.lang.Double"><![CDATA[$V{head_amountMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="60" height="25" rowTotalGroup="Emp_name">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField pattern="#,##0.00">
+							<reportElement style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="60" height="25"/>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<textFieldExpression class="java.lang.Double"><![CDATA[$V{head_amountMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="50" columnTotalGroup="salary_head_id">
+					<cellContents backcolor="#005FB3" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25" forecolor="#FFFFFF"/>
+							<textElement/>
+							<textFieldExpression class="java.lang.Double"><![CDATA[$V{head_amountMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="Emp_name" columnTotalGroup="salary_head_id">
+					<cellContents backcolor="#005FB3" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25" forecolor="#FFFFFF"/>
+							<textElement/>
+							<textFieldExpression class="java.lang.Double"><![CDATA[$V{head_amountMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="50" columnTotalGroup="salary_head_name">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="-1073741824"/>
+							<textElement>
+								<font size="2"/>
+							</textElement>
+							<textFieldExpression class="java.lang.Double"><![CDATA[$V{head_amountMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="Emp_name" columnTotalGroup="salary_head_name">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25"/>
+							<textElement/>
+							<textFieldExpression class="java.lang.Double"><![CDATA[$V{head_amountMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="monthYear">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="monthYear" columnTotalGroup="salary_head_id">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="monthYear" columnTotalGroup="salary_head_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="total_day_in_month">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="total_day_in_month" columnTotalGroup="salary_head_id">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="total_day_in_month" columnTotalGroup="salary_head_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="hollyd_weekOff">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="hollyd_weekOff" columnTotalGroup="salary_head_id">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="hollyd_weekOff" columnTotalGroup="salary_head_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="employee_code">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="employee_code" columnTotalGroup="salary_head_id">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="employee_code" columnTotalGroup="salary_head_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="designation">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="designation" columnTotalGroup="salary_head_id">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="designation" columnTotalGroup="salary_head_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="working_days">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="working_days" columnTotalGroup="salary_head_id">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="working_days" columnTotalGroup="salary_head_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="employee_id">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="employee_id" columnTotalGroup="salary_head_id">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="employee_id" columnTotalGroup="salary_head_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="join_date">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="join_date" columnTotalGroup="salary_head_id">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="join_date" columnTotalGroup="salary_head_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="increment_date">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="increment_date" columnTotalGroup="salary_head_id">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="increment_date" columnTotalGroup="salary_head_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="opening_leave_balance">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="opening_leave_balance" columnTotalGroup="salary_head_id">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="opening_leave_balance" columnTotalGroup="salary_head_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="opening_cl_balance">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="opening_cl_balance" columnTotalGroup="salary_head_id">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="opening_cl_balance" columnTotalGroup="salary_head_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="present_days">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="present_days" columnTotalGroup="salary_head_id">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="present_days" columnTotalGroup="salary_head_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="absent_days">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="absent_days" columnTotalGroup="salary_head_id">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="absent_days" columnTotalGroup="salary_head_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="availed_leave">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="availed_leave" columnTotalGroup="salary_head_id">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="availed_leave" columnTotalGroup="salary_head_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="loss_of_pay">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="loss_of_pay" columnTotalGroup="salary_head_id">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="loss_of_pay" columnTotalGroup="salary_head_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="extra_work_day">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="extra_work_day" columnTotalGroup="salary_head_id">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="extra_work_day" columnTotalGroup="salary_head_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="payable_day">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="payable_day" columnTotalGroup="salary_head_id">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="payable_day" columnTotalGroup="salary_head_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="closing_leave_balance">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="closing_leave_balance" columnTotalGroup="salary_head_id">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="closing_leave_balance" columnTotalGroup="salary_head_name">
+					<cellContents/>
+				</crosstabCell>
+			</crosstab>
+		</band>
+	</summary>
+	<noData>
+		<band height="100">
+			<textField>
+				<reportElement x="0" y="0" width="2800" height="23" forecolor="#0066FF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="styled">
+					<font fontName="Arial" size="16" isBold="true" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[" Salary Summary Report "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="23" width="2800" height="16" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Year -  " + "<style forecolor='red'>"+ $P{YearPrompt}+"</style>"
++ ", Month -  "+ "<style forecolor='red'>"+ $P{SingleMandatoryMonthPrompt}+"</style>"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="39" width="2800" height="30" forecolor="#FF3300"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="Arial" size="20"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="69" width="2800" height="18" forecolor="#0099FF"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="Arial" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(Please Check Your Selection Criteria)]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>

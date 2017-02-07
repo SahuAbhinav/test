@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="masters-http">
+        <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
+        <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
+        <dependent-module archiveName="masters-service-1_0_0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/masters-service/masters-service">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="masters-storage-1_0_0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/masters-storage/masters-storage">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="masters-entity-1_0_0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/masters-entity/masters-entity">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="common-entity-1_0_0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/common-entity/common-entity">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="common-storage-1_0_0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/common-storage/common-storage">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="masters-model-1_0_0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/masters-model/masters-model">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="common-model-1_0_0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/common-model/common-model">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="masters-service-business-1_0_0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/masters-service-business/masters-service-business">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="common-service-1_0_0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/common-service/common-service">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="common-service-business-1_0_0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/common-service-business/common-service-business">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="common-util-1_0_0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/common-util/common-util">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="context-root" value="masters-http"/>
+        <property name="java-output-path" value="/masters-http/target/classes"/>
+    </wb-module>
+</project-modules>

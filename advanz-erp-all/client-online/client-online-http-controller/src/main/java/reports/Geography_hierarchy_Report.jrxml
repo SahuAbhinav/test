@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Geography_Hierarchy " pageWidth="1190" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="1190" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="fc157916-b094-402f-b224-c4b293d85d4f">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="style1" mode="Opaque">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 ==0)]]></conditionExpression>
+			<style backcolor="#E6F3F7" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="ZoneNamePrompt" class="java.lang.String"/>
+	<parameter name="StateNamePrompt" class="java.lang.String"/>
+	<parameter name="RegionNamePrompt" class="java.lang.String"/>
+	<parameter name="AreaNamePrompt" class="java.lang.String"/>
+	<parameter name="ZoneNameNull_FlagPrompt" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[$P{ZoneNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="StateNull_FlagPrompt" class="java.lang.Integer">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[$P{StateNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="RegionNameNull_FlagPrompt" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[$P{RegionNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="AreaNameNull_FlagPrompt" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[$P{AreaNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT ct.city_code AS city_code,ct.city_name AS city_name, ct.stdcode AS stdcode,
+a.area_code AS area_code,a.area_name AS area_name,
+r.region_code AS region_code,r.region_name AS region_name,
+s.State_CODE AS state_code,s.State_NAME AS state_name,
+z.zone_code AS zone_code,z.Zone_NAME AS zone_name,
+c.COUNTRY_CODE AS country_code, c.COUNTRY_NAME AS country_name
+FROM m_city AS ct,m_area AS a,m_region AS r,m_state AS s
+,m_zone AS z, m_country AS c
+WHERE ct.deleted_flag=0 AND ct.area_id=a.area_id
+AND a.deleted_flag=0 AND a.region_id=r.region_id
+AND r.deleted_flag=0 AND r.state_id=s.state_id
+AND s.deleted_flag=0 AND s.zone_id=z.zone_id
+AND z.deleted_flag=0 AND z.country_id=c.country_id AND c.deleted_flag=0
+AND (z.zone_name= $P{ZoneNamePrompt} OR 1=$P{ZoneNameNull_FlagPrompt})
+AND (s.state_name= $P{StateNamePrompt} OR 1=$P{StateNull_FlagPrompt})
+AND (r.region_name= $P{RegionNamePrompt} OR 1=$P{RegionNameNull_FlagPrompt})
+AND (a.area_name= $P{AreaNamePrompt} OR 1=$P{AreaNameNull_FlagPrompt})]]>
+	</queryString>
+	<field name="city_code" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="city_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="stdcode" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="area_code" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="area_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="region_code" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="region_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="state_code" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="state_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="zone_code" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="zone_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="country_code" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="country_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="s_no" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$V{REPORT_COUNT}]]></variableExpression>
+	</variable>
+	<title>
+		<band height="42">
+			<staticText>
+				<reportElement uuid="e3e2b164-1a79-429a-8184-82454b751173" x="0" y="0" width="1189" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="15" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Geography Hierarchy Report]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="1604ada6-dbd9-4cb5-807d-398aa24bd6f9" x="0" y="20" width="1189" height="15" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Zone : " + ($P{ZoneNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ZoneNamePrompt}+"</style>")
++ ",  State : " + ($P{StateNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{StateNamePrompt}+"</style>")
++ ",  Region : " + ($P{RegionNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{RegionNamePrompt}+"</style>")
++ ",  Area : " + ($P{AreaNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{AreaNamePrompt}+"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="22">
+			<line>
+				<reportElement uuid="4870d091-0ef7-4586-9200-78f770423023" x="0" y="1" width="1189" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="b8ce8840-1a31-4f66-a2dd-291ccc3cb1c7" x="933" y="0" width="180" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[City Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a84395fd-d0c6-494d-99ab-ddc8d4b4d925" x="0" y="0" width="33" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[S.No.]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="fda4b5a4-2a3f-42d8-9239-15fcb638b722" x="0" y="20" width="1189" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="eef4158e-a026-4aac-a628-4bf7fc5a193a" x="753" y="0" width="180" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Area Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="af5c0aba-286e-4467-b7d6-05493b953be4" x="573" y="0" width="180" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Region Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="4c983427-5923-4a57-8230-e646bd0262c9" x="393" y="0" width="180" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[State Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ae31b331-dce2-4208-9d58-506ee6512cd0" x="213" y="0" width="180" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Zone Name1]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b1d2f768-9885-41d6-a454-728a148829c8" x="33" y="0" width="180" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Country Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7f8f13c6-94ab-460b-9c5b-0689e9170f94" x="1113" y="0" width="76" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Std Code]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="16">
+			<frame>
+				<reportElement uuid="0ea52e74-021c-4de4-b607-782ce4ee178b" style="style1" x="0" y="0" width="1189" height="16"/>
+				<textField>
+					<reportElement uuid="e6e482ee-df8e-4659-ae49-ef89f08f755b" x="933" y="0" width="180" height="13"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{city_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="cbca2550-7532-4958-a4be-e673b61eff93" isPrintRepeatedValues="false" x="0" y="0" width="33" height="13"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{s_no}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="157fcd4e-322b-4962-a926-3f3fbe74fdac" x="753" y="0" width="180" height="13"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{area_name}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="a004b5f6-1f1d-47b5-b198-0c102bc91ce8" x="573" y="0" width="180" height="13"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{region_name}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="ec1cb0ca-13dc-4f39-8fde-1bd9c13fdae9" x="393" y="0" width="180" height="13"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{state_name}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="6d28cde3-13fd-41a2-95e9-598a999a2eb8" x="213" y="0" width="180" height="13"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{zone_name}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="56cd05eb-345c-400a-81ea-f32bfc74e3d8" x="33" y="0" width="180" height="13"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{country_name}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="a4333336-924b-45de-8d15-4dd7e4a1823c" x="1113" y="0" width="76" height="13"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{stdcode}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<noData>
+		<band height="86">
+			<staticText>
+				<reportElement uuid="b5edbffe-73a9-47f9-9041-afa799ce20ae" x="0" y="0" width="1189" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="15" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Geography Hierarchy Report]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="dfdb37c1-8574-4250-98d0-140fc124f04d" x="0" y="35" width="1189" height="29" forecolor="#FF3300"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial Black" size="20"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b7531aab-8498-4e43-bb0d-a9acf3c45d9a" x="0" y="65" width="1189" height="20" forecolor="#0099FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(Please Check Your Selection Criteria)]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="0968a61a-91b9-446b-8572-47b1d9b7c6b3" x="0" y="20" width="1189" height="15" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Zone : " + ($P{ZoneNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ZoneNamePrompt}+"</style>")
++ ",  State : " + ($P{StateNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{StateNamePrompt}+"</style>")
++ ",  Region : " + ($P{RegionNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{RegionNamePrompt}+"</style>")
++ ",  Area : " + ($P{AreaNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{AreaNamePrompt}+"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</noData>
+</jasperReport>

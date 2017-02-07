@@ -1,0 +1,22 @@
+package com.advanz.erp.masters.service.business;
+import com.advanz.erp.common.service.business.IAdvanzErpBaseSerivce;
+import com.advanz.erp.masters.model.msg.ModuleMenuMasterInputMessage;
+import com.advanz.erp.masters.model.msg.ModuleMenuMasterOutMessage;
+
+
+public interface IModuleMenuMasterService extends IAdvanzErpBaseSerivce{
+	
+    public ModuleMenuMasterOutMessage createModuleMenuMaster(ModuleMenuMasterInputMessage moduleMenuMasterInputMessage);
+	public ModuleMenuMasterOutMessage updateModuleMenuMaster(ModuleMenuMasterInputMessage moduleMenuMasterInputMessage);
+	public ModuleMenuMasterOutMessage deleteModuleMenuMaster(ModuleMenuMasterInputMessage moduleMenuMasterInputMessage);
+	//public ItemCategoryOutMessage findItemCategoryByCriteria(ItemCategoryInputMessage itemCategoryInputMessage);
+	public ModuleMenuMasterOutMessage findAllModuleMenuMaster();
+	public ModuleMenuMasterOutMessage findModuleMenuMasterByModuleName(ModuleMenuMasterInputMessage moduleMenuMasterInputMessage);
+
+	public ModuleMenuMasterOutMessage findModuleMenuMasterBySubModuleName(ModuleMenuMasterInputMessage moduleMenuMasterInputMessage);
+	
+	public ModuleMenuMasterOutMessage findModuleMenuMasterByRoleId(ModuleMenuMasterInputMessage moduleMenuMasterInputMessage);
+	public ModuleMenuMasterOutMessage getReportLinkList(ModuleMenuMasterInputMessage moduleMenuMasterInputMessage);
+	public ModuleMenuMasterOutMessage search(ModuleMenuMasterInputMessage moduleMenuMasterInputMessage);
+
+}

@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+ 	<context:component-scan base-package="com.advanz.erp.masters.service" />
+ 	
+ 	<bean id="itemGroupService" class="com.advanz.erp.masters.service.ItemGroupServiceImpl"  scope="prototype"></bean>
+ 	
+ 	<bean id="itemCategoryService" class="com.advanz.erp.masters.service.ItemCategoryServiceImpl" scope="prototype"></bean>
+ 
+ 	
+ 	<bean id="companyService" class="com.advanz.erp.masters.service.CompanyServiceImpl" scope="prototype"></bean>
+ 	
+ 	<bean id="branchService" class="com.advanz.erp.masters.service.BranchServiceImpl" scope="prototype"></bean>
+	
+	<bean id="batchService" class="com.advanz.erp.masters.service.BatchServiceImpl" scope="prototype"></bean>
+	
+	<bean id="partyTypeService" class="com.advanz.erp.masters.service.PartyTypeServiceImpl" scope="prototype"></bean>
+	
+	<bean id="itemService" class="com.advanz.erp.masters.service.ItemServiceImpl" scope="prototype"></bean>
+	
+	<bean id="itemGroupFlagService" class="com.advanz.erp.masters.service.ItemGroupFlagServiceImpl" scope="prototype"></bean>
+	
+	<bean id="countryService" class="com.advanz.erp.masters.service.CountryServiceImpl" scope="prototype"></bean>
+	
+	<bean id="zoneService" class="com.advanz.erp.masters.service.ZoneServiceImpl" scope="prototype"></bean>
+	
+	<bean id="areaService" class="com.advanz.erp.masters.service.AreaServiceImpl" scope="prototype"></bean>
+	
+	<bean id="cityService" class="com.advanz.erp.masters.service.CityServiceImpl" scope="prototype"></bean>
+	
+	<bean id="regionService" class="com.advanz.erp.masters.service.RegionServiceImpl" scope="prototype"></bean>
+	
+	<bean id="stateService" class="com.advanz.erp.masters.service.StateServiceImpl" scope="prototype"></bean>
+	
+	<bean id="salaryHeadService" class="com.advanz.erp.masters.service.SalaryHeadServiceImpl" scope="prototype"></bean>
+	
+	<bean id="mastersService" class="com.advanz.erp.masters.service.MastersServiceImpl" scope="prototype"></bean>
+	
+	<bean id="leaveTypeMastService" class="com.advanz.erp.masters.service.LeaveTypeMastServiceImpl" scope="prototype"></bean>
+	
+	<bean id="storeLocationService" class="com.advanz.erp.masters.service.StoreLocationServiceImpl" scope="prototype"></bean>
+	
+	<bean id="transporterService" class="com.advanz.erp.masters.service.TransporterServiceImpl" scope="prototype"></bean>
+	
+	<bean id="employeeService" class="com.advanz.erp.masters.service.EmployeeServiceImpl" scope="prototype"></bean>
+
+	<bean id="partyService" class="com.advanz.erp.masters.service.PartyServiceImpl" scope="prototype"></bean>
+	
+	<bean id="transactionTypeService" class="com.advanz.erp.masters.service.TransactionTypeServiceImpl" scope="prototype"></bean>
+	
+	<bean id="salesOrderMasterService" class="com.advanz.erp.masters.service.SalesOrderMasterServiceImpl" scope="prototype"></bean>
+	
+	<bean id="professionalTaxService" class="com.advanz.erp.masters.service.ProfessionalTaxServiceImpl" scope="prototype"></bean>
+	
+	<bean id="professionalTaxDeductTypeService" class="com.advanz.erp.masters.service.ProfessionalTaxDeductTypeServiceImpl" scope="prototype"></bean>
+	
+
+	<bean id="salesOrderService" class="com.advanz.erp.masters.service.SalesOrderServiceImpl" scope="prototype"></bean>
+	
+	<bean id="billService" class="com.advanz.erp.masters.service.BillServiceImpl" scope="prototype"></bean>
+	<bean id="billDetailService" class="com.advanz.erp.masters.service.BillDetailServiceImpl" scope="prototype"></bean>
+	
+	<bean id="proformaMasterService" class="com.advanz.erp.masters.service.ProformaMasterServiceImpl" scope="prototype"></bean>
+	<bean id="proformaDetailService" class="com.advanz.erp.masters.service.ProformaDetailServiceImpl" scope="prototype"></bean>
+	
+	<bean id="stockLedgerService" class="com.advanz.erp.masters.service.StockLedgerServiceImpl" scope="prototype"></bean>
+
+	
+	
+	<bean id="dispatchDetailService" class="com.advanz.erp.masters.service.DispatchDetailServiceImpl" scope="prototype"></bean>
+	<bean id="dispatchMasterService" class="com.advanz.erp.masters.service.DispatchMasterServiceImpl" scope="prototype"></bean>
+
+
+	<bean id="quotationMasterService" class="com.advanz.erp.masters.service.QuotationMasterServiceImpl" scope="prototype"></bean>
+
+	<bean id="finishedGoodsMasterService" class="com.advanz.erp.masters.service.FinishedGoodsMasterServiceImpl" scope="prototype"></bean>
+	
+	<bean id="purchaseOrderMasterService" class="com.advanz.erp.masters.service.PurchaseOrderMasterServiceImpl" scope="prototype"></bean>
+	
+	<bean id="issueMasterService" class="com.advanz.erp.masters.service.IssueMasterServiceImpl" scope="prototype"></bean>
+
+    <bean id="blanketProductionMasterService" class="com.advanz.erp.masters.service.BlanketProductionMasterServiceImpl" scope="prototype"></bean>
+     
+     <bean id="blanketProductionMasterNewService" class="com.advanz.erp.masters.service.BlanketProductionMasterNewServiceImpl" scope="prototype"></bean>
+     
+      <bean id="barcodeLedgerService" class="com.advanz.erp.masters.service.BarcodeLedgerServiceImpl" scope="prototype">
+       <property name="printerName" value="TSC-TTP-244-Pro"/>
+      
+      </bean>
+        
+	<bean id="issueTypeMasterService" class="com.advanz.erp.masters.service.IssueTypeMasterServiceImpl" scope="prototype"></bean>
+	
+	<bean id="annealingOvenService" class="com.advanz.erp.masters.service.AnnealingOvenServiceImpl" scope="prototype"></bean>
+	
+	<bean id="grnMasterService" class="com.advanz.erp.masters.service.GrnMasterServiceImpl" scope="prototype"></bean>
+	
+	<bean id="melterLogSummaryService" class="com.advanz.erp.masters.service.MelterLogSummaryServiceImpl" scope="prototype"></bean>
+	
+	<bean id="melterTrollyLogService" class="com.advanz.erp.masters.service.MelterTrollyLogServiceImpl" scope="prototype"></bean>
+	
+	<bean id="melterLogBookService" class="com.advanz.erp.masters.service.MelterLogBookServiceImpl" scope="prototype"></bean>
+	
+	<bean id="userMasterRoleService" class="com.advanz.erp.masters.service.UserMasterRoleServiceImpl" scope="prototype"></bean>
+	
+	<bean id="userRoleService" class="com.advanz.erp.masters.service.UserRoleServiceImpl" scope="prototype"></bean>
+	
+	<bean id="shiftReportMasterService" class="com.advanz.erp.masters.service.ShiftReportMasterServiceImpl" scope="prototype"></bean>
+
+	<bean id="moduleMenuMasterService" class="com.advanz.erp.masters.service.ModuleMenuMasterServiceImpl" scope="prototype"></bean>
+	
+	<bean id="roleService" class="com.advanz.erp.masters.service.RoleSerivceImpl" scope="prototype"/>
+	
+	<bean id="userRoleAndRightsService" class="com.advanz.erp.masters.service.UserRoleAndRightsServiceImpl" scope="prototype"/>
+	
+	<bean id="exciseLedgerService" class="com.advanz.erp.masters.service.ExciseLedgerServiceImpl" scope="prototype"/>
+	<bean id="masterFormulaService" class="com.advanz.erp.masters.service.MasterFormulaServiceImpl" scope="prototype"/>
+<bean id="debitDutyMasterService" class="com.advanz.erp.masters.service.DebitDutyMasterServiceImpl" scope="prototype"/>
+<bean id="getPassMasterService" class="com.advanz.erp.masters.service.GetPassMasterServiceImpl" scope="prototype"/>
+<bean id="returnGetPassMasterService" class="com.advanz.erp.masters.service.ReturnGetPassMasterServiceImpl" scope="prototype"/>
+
+<bean id="issueReturnService" class="com.advanz.erp.masters.service.IssueReturnServiceImpl" scope="prototype"/>
+<bean id="bulkFiberMasterService" class="com.advanz.erp.masters.service.BulkFiberMasterServiceImpl" scope="prototype"/>
+
+<bean id="attandanceMasterService" class="com.advanz.erp.masters.service.AttandanceMasterServiceImpl" scope="prototype"/>
+<bean id="advanceAmountService" class="com.advanz.erp.masters.service.AdvanceAmountServiceImpl" scope="prototype"/>
+
+<bean id="salaryNoteService" class="com.advanz.erp.masters.service.SalaryNoteServiceImpl" scope="prototype"/>
+
+<bean id="leaveApplicationService" class="com.advanz.erp.masters.service.LeaveApplicationServiceImpl" scope="prototype"/>
+
+<bean id="indentMasterService" class="com.advanz.erp.masters.service.IndentMasterServiceImpl" scope="prototype"/>
+
+<bean id="salaryMasterService" class="com.advanz.erp.masters.service.SalaryMasterServiceImpl" scope="prototype"/>
+<bean id="capativeConsuptionService" class="com.advanz.erp.masters.service.CapativeConsuptionServiceImpl" scope="prototype"/>
+<!--   MAIL SCHEDULER MAPPING FROM HERE  -->
+
+
+<!--  @author Anil Dhakad -->
+ 
+<beans>
+ <bean id="emailService" class="com.advanz.erp.masters.service.EmailService">
+	  <property name="mailSender" ref="mailSender"></property>
+	 </bean>
+
+	   <bean name="birthdayWisherJob" class="org.springframework.scheduling.quartz.JobDetailBean">
+	  <property name="jobClass" value="com.advanz.erp.masters.service.EmailSenderJob" />
+	  <property name="jobDataAsMap">
+	   <map>
+	    <entry key="emailService" value-ref="emailService"></entry>
+	   </map>
+	  </property>
+	 </bean>
+	
+	 <bean id="birthdayWisherCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+	  <property name="jobDetail" ref="birthdayWisherJob" />
+	  
+	  
+	  <!-- run every morning at 6 AM  60*60*24*1000-->
+	   <!--<property name="cronExpression" value="0 40 11 1/1 * ? *" />  --> 
+	     <property name="cronExpression" value="0 0 22/24 * * ?" />  
+	  <!--  <property name="cronExpression" value="0/3000 * * * * ?" />  -->   
+	 </bean>
+	  
+	 <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	 <property name="triggers">
+	 <list>
+	 <ref bean="birthdayWisherCronTrigger" />
+	 </list>
+	 </property>
+	 </bean>
+	 
+	 <!-- Check Mail scheduler -->
+	 
+	  <bean id="EmailCheckAndSendService" class="com.advanz.erp.masters.service.EmailCheckAndSendService">
+	  <property name="mailSender" ref="mailSender"></property>
+	 </bean>
+	 
+	 <bean name="checkMailJob" class="org.springframework.scheduling.quartz.JobDetailBean">
+	  <property name="jobClass" value="com.advanz.erp.masters.service.EmailCheckAndSenderJob" />
+	  <property name="jobDataAsMap">
+	   <map>
+	    <entry key="EmailCheckAndSendService" value-ref="EmailCheckAndSendService"></entry>
+	   </map>
+	  </property>
+	 </bean>
+	
+	 <bean id="checkMailJobCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+	  <property name="jobDetail" ref="checkMailJob" />
+	  
+	  
+	  
+	  
+	  <!-- run every morning at 6 AM  60*60*24*1000-->
+	  <!-- <property name="cronExpression" value="0 0/10 12,12 * * ?" />  -->
+	   <property name="cronExpression" value="0 0/10 23,23 * * ?" /> 
+	  <!--  <property name="cronExpression" value="0/3000 * * * * ?" />  -->   
+	  <!-- <property name="cronExpression" value="0 0 22/24 * * ?" />  -->
+	 </bean>
+	  
+	 <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	 <property name="triggers">
+	 <list>
+	 <ref bean="checkMailJobCronTrigger" />
+	 </list>
+	 </property>
+	 </bean>
+	 
+	  
+	   
+	 <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+	  <property name="defaultEncoding" value="UTF-8"/>
+	  <property name="host" value="smtp.gmail.com" />
+	  <property name="port" value="465" />
+	  <property name="protocol" value="smtps" />
+	  <property name="username" value="info@101bi.com"/>
+	  <property name="password" value="test4321"/>
+	  <property name="javaMailProperties">
+	   <props>
+	    <prop key="mail.smtps.auth">true</prop>
+	    <prop key="mail.smtps.starttls.enable">true</prop>
+	    <prop key="mail.smtps.debug">true</prop>
+	   </props>
+	  </property>
+	 </bean>
+</beans>
+
+
+<!--  MAIL SCHEDULER MAPPING END  -->
+
+
+</beans>

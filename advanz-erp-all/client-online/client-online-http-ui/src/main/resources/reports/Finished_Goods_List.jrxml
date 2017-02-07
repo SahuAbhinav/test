@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Finished_Goods_List" pageWidth="1343" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="1343" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="b22d06e5-55ce-4d1a-ba85-c08dfe2c93fd">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="style1" mode="Opaque">
+		<paragraph lineSpacing="Single"/>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 ==0)]]></conditionExpression>
+			<style backcolor="#E6F3F7" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
+				<paragraph lineSpacing="Single"/>
+			</style>
+		</conditionalStyle>
+	</style>
+	<parameter name="FromDatePrompt" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ToDatePrompt" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ItemCategoryPrompt" class="java.lang.String"/>
+	<parameter name="ItemCategoryNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ItemCategoryPrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ItemNamePrompt" class="java.lang.String"/>
+	<parameter name="ItemNameNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ItemNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Item_Status_Prompt" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Item_StatusNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{Item_Status_Prompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT t_finished_goods.finished_goods_number, t_finished_goods.finish_good_date
+, m_item.item_name
+, m_item.itemcode
+, t_finished_goods_detail.batch_no, t_finished_goods_detail.expiry_date, t_finished_goods_detail.mfg_date
+, UOM.name AS UOM, t_finished_goods_detail.quantity AS QTY
+, m_store_location.STORE_LOCATION
+, t_finished_goods_detail.packing_details
+,IFNULL(m_item.item_length,'') AS item_length
+,IFNULL(m_item.item_width,'') AS item_width
+,IFNULL(m_item.item_thikness,'') AS item_thikness
+,IFNULL(m_item.item_density,'') AS item_density
+,gr.NAME AS Grade
+FROM t_finished_goods
+, t_finished_goods_detail , m_item, m_item_category c
+, (SELECT masters_id,NAME FROM m_masters WHERE m_form_name='Measurement Unit') AS UOM
+,(SELECT  masters_id ,NAME FROM m_masters WHERE m_form_name='Item Grade' AND deleted_flag=0) AS gr
+, m_store_location
+WHERE t_finished_goods.finished_goods_number = t_finished_goods_detail.finished_goods_number AND m_item.deleted_flag=0
+AND t_finished_goods.deleted_flag=0 AND t_finished_goods_detail.deleted_flag=0
+AND t_finished_goods_detail.item_id = m_item.item_id
+AND m_item.item_category_id=c.item_category_id
+AND m_item.measurement_Unit_id=UOM.masters_id AND gr.masters_id=m_item.item_grade_id
+AND t_finished_goods_detail.store_location_id = m_store_location.STORE_LOCATION_ID
+AND CAST(t_finished_goods.finish_good_date AS DATE) >= $P{FromDatePrompt}
+AND CAST(t_finished_goods.finish_good_date AS DATE) <= $P{ToDatePrompt}
+AND (c.ITEM_CATEGORY_NAME = $P{ItemCategoryPrompt} OR 1=$P{ItemCategoryNull_FlagPrompt})
+AND(m_item.item_name=$P{ItemNamePrompt} OR 1=$P{ItemNameNull_FlagPrompt})
+AND (m_item.active_status=$P{Item_Status_Prompt} OR 1=$P{Item_StatusNull_FlagPrompt})
+ORDER BY 2 DESC,m_item.item_sequence_no,3,4,5]]>
+	</queryString>
+	<field name="finished_goods_number" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="finish_good_date" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="item_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="itemcode" class="java.lang.String"/>
+	<field name="batch_no" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="expiry_date" class="java.util.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="mfg_date" class="java.util.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="UOM" class="java.lang.String"/>
+	<field name="QTY" class="java.lang.Double"/>
+	<field name="STORE_LOCATION" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="packing_details" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="item_length" class="java.lang.Double"/>
+	<field name="item_width" class="java.lang.Double"/>
+	<field name="item_thikness" class="java.lang.Double"/>
+	<field name="item_density" class="java.lang.Double"/>
+	<field name="Grade" class="java.lang.String"/>
+	<variable name="s_no" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$V{REPORT_COUNT}]]></variableExpression>
+	</variable>
+	<variable name="QTY_SUM" class="java.lang.Float" resetType="Group" resetGroup="FGNumber" calculation="Sum">
+		<variableExpression><![CDATA[$F{QTY}]]></variableExpression>
+	</variable>
+	<variable name="QTY_GRAND_TOTAL" class="java.lang.Float" calculation="Sum">
+		<variableExpression><![CDATA[$F{QTY}]]></variableExpression>
+	</variable>
+	<group name="Date">
+		<groupExpression><![CDATA[$F{finish_good_date}]]></groupExpression>
+	</group>
+	<group name="FGNumber">
+		<groupExpression><![CDATA[$F{finished_goods_number}]]></groupExpression>
+		<groupHeader>
+			<band height="16">
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="b7b7bd04-6d2b-4cfb-af88-9fc5c62ce7ad" x="4" y="0" width="100" height="13"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{finished_goods_number}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="dd-MM-yy" isBlankWhenNull="true">
+					<reportElement uuid="7f4f0cc7-a0c0-468e-8fbf-67f524410bff" x="104" y="0" width="112" height="13"/>
+					<textElement textAlignment="Justified" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yy").format($F{finish_good_date})]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="25">
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement uuid="93c89792-dc7d-4eb0-a58a-48d0837edceb" x="863" y="4" width="80" height="15"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( ($V{QTY_SUM}.doubleValue()-$V{QTY_SUM}.intValue())> new Double(0) ? $V{QTY_SUM} :
+new DecimalFormat("###0").format($V{QTY_SUM}) )]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement uuid="6f940ec2-97bf-4903-9bfc-70de6dcce744" x="583" y="21" width="760" height="1"/>
+				</line>
+				<line>
+					<reportElement uuid="b9873650-d8fc-457c-ae8f-3f75fad6648d" x="583" y="1" width="760" height="1"/>
+				</line>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="cfd8c6d4-b277-49b6-b5e9-fcd49a913e24" x="584" y="4" width="279" height="15"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Finish Goods No. ("+$F{finished_goods_number}+") Total:"]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<pageHeader>
+		<band height="62">
+			<staticText>
+				<reportElement uuid="5f687f33-dca0-4349-a963-5dfc3aafde69" x="0" y="1" width="1343" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Finished Goods List]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="false">
+				<reportElement uuid="698fbf55-bff1-4a51-9b06-b36071eedd1a" x="0" y="20" width="1343" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["From Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{FromDatePrompt})+"</style>"
++" To Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{ToDatePrompt})+"</style>"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="44d70d35-014b-464f-aa26-b9cb19a7fcc8" x="0" y="40" width="1343" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" Item : " + ($P{ItemNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemNamePrompt}+"</style>")
++ ", Active Status : " + ($P{Item_StatusNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+ ($P{Item_Status_Prompt}.intValue()==1?"Yes":"No") +"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="43">
+			<line>
+				<reportElement uuid="f2595272-750c-4dbb-b27a-e41da03fcccf" x="0" y="1" width="1343" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="4892827d-2c3c-4c28-92ee-252922a57d05" x="4" y="2" width="100" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Finish Goods No.]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="1b6e6d75-258f-4c15-ade4-ebc8ba0c2f42" x="0" y="38" width="1343" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="a2026cd6-dffe-4b2b-9f08-ce9cd84abca8" x="184" y="18" width="250" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Item Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7dadf771-5cfc-4bf7-854a-427ba9a006f9" x="763" y="18" width="100" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Expiry Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="4081054e-6bbc-495e-bb6d-ce582977f1b9" x="863" y="18" width="100" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Mfg. Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f98e1bae-18b1-4bc7-b2d0-943daa89ab0f" x="963" y="18" width="100" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[UOM]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b1c1c1ab-500e-4b3e-ae71-645fd491d209" x="1063" y="18" width="80" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[QUANTITY]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c33962b1-cf65-4843-8fdd-cc27726755bb" x="1143" y="18" width="200" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[STORE LOCATION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="8517ff93-2417-4a96-a6b3-b983c03d1536" x="634" y="18" width="129" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Batch No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="0c9cd1c5-ae58-4fde-acfb-9784d7d27ae1" x="104" y="2" width="112" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Finish Goods Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5a6776c4-9a3c-4549-8431-fb33f4e5a5b0" x="434" y="18" width="75" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Size]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5044d976-d559-455f-91a9-f23f28295446" x="584" y="18" width="50" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Grade]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e4d73085-5be8-4ec0-9deb-ad8dd3f0e38d" x="509" y="18" width="75" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Density]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="261d8d8f-084a-45a3-822d-3cf49a5d38f7" x="104" y="18" width="80" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Item Code]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="24">
+			<frame>
+				<reportElement uuid="c104da0c-b80c-489a-ae4c-3b9280fef4f1" style="style1" x="0" y="0" width="1343" height="14"/>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement uuid="faba6862-ab93-43ae-9828-b890cc43d65d" x="184" y="0" width="250" height="13"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{item_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement uuid="a61144cb-5b92-4d65-8f30-0504fcdfe9fa" x="634" y="0" width="129" height="13"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{batch_no}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement uuid="14cbd1ea-b1d8-4543-9ea4-c613459dfe75" x="763" y="0" width="100" height="13"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yy").format($F{expiry_date})]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00">
+					<reportElement uuid="7f7de1da-be56-4ca3-8ef2-d8e68e8408c5" x="1143" y="0" width="200" height="13"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{STORE_LOCATION}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement uuid="b6f0d8c2-950c-4355-934f-28ffea5bcc50" x="1063" y="0" width="80" height="13"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( ($F{QTY}.doubleValue()-$F{QTY}.intValue())> new Double(0) ? $F{QTY} :
+new DecimalFormat("###0").format($F{QTY}) )]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00">
+					<reportElement uuid="cd825496-c430-4c79-9388-4fc52dc13dc8" x="963" y="0" width="100" height="13"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{UOM}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement uuid="0956c25c-e55b-4b29-ba42-e81d5b4d64ec" x="863" y="0" width="100" height="13"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yy").format($F{mfg_date})]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="d20b176f-94f2-4016-b4fd-91ccc6af0382" x="434" y="0" width="75" height="13"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( ($F{item_length}.doubleValue()-$F{item_length}.intValue())> new Double(0) ? $F{item_length} :
+new DecimalFormat("###0").format($F{item_length}) ) + " / " + ( ($F{item_width}.doubleValue()-$F{item_width}.intValue())> new Double(0) ? $F{item_width} :
+new DecimalFormat("###0").format($F{item_width}) )]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="f8c0dbc5-b96d-4b2d-938f-7867bcd3f52c" x="584" y="0" width="50" height="13"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Grade}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="364ba459-2874-4ac1-a131-7a032a678e83" x="509" y="0" width="75" height="13"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( ($F{item_thikness}.doubleValue()-$F{item_thikness}.intValue())> new Double(0) ? $F{item_thikness} : new DecimalFormat("###0").format($F{item_thikness}) )
++ " / " +
+( ($F{item_density}.doubleValue()-$F{item_density}.intValue())> new Double(0) ? $F{item_density} :new DecimalFormat("###0").format($F{item_density}) )]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement uuid="2fad2766-e5a4-4d54-82f0-932612c0190e" x="104" y="0" width="80" height="13"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{itemcode}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<summary>
+		<band height="25">
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="6e96dd34-b2a1-400e-b55f-a26cf76087d5" x="863" y="5" width="80" height="15"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{QTY_GRAND_TOTAL}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="9c47128d-c84a-49d5-85b0-2fc7fa899870" x="584" y="5" width="279" height="15"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Grand Total:"]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="ad4044ce-11cd-47a2-ab90-9ce5730e1405" x="583" y="23" width="760" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="49ea54bd-2d8c-43a0-a50e-a03f11c56a02" x="583" y="3" width="760" height="1"/>
+			</line>
+		</band>
+	</summary>
+	<noData>
+		<band height="109">
+			<staticText>
+				<reportElement uuid="051b1380-521c-4411-8648-42dee0cee556" x="0" y="0" width="1343" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Finished Goods List]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="05d1a65c-2f48-4bca-ad6c-b8c2138cb702" x="0" y="60" width="1343" height="29" forecolor="#FF3300"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="20"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="8cff1957-69f8-4e90-b551-54f71133994a" x="0" y="89" width="1343" height="20" forecolor="#0099FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[(Please Check Your Selection Criteria)]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="e11c8aa9-580e-4cee-92c4-5b3d742f6028" x="0" y="20" width="1343" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["From Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{FromDatePrompt})+"</style>"
++" To Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{ToDatePrompt})+"</style>"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="73b0e9ac-f0a2-42fa-84df-330600a49db1" x="0" y="40" width="1343" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" Item : " + ($P{ItemNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemNamePrompt}+"</style>")
++ ", Active Status : " + ($P{Item_StatusNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+ ($P{Item_Status_Prompt}.intValue()==1?"Yes":"No") +"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</noData>
+</jasperReport>

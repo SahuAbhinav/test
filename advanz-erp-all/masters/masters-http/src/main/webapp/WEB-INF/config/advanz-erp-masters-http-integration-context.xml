@@ -1,0 +1,539 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<!-- URL Mapping to forward to controller... -->
+	<bean id="remoteMapping"
+		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="mappings">
+			<props>
+				<prop key="/CompanyService">/CompanyService</prop>
+				<prop key="/BranchService">/BranchService</prop>
+				<prop key="/BatchService">/BatchService</prop>
+				<prop key="/ItemGroupService">/ItemGroupService</prop>
+				<prop key="/ItemCategoryService">/ItemCategoryService</prop>
+				<prop key="/PartyTypeService">/PartyTypeService</prop>
+				<prop key="/ItemService">/ItemService</prop>
+				<prop key="/ItemGroupFlagService">/ItemGroupFlagService</prop>
+				<prop key="/CountryService">/CountryService</prop>
+				<prop key="/ZoneService">/ZoneService</prop>
+				<prop key="/AreaService">/AreaService</prop>
+				<prop key="/StateService">/StateService</prop>
+				<prop key="/RegionService">/RegionService</prop>
+				<prop key="/CityService">/CityService</prop>
+				<prop key="/MastersService">/MastersService</prop>
+				<prop key="SalaryHeadService">/SalaryHeadService</prop>
+				<prop key="/StoreLocationService">/StoreLocationService</prop>
+				<prop key="/TransporterService">/TransporterService</prop>
+				<prop key="/LeaveTypeMastService">/LeaveTypeMastService</prop>
+				<prop key="/PartyService">/PartyService</prop>
+				<prop key="/EmployeeService">/EmployeeService</prop>
+				<prop key="/TransactionTypeService">/TransactionTypeService</prop>
+				<prop key="/SalesOrderMasterService">/SalesOrderMasterService</prop>
+			    <prop key="/ProfessionalTaxService">/ProfessionalTaxService</prop>
+				<prop key="/ProfessionalTaxDeductTypeService">/ProfessionalTaxDeductTypeService</prop>
+				<prop key="/FinishedGoodsMasterService">/FinishedGoodsMasterService</prop>
+				<prop key="/PurchaseOrderMasterService">/PurchaseOrderMasterService</prop>
+				<prop key="/QuotationMasterService">/QuotationMasterService</prop>
+				<prop key="/BillService">/BillService</prop>
+                <prop key="/BillDetailService">/BillDetailService</prop> 
+                <prop key="/StockLedgerService">/StockLedgerService</prop>
+                <prop key="/DispatchDetailService">/DispatchDetailService</prop> 
+                <prop key="/DispatchMasterService">/DispatchMasterService</prop>   
+                <prop key="/BlanketProductionMasterService">/BlanketProductionMasterService</prop>
+                <prop key="/BlanketProductionMasterNewService">/BlanketProductionMasterNewService</prop>   
+				<prop key="/IssueTypeMasterService">/IssueTypeMasterService</prop>  
+                <prop key="/AnnealingOvenService">/AnnealingOvenService</prop>
+				<prop key="/IssueService">/IssueService</prop>   
+				<prop key="/GrnMasterService">/GrnMasterService</prop>
+				<prop key="/MelterLogSummaryService">/MelterLogSummaryService</prop>
+				 <prop key="/MelterTrollyLogService">/MelterTrollyLogService</prop>
+				 <prop key="/MelterLogBookService">/MelterLogBookService</prop> 
+				  <prop key="/UserMasterRoleService">/UserMasterRoleService</prop> 
+				  <prop key="/UserRoleService">/UserRoleService</prop> 
+				 <prop key="/RoleService">/RoleService</prop>
+				  <prop key="/ShiftReportMasterService">/ShiftReportMasterService</prop> 
+				  <prop key="/ModuleMenuMasterService">/ModuleMenuMasterService</prop>
+				  <prop key="/ProformaMasterService">/ProformaMasterService</prop>
+                <prop key="/ProformaDetailService">/ProformaDetailService</prop>
+                <prop key="/UserRoleAndRightsService">/UserRoleAndRightsService</prop>
+                 <prop key="/ExciseLedgerService">/ExciseLedgerService</prop>
+                  <prop key="/DebitDutyMasterService">/DebitDutyMasterService</prop>
+                 <prop key="/MasterFormulaService">/MasterFormulaService</prop>	
+                 <prop key="/GetPassMasterService">/GetPassMasterService</prop>
+                 <prop key="/ReturnGetPassMasterService">/ReturnGetPassMasterService</prop>								   
+			 <prop key="/IssueReturnService">/IssueReturnService</prop>	
+			  <prop key="/BulkFiberMasterService">/BulkFiberMasterService</prop>
+			  <prop key="/AttandanceMasterService">/AttandanceMasterService</prop>	
+			   <prop key="/AdvanceAmountService">/AdvanceAmountService</prop>
+			    <prop key="/SalaryNoteService">/SalaryNoteService</prop>	
+			    <prop key="/LeaveApplicationService">/LeaveApplicationService</prop>
+			    <prop key="/IndentMasterService">/IndentMasterService</prop>
+			     <prop key="/SalaryMasterService">/SalaryMasterService</prop>	
+			     <prop key="/CapativeConsuptionService">/CapativeConsuptionService</prop>
+			      <prop key="/BarcodeLedgerService">/BarcodeLedgerService</prop>										
+			</props>
+		</property>
+	</bean>
+
+	<bean name="/CompanyService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="companyService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.ICompanyService" />
+	</bean>
+	
+	
+	<bean name="/BranchService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter"  scope="prototype">
+		<property name="service" ref="branchService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IBranchService" />
+	</bean>
+	<bean name="/BatchService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="batchService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IBatchService" />
+	</bean>
+	
+	<bean name="/ItemGroupService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="itemGroupService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IItemGroupService" />
+	</bean>
+	<bean name="/ItemCategoryService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="itemCategoryService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IItemCategoryService" />
+	</bean>
+	<bean name="/PartyTypeService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="partyTypeService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IPartyTypeService" />
+	</bean>
+	<bean name="/ItemService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="itemService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IItemService" />
+	</bean>
+	
+	<bean name="/ItemGroupFlagService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="itemGroupFlagService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IItemGroupFlagService" />
+	</bean>
+	
+	<bean name="/CountryService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="countryService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.ICountryService" />
+	</bean>
+	
+	<bean name="/ZoneService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="zoneService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IZoneService" />
+	</bean>
+	
+	<bean name="/CityService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="cityService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.ICityService" />
+	</bean>
+	
+	<bean name="/RegionService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="regionService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IRegionService" />
+	</bean>
+	
+	<bean name="/StateService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="stateService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IStateService" />
+	</bean>
+	
+	<bean name="/AreaService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="areaService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IAreaService" />
+	</bean>
+	
+	<bean name="/MastersService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="mastersService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IMastersService" />
+	</bean>
+	
+
+	<bean name="/SalaryHeadService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="salaryHeadService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.ISalaryHeadService" />
+	</bean>
+	
+
+	<bean name="/StoreLocationService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="storeLocationService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IStoreLocationService" />
+	</bean>
+	
+	<bean name="/TransporterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="transporterService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.ITransporterService" />
+	</bean>
+	
+	<bean name="/LeaveTypeMastService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="leaveTypeMastService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.ILeaveTypeMastService" />
+	</bean>
+	
+	<bean name="/PartyService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="partyService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IPartyService" />
+	</bean>
+	
+	<bean name="/EmployeeService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="employeeService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IEmployeeService" />
+	</bean>
+	<bean name="/TransactionTypeService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="transactionTypeService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.ITransactionTypeService" />
+	</bean>
+<bean name="/SalesOrderMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="salesOrderMasterService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.ISalesOrderMasterService" />
+	</bean>
+	
+	<bean name="/ProfessionalTaxService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="professionalTaxService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IProfessionalTaxService" />
+	</bean>
+	
+	<bean name="/ProfessionalTaxDeductTypeService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="professionalTaxDeductTypeService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IProfessionalTaxDeductTypeService" />
+	</bean>
+	
+
+	<bean name="/FinishedGoodsMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="finishedGoodsMasterService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IFinishedGoodsMasterService" />
+	</bean>
+	
+
+	<bean name="/PurchaseOrderMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="purchaseOrderMasterService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IPurchaseOrderMasterService" />
+	 </bean>
+		<bean name="/QuotationMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="quotationMasterService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IQuotationMasterService" />
+	</bean>
+	
+	<bean name="/BillService"
+        class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+        <property name="service" ref="billService" />
+        <property name="serviceInterface"
+            value="com.advanz.erp.masters.service.business.IBillService" />
+    </bean> 
+    
+    <bean name="/BillDetailService"
+        class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+        <property name="service" ref="billDetailService" />
+        <property name="serviceInterface"
+            value="com.advanz.erp.masters.service.business.IBillDetailService" />
+    </bean> 
+	
+	
+	<bean name="/ProformaMasterService"
+        class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+        <property name="service" ref="proformaMasterService" />
+        <property name="serviceInterface"
+            value="com.advanz.erp.masters.service.business.IProformaMasterService" />
+    </bean> 
+    
+    <bean name="/ProformaDetailService"
+        class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+        <property name="service" ref="proformaDetailService" />
+        <property name="serviceInterface"
+            value="com.advanz.erp.masters.service.business.IProformaDetailService" />
+    </bean>
+	
+	
+	
+	<bean name="/StockLedgerService"
+        class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+        <property name="service" ref="stockLedgerService" />
+        <property name="serviceInterface"
+            value="com.advanz.erp.masters.service.business.IStockLedgerService" />
+    </bean> 
+
+    
+    
+    
+    <bean name="/DispatchDetailService"
+        class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+        <property name="service" ref="dispatchDetailService" />
+        <property name="serviceInterface"
+            value="com.advanz.erp.masters.service.business.IDispatchDetailService" />
+    </bean> 
+	
+	<bean name="/DispatchMasterService"
+        class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+        <property name="service" ref="dispatchMasterService" />
+        <property name="serviceInterface"
+            value="com.advanz.erp.masters.service.business.IDispatchMasterService" />
+    </bean> 
+
+    <bean name="/BlanketProductionMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="blanketProductionMasterService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IBlanketProductionMasterService" />
+	</bean>
+	<!-- blanket production new form -->
+	 <bean name="/BlanketProductionMasterNewService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="blanketProductionMasterNewService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IBlanketProductionMasterNewService" />
+	</bean>
+	
+	<!-- for barcode reader -->
+	<bean name="/BarcodeLedgerService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="barcodeLedgerService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IBarcodeLedgerService" />
+	</bean>
+	
+    <bean name="/IssueTypeMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="issueTypeMasterService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IIssueTypeMasterService" />
+	</bean>
+
+	
+	<bean name="/AnnealingOvenService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="annealingOvenService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IAnnealingOvenService" />
+	</bean>
+	
+	<bean name="/IssueService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="issueMasterService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IIssueMasterService" />
+	</bean>
+
+	<bean name="/GrnMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="grnMasterService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IGrnMasterService" />
+	</bean>
+	
+	  <bean name="/MelterLogSummaryService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="melterLogSummaryService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IMelterLogSummaryService" />
+	</bean>
+	
+	<bean name="/MelterTrollyLogService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="melterTrollyLogService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IMelterTrollyLogService" />
+	</bean>
+	
+	<bean name="/MelterLogBookService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="melterLogBookService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IMelterLogBookService" />
+	 </bean>
+	 
+	  <bean name="/UserMasterRoleService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="userMasterRoleService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IUserMasterRoleService" />
+	 </bean>
+	 
+		 
+	 <bean name="/UserRoleService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="userRoleServiceImpl" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IUserRoleService" />
+	 </bean>
+	 
+	 
+	
+	<bean name="/UserRoleAndRightsService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="userRoleAndRightsService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IUserRoleAndRightsService"/>
+	 </bean>											   
+	 
+	 <bean name="/ShiftReportMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="shiftReportMasterService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IShiftReportMasterService" />
+	</bean>
+
+	
+	 <bean name="/ModuleMenuMasterService"
+        class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+        <property name="service" ref="moduleMenuMasterService" />
+        <property name="serviceInterface"
+            value="com.advanz.erp.masters.service.business.IModuleMenuMasterService" />
+    </bean> 
+
+	
+	<bean name="/RoleService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="roleService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IRoleService" />
+	</bean>
+	
+	<bean name="/ExciseLedgerService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="exciseLedgerService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IExciseLedgerService" />
+	</bean>
+<bean name="/DebitDutyMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="debitDutyMasterService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IDebitDutyMasterService" />
+	</bean>
+<bean name="/MasterFormulaService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="masterFormulaService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IMasterFormulaService" />
+	</bean>
+	<bean name="/GetPassMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="getPassMasterService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IGetPassMasterService" />
+	</bean>
+	<bean name="/ReturnGetPassMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="returnGetPassMasterService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IReturnGetPassMasterService" />
+	</bean>
+	<bean name="/IssueReturnService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="issueReturnService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IIssueReturnService" />
+	</bean>
+	<bean name="/BulkFiberMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="bulkFiberMasterService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IBulkFiberMasterService" />
+	</bean>
+	
+	<bean name="/AttandanceMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="attandanceMasterService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IAttandanceMasterService" />
+	</bean>
+	<bean name="/AdvanceAmountService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="advanceAmountService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IAdvanceAmountService" />
+	</bean>
+	
+	<bean name="/SalaryNoteService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="salaryNoteService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.ISalaryNoteService" />
+	</bean>
+	
+	<bean name="/LeaveApplicationService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="leaveApplicationService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.ILeaveApplicationService" />
+	</bean>
+	<bean name="/IndentMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="indentMasterService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IIndentMasterService" />
+	</bean>
+	
+		<bean name="/SalaryMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="salaryMasterService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.ISalaryMasterService" />
+	</bean>
+	
+	<bean name="/CapativeConsuptionService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter" scope="prototype">
+		<property name="service" ref="capativeConsuptionService" />
+		<property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.ICapativeConsuptionService" />
+	</bean>
+	
+</beans>

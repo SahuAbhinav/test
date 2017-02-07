@@ -1,0 +1,780 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Partywise_Invoice_Detail" pageWidth="1245" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="1245" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="fac874a7-fefb-4d55-8450-927667ff890f">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="294"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Alternet Row Format">
+		<paragraph lineSpacing="Single"/>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean ($V{REPORT_COUNT}.intValue()%2 ==0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#E6F3F7">
+				<paragraph lineSpacing="Single"/>
+			</style>
+		</conditionalStyle>
+	</style>
+	<parameter name="FromDatePrompt" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ToDatePrompt" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ItemNamePrompt" class="java.lang.String"/>
+	<parameter name="ItemNameNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ItemNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PartyNamePrompt" class="java.lang.String"/>
+	<parameter name="PartyNameNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{PartyNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ItemCategoryPrompt" class="java.lang.String"/>
+	<parameter name="ItemCategoryNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ItemCategoryPrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Item_Status_Prompt" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Item_StatusNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{Item_Status_Prompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT UPPER(CONCAT(m_party.party_name,' ',city.city_name)) AS Party_City
+, UPPER(m_item.item_name) AS item_name, UPPER(pack.NAME) AS pack_name
+, UPPER(measure.NAME) AS measure_name
+, t_bill_detail.batch_no AS batch_no
+, ROUND(SUM(IFNULL(t_bill_detail.quantity,0)),2) AS quantity
+, ROUND(IFNULL(t_bill_detail.sales_rate,0),2) AS sales_rate
+, ROUND(SUM(IFNULL(t_bill_detail.item_value ,0)),2) AS item_value
+, ROUND(SUM(IFNULL(t_bill_detail.excise_amount,0)+IFNULL(t_bill_detail.edu_cess_amount,0)+IFNULL(t_bill_detail.h_edu_cess_amount,0)),2) AS excise_amount
+, ROUND(SUM(IFNULL(t_bill_detail.discount_amount,0)),2) AS discount_amount
+, ROUND(SUM(IFNULL(t_bill_detail.vat_amount,0)+IFNULL(t_bill_detail.cst_amount,0)),2) AS taxable_amount
+, ROUND(SUM(IFNULL(t_bill_detail.net_amount,0)),2) AS net_amount
+,IFNULL(m_item.item_length,'') AS item_length
+,IFNULL(m_item.item_width,'') AS item_width
+,IFNULL(m_item.item_thikness,'') AS item_thikness
+,IFNULL(m_item.item_density,'') AS item_density
+,gr.NAME AS Grade
+FROM m_item, m_item_category AS c, (SELECT * FROM m_masters WHERE m_form_name='Pack Type' AND deleted_flag=0) AS pack
+, (SELECT * FROM m_masters WHERE m_form_name='Measurement Unit' AND deleted_flag=0) AS Measure
+,(SELECT  masters_id ,NAME FROM m_masters WHERE m_form_name='Item Grade' AND deleted_flag=0) AS gr
+, t_bill_detail , t_bill_mast , m_party,m_city AS city
+WHERE m_item.deleted_flag=0 AND m_item.pack_type_id = pack.masters_id
+AND m_item.item_category_id=c.item_category_id AND c.deleted_flag=0
+AND city.city_id=t_bill_mast.city_id AND city.deleted_flag=0
+AND m_item.measurement_Unit_id = measure.masters_id AND gr.masters_id=m_item.item_grade_id
+AND m_item.item_id = t_bill_detail.item_id AND t_bill_detail.deleted_flag=0
+AND t_bill_detail.invoice_number = t_bill_mast.invoice_number AND t_bill_mast.deleted_flag=0
+AND t_bill_mast.party_id = m_party.party_id AND m_party.deleted_flag=0
+AND (c.ITEM_CATEGORY_NAME = $P{ItemCategoryPrompt} OR 1=$P{ItemCategoryNull_FlagPrompt})
+AND(m_item.item_name=$P{ItemNamePrompt} OR 1=$P{ItemNameNull_FlagPrompt})
+AND(m_party.party_name=$P{PartyNamePrompt} OR 1=$P{PartyNameNull_FlagPrompt})
+AND cast(t_bill_mast.invoice_date as date) >= $P{FromDatePrompt}
+AND cast(t_bill_mast.invoice_date as date) <= $P{ToDatePrompt}
+AND (m_item.active_status=$P{Item_Status_Prompt} OR 1=$P{Item_StatusNull_FlagPrompt})
+GROUP BY 1,2,3,4,5,7
+ORDER BY 1,2,4]]>
+	</queryString>
+	<field name="Party_City" class="java.lang.String"/>
+	<field name="item_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="pack_name" class="java.lang.String"/>
+	<field name="measure_name" class="java.lang.String"/>
+	<field name="batch_no" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="quantity" class="java.lang.Float">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="sales_rate" class="java.lang.Float">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="item_value" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="excise_amount" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="discount_amount" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="taxable_amount" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="net_amount" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="item_length" class="java.lang.Double"/>
+	<field name="item_width" class="java.lang.Double"/>
+	<field name="item_thikness" class="java.lang.Double"/>
+	<field name="item_density" class="java.lang.Double"/>
+	<field name="Grade" class="java.lang.String"/>
+	<variable name="VarquantitySum" class="java.lang.Float" calculation="Sum">
+		<variableExpression><![CDATA[$F{quantity}]]></variableExpression>
+	</variable>
+	<variable name="Varsales_rateSum" class="java.lang.Float" calculation="Sum">
+		<variableExpression><![CDATA[$F{sales_rate}]]></variableExpression>
+	</variable>
+	<variable name="Varitem_valueSum" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{item_value}]]></variableExpression>
+	</variable>
+	<variable name="Varexcise_amountSum" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{excise_amount}]]></variableExpression>
+	</variable>
+	<variable name="Vardiscount_amountSum" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{discount_amount}]]></variableExpression>
+	</variable>
+	<variable name="Vartaxable_amountSum" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{taxable_amount}]]></variableExpression>
+	</variable>
+	<variable name="Varnet_amountSum" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{net_amount}]]></variableExpression>
+	</variable>
+	<variable name="VarquantitySum_inv_party" class="java.lang.Float" resetType="Group" resetGroup="Party" calculation="Sum">
+		<variableExpression><![CDATA[$F{quantity}]]></variableExpression>
+	</variable>
+	<variable name="Varsales_rateSum_inv_party" class="java.lang.Float" resetType="Group" resetGroup="Party" calculation="Sum">
+		<variableExpression><![CDATA[$F{sales_rate}]]></variableExpression>
+	</variable>
+	<variable name="Varitem_valueSum_inv_party" class="java.lang.Double" resetType="Group" resetGroup="Party" calculation="Sum">
+		<variableExpression><![CDATA[$F{item_value}]]></variableExpression>
+	</variable>
+	<variable name="Varexcise_amountSum_inv_party" class="java.lang.Double" resetType="Group" resetGroup="Party" calculation="Sum">
+		<variableExpression><![CDATA[$F{excise_amount}]]></variableExpression>
+	</variable>
+	<variable name="Vardiscount_amountSum_inv_party" class="java.lang.Double" resetType="Group" resetGroup="Party" calculation="Sum">
+		<variableExpression><![CDATA[$F{discount_amount}]]></variableExpression>
+	</variable>
+	<variable name="Vartaxable_amountSum_inv_party" class="java.lang.Double" resetType="Group" resetGroup="Party" calculation="Sum">
+		<variableExpression><![CDATA[$F{taxable_amount}]]></variableExpression>
+	</variable>
+	<variable name="Varnet_amountSum_inv_party" class="java.lang.Double" resetType="Group" resetGroup="Party" calculation="Sum">
+		<variableExpression><![CDATA[$F{net_amount}]]></variableExpression>
+	</variable>
+	<group name="Party">
+		<groupExpression><![CDATA[$F{Party_City}]]></groupExpression>
+		<groupHeader>
+			<band height="25">
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="93425cd0-71cc-41a7-a8b5-9a8baefa8d6a" x="0" y="3" width="262" height="20" forecolor="#CC0000"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="11" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA["PARTY : ".concat($F{Party_City})]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="28">
+				<line>
+					<reportElement uuid="d13b6d4f-999d-453a-93ac-491a82e9b16b" x="0" y="1" width="1248" height="1"/>
+				</line>
+				<line>
+					<reportElement uuid="53ec7068-e079-4315-88b9-daf6903c7f71" x="0" y="27" width="1248" height="1"/>
+				</line>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement uuid="497d2913-576d-43de-a464-d4fe1a1505b2" x="904" y="2" width="85" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{Varexcise_amountSum_inv_party}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement uuid="f2e3c686-b639-4021-a40d-4ed9a506424d" x="989" y="2" width="83" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{Vardiscount_amountSum_inv_party}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement uuid="67e48062-4dfc-41c2-a23e-59a1ca28008c" x="1072" y="2" width="85" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{Vartaxable_amountSum_inv_party}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement uuid="294fb444-b8ff-4d7e-9287-e6b351ab6d08" x="649" y="2" width="85" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( ($V{VarquantitySum_inv_party}.doubleValue()-$V{VarquantitySum_inv_party}.intValue())> new Double(0) ? $V{VarquantitySum_inv_party}:
+new DecimalFormat("###0").format($V{VarquantitySum_inv_party}) )]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true" hyperlinkType="ReportExecution">
+					<reportElement uuid="e167c76c-990b-4e3c-82dc-9e165232df64" x="200" y="2" width="449" height="20" forecolor="#CC0000"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="11" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Party_City}.concat(" Total:")]]></textFieldExpression>
+					<hyperlinkTooltipExpression><![CDATA["Click for Head Quarter wise view"]]></hyperlinkTooltipExpression>
+					<hyperlinkParameter name="_report">
+						<hyperlinkParameterExpression><![CDATA["/CIPH/Reports/A1D5HQComparision"]]></hyperlinkParameterExpression>
+					</hyperlinkParameter>
+					<hyperlinkParameter name="YearPrompt">
+						<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+					</hyperlinkParameter>
+					<hyperlinkParameter name="QuarterNamePrompt">
+						<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+					</hyperlinkParameter>
+					<hyperlinkParameter name="MonthPrompt">
+						<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+					</hyperlinkParameter>
+					<hyperlinkParameter name="ProductSubGroupPrompt">
+						<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+					</hyperlinkParameter>
+					<hyperlinkParameter name="ProductNamePrompt">
+						<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+					</hyperlinkParameter>
+					<hyperlinkParameter name="ZoneNamePrompt">
+						<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+					</hyperlinkParameter>
+					<hyperlinkParameter name="StateNamePrompt">
+						<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+					</hyperlinkParameter>
+					<hyperlinkParameter name="RegionNamePrompt">
+						<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+					</hyperlinkParameter>
+					<hyperlinkParameter name="HQNamePrompt">
+						<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+					</hyperlinkParameter>
+					<hyperlinkParameter name="AreaNamePrompt">
+						<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+					</hyperlinkParameter>
+					<hyperlinkParameter name="SKUNamePrompt">
+						<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+					</hyperlinkParameter>
+					<hyperlinkParameter name="DatePrompt">
+						<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+					</hyperlinkParameter>
+					<hyperlinkParameter name="ProductGroupPrompt">
+						<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+					</hyperlinkParameter>
+					<hyperlinkParameter name="FromMonthPrompt">
+						<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+					</hyperlinkParameter>
+					<hyperlinkParameter name="ToMonthPrompt">
+						<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+					</hyperlinkParameter>
+					<hyperlinkParameter name="UserNamePrompt">
+						<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+					</hyperlinkParameter>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement uuid="05c37e3b-6a66-4ab9-9d2c-7013124bd72e" x="819" y="2" width="85" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{Varitem_valueSum_inv_party}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement uuid="a54e3ffb-9904-4226-8a2d-6067874bf2ab" x="1157" y="2" width="85" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{Varnet_amountSum_inv_party}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement uuid="909afe1e-ca53-4f85-9ec6-2877be2e91ce" x="734" y="2" width="85" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{Varsales_rateSum_inv_party}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band/>
+	</background>
+	<pageHeader>
+		<band height="65">
+			<textField>
+				<reportElement uuid="8a475f73-d28b-49d0-a06e-f4fb617e39a2" x="0" y="22" width="1245" height="20" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" From Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{FromDatePrompt})+"</style>"
++" ,  To Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{ToDatePrompt})+"</style>"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="90c85728-514c-4a00-960c-ac66c65574b9" x="0" y="0" width="1245" height="20" forecolor="#0066FF"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Party wise Item wise Sales]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="bbaae59e-3fb1-438f-aa69-9d051bdda835" x="0" y="42" width="1245" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["For Party : " + ($P{PartyNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{PartyNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++", Category : " + ($P{ItemCategoryNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemCategoryPrompt}.replaceAll( "&", "&amp;" )+"</style>")
++", Item : " + ($P{ItemNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++ ", Active Status : " + ($P{Item_StatusNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+ ($P{Item_Status_Prompt}.intValue()==1?"Yes":"No") +"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="23">
+			<line>
+				<reportElement uuid="acab0f70-4daa-4caf-a60f-f208a50b9f71" x="0" y="0" width="1248" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="334d3f67-1339-4b06-852a-bb8ebe6219a2" x="30" y="1" width="232" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Item Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="14e03050-e9b7-4e13-9050-cd240a6fb3a9" x="649" y="1" width="85" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Quantity]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e71a0a09-1d5d-45be-920a-ce68441cab12" x="1157" y="1" width="85" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Net Amt]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="bb199fd4-9fc8-41af-b4b5-4b1abfbffeae" x="0" y="1" width="30" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[S No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ae744a7a-26bc-4905-a380-5d6fac886c94" x="1072" y="1" width="85" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Tax Amt]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="459bfee4-e4b9-425b-8356-b3dc95152893" x="577" y="1" width="72" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Batch No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d101b110-8056-439c-b383-77b5020f20ae" x="904" y="1" width="85" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Excise Amt]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="68b63930-6b7c-421c-b61a-9d26d68163d5" x="989" y="1" width="83" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Discount Amt]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="a1268692-f7fd-4405-93d9-1725b2d8a9ab" x="0" y="22" width="1248" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="e8e27892-e919-4889-a5ae-8c5f481d4dc0" x="462" y="1" width="65" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Pack Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="27e1aaeb-d938-438d-8191-47c3456242d0" x="527" y="1" width="50" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Unit]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="66dc86d0-a349-43cb-ae04-86a99f25405a" x="734" y="1" width="85" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Rate]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="fbce3272-6ae5-4d7f-a581-caace6d6a076" x="819" y="1" width="85" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Item Value]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="27a4ab9e-22cf-43ba-abdd-b130463d8967" x="262" y="1" width="75" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Size]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d9444657-a367-4e91-8182-777fda3fc293" x="412" y="1" width="50" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Grade]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="873d4715-6053-4dc4-a8a6-3d07653e5aaa" x="337" y="1" width="75" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Density]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="30">
+			<textField>
+				<reportElement uuid="dd6882e5-4ff0-40ed-8bc8-f844928062df" style="Alternet Row Format" x="0" y="0" width="30" height="29"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true" hyperlinkType="ReportExecution">
+				<reportElement uuid="25aef5ef-8d26-41a9-b377-f6cae2e1717d" style="Alternet Row Format" x="30" y="0" width="232" height="29"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{item_name}]]></textFieldExpression>
+				<hyperlinkTooltipExpression><![CDATA["Click for Head Quarter wise view"]]></hyperlinkTooltipExpression>
+				<hyperlinkParameter name="_report">
+					<hyperlinkParameterExpression><![CDATA["/CIPH/Reports/A1D5HQComparision"]]></hyperlinkParameterExpression>
+				</hyperlinkParameter>
+				<hyperlinkParameter name="YearPrompt">
+					<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+				</hyperlinkParameter>
+				<hyperlinkParameter name="QuarterNamePrompt">
+					<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+				</hyperlinkParameter>
+				<hyperlinkParameter name="MonthPrompt">
+					<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+				</hyperlinkParameter>
+				<hyperlinkParameter name="ProductSubGroupPrompt">
+					<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+				</hyperlinkParameter>
+				<hyperlinkParameter name="ProductNamePrompt">
+					<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+				</hyperlinkParameter>
+				<hyperlinkParameter name="ZoneNamePrompt">
+					<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+				</hyperlinkParameter>
+				<hyperlinkParameter name="StateNamePrompt">
+					<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+				</hyperlinkParameter>
+				<hyperlinkParameter name="RegionNamePrompt">
+					<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+				</hyperlinkParameter>
+				<hyperlinkParameter name="HQNamePrompt">
+					<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+				</hyperlinkParameter>
+				<hyperlinkParameter name="AreaNamePrompt">
+					<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+				</hyperlinkParameter>
+				<hyperlinkParameter name="SKUNamePrompt">
+					<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+				</hyperlinkParameter>
+				<hyperlinkParameter name="DatePrompt">
+					<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+				</hyperlinkParameter>
+				<hyperlinkParameter name="ProductGroupPrompt">
+					<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+				</hyperlinkParameter>
+				<hyperlinkParameter name="FromMonthPrompt">
+					<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+				</hyperlinkParameter>
+				<hyperlinkParameter name="ToMonthPrompt">
+					<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+				</hyperlinkParameter>
+				<hyperlinkParameter name="UserNamePrompt">
+					<hyperlinkParameterExpression><![CDATA[]]></hyperlinkParameterExpression>
+				</hyperlinkParameter>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement uuid="12886fb6-2daa-4a28-a144-ec758c421779" style="Alternet Row Format" x="734" y="0" width="85" height="29"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sales_rate}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="22a47374-145c-4618-8535-2cc3c418da22" style="Alternet Row Format" x="819" y="0" width="85" height="29"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{item_value}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="deb61757-6531-43ae-a7e4-e3b252a49b30" style="Alternet Row Format" x="904" y="0" width="85" height="29"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{excise_amount}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="cbe3edb4-b803-41cb-a0cb-b228f934082c" style="Alternet Row Format" x="1157" y="0" width="85" height="29"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{net_amount}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="6c5aaa77-59d6-4c60-ac70-80a342ef461d" style="Alternet Row Format" x="1072" y="0" width="85" height="29"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{taxable_amount}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="c593b30b-c356-455f-855a-86d1f65c06d6" style="Alternet Row Format" x="989" y="0" width="83" height="29"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{discount_amount}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="5436fb3a-70d0-4a20-b83e-1d32b21137b6" style="Alternet Row Format" x="462" y="0" width="65" height="29"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pack_name}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement uuid="dbc49de2-afd8-40a0-8c50-1cf1d3dc4887" style="Alternet Row Format" x="649" y="0" width="85" height="29"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[( ($F{quantity}.doubleValue()-$F{quantity}.intValue())> new Double(0) ? $F{quantity} :
+new DecimalFormat("###0").format($F{quantity}) )]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="d85f3725-b800-4175-ad76-149e0104fd2d" style="Alternet Row Format" x="527" y="0" width="50" height="29"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{measure_name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="9bb0e937-64f3-43ca-bbd6-19c4a15c396c" style="Alternet Row Format" x="577" y="0" width="72" height="29"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{batch_no}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="83b97352-7df4-4dd6-95fa-52301bb50680" style="Alternet Row Format" x="262" y="0" width="75" height="29"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[( ($F{item_length}.doubleValue()-$F{item_length}.intValue())> new Double(0) ? $F{item_length} :
+new DecimalFormat("###0").format($F{item_length}) ) + " / " + ( ($F{item_width}.doubleValue()-$F{item_width}.intValue())> new Double(0) ? $F{item_width} :
+new DecimalFormat("###0").format($F{item_width}) )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="2e70d4f7-70f7-4661-890e-878c2cb62a55" style="Alternet Row Format" x="412" y="0" width="50" height="29"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Grade}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="1c5be504-106e-4a79-a1a4-e55b21848f7e" style="Alternet Row Format" x="337" y="0" width="75" height="29"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[( ($F{item_thikness}.doubleValue()-$F{item_thikness}.intValue())> new Double(0) ? $F{item_thikness} : new DecimalFormat("###0").format($F{item_thikness}) )
++ " / " +
+( ($F{item_density}.doubleValue()-$F{item_density}.intValue())> new Double(0) ? $F{item_density} :new DecimalFormat("###0").format($F{item_density}) )]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="19">
+			<line>
+				<reportElement uuid="d4d0dea1-c60a-488b-a84d-3633e3e76209" x="0" y="3" width="1248" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="5248a824-c416-4251-8bcf-9e937878b2e2" x="1157" y="4" width="85" height="15"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Cont......]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<lastPageFooter>
+		<band height="5">
+			<line>
+				<reportElement uuid="d6c223db-dda5-472e-a39c-931407e31b36" x="0" y="2" width="1248" height="1"/>
+			</line>
+		</band>
+	</lastPageFooter>
+	<summary>
+		<band height="24">
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="9da99499-3121-44a6-a7ee-07623fb501a8" style="Alternet Row Format" x="1157" y="1" width="85" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{Varnet_amountSum}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="79bf0cf4-6123-4f92-835e-725051760d8a" style="Alternet Row Format" x="649" y="1" width="85" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[( ($V{VarquantitySum}.doubleValue()-$V{VarquantitySum}.intValue())> new Double(0) ? $V{VarquantitySum}:
+new DecimalFormat("###0").format($V{VarquantitySum}) )]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="e951dcdd-f114-4f0a-8128-6fd038d50cbe" style="Alternet Row Format" x="1072" y="1" width="85" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{Vartaxable_amountSum_inv_party}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="6b386229-c212-4be4-bf32-dbeb9c7c6490" style="Alternet Row Format" x="904" y="1" width="85" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{Varexcise_amountSum}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="d7678f2c-6956-4837-aabe-cfb5717f37c2" style="Alternet Row Format" x="734" y="1" width="85" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{Varsales_rateSum}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="9d6c59ce-6fcd-413a-bc19-6c255d3a3b54" style="Alternet Row Format" x="989" y="1" width="83" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{Vardiscount_amountSum}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="f4e69d40-f59d-457c-aaf2-895c217a5609" style="Alternet Row Format" x="819" y="1" width="85" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{Varitem_valueSum}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="bb4fecfb-0ee0-4946-b295-3aa0904337fb" x="0" y="21" width="1248" height="1"/>
+			</line>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="a251c9cd-67c4-47c3-b00a-4b03e60dda5e" x="462" y="1" width="187" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Total:"]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+	<noData>
+		<band height="112">
+			<staticText>
+				<reportElement uuid="75320406-d932-492a-ac14-d2d26b506513" x="0" y="92" width="1245" height="20" forecolor="#0099FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[(Please Check Your Selection Criteria)]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="ef2882ab-37a5-4a11-80da-b1ffe791943a" x="0" y="22" width="1245" height="20" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" From Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{FromDatePrompt})+"</style>"
++" ,  To Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{ToDatePrompt})+"</style>"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="d40ab9b8-6ac1-42fb-a5a8-d0c154c8c76a" x="0" y="1" width="1245" height="20" forecolor="#0066FF"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Party wise Item wise Sales]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="798c87f9-9eb0-4af8-83ca-6245576f5ff0" x="0" y="62" width="1245" height="29" forecolor="#FF3300"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="20"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="4c54995d-6f97-4e49-aeb0-7d8a823f0bb0" x="0" y="42" width="1245" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["For Party : " + ($P{PartyNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{PartyNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++", Category : " + ($P{ItemCategoryNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemCategoryPrompt}.replaceAll( "&", "&amp;" )+"</style>")
++", Item : " + ($P{ItemNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++ ", Active Status : " + ($P{Item_StatusNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+ ($P{Item_Status_Prompt}.intValue()==1?"Yes":"No") +"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</noData>
+</jasperReport>

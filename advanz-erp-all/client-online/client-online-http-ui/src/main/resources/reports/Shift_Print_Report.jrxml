@@ -1,0 +1,1526 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Shift Report" pageWidth="675" pageHeight="1040" whenNoDataType="NoDataSection" columnWidth="667" leftMargin="4" rightMargin="4" topMargin="0" bottomMargin="0" uuid="bead1f22-2904-4007-bd4a-ae1739365d78">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="120"/>
+	<style name="style1" mode="Opaque">
+		<paragraph lineSpacing="Single"/>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 ==0)]]></conditionExpression>
+			<style backcolor="#E6F3F7" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
+				<paragraph lineSpacing="Single"/>
+			</style>
+		</conditionalStyle>
+	</style>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<paragraph lineSpacing="Single"/>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<paragraph lineSpacing="Single"/>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<paragraph lineSpacing="Single"/>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<paragraph lineSpacing="Single"/>
+	</style>
+	<style name="table 1">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+		<paragraph lineSpacing="Single"/>
+	</style>
+	<style name="table 1_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<paragraph lineSpacing="Single"/>
+	</style>
+	<style name="table 1_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<paragraph lineSpacing="Single"/>
+	</style>
+	<style name="table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<paragraph lineSpacing="Single"/>
+	</style>
+	<subDataset name="Item_Group_Name_Dataset" whenResourceMissingType="Empty" uuid="7379be36-555f-438c-92f8-de0e26d81384">
+		<parameter name="Date_Prompt" class="java.util.Date" isForPrompting="false"/>
+		<parameter name="Shift_Prompt" class="java.lang.String" isForPrompting="false"/>
+		<parameter name="RUNNoPrompt" class="java.lang.String" isForPrompting="false"/>
+		<queryString>
+			<![CDATA[SELECT m.run_no, IFNULL(group_flag.ITEM_GROUP_FLAG_Name,'') AS ITEM_GROUP_FLAG_Name
+, UPPER(IFNULL(i.item_name,'')) AS item_name, UPPER(IFNULL(m_masters.NAME,'')) AS unit
+, IFNULL(d.quantity,0) AS quantity, IFNULL(d.remark,'') AS remark
+FROM
+t_shift_report_mast m,t_shift_consumed_detail d, m_item i, m_masters
+,m_item_group_flag AS group_flag,
+(SELECT masters_id,NAME,shift_from_time AS start_time, shift_to_time AS end_time FROM m_masters WHERE m_form_name='Shift Master' AND deleted_flag = 0) AS shift
+WHERE  m.deleted_flag = 0 AND d.deleted_flag=0
+AND i.deleted_flag = 0 AND m_masters.deleted_flag=0
+AND m.shift_report_id=d.shift_report_id
+AND d.item_group_flag_id=group_flag.ITEM_GROUP_FLAG_ID
+AND d.item_id = i.item_id
+AND d.measurement_Unit_id = m_masters.masters_id
+AND m_masters.m_form_name = 'Measurement Unit'
+AND m.shift_id=shift.masters_id
+AND m.shift_report_date = $P{Date_Prompt}
+AND shift.NAME=$P{Shift_Prompt}
+AND m.run_no = $P{RUNNoPrompt};]]>
+		</queryString>
+		<field name="run_no" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="ITEM_GROUP_FLAG_Name" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="item_name" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="unit" class="java.lang.String"/>
+		<field name="quantity" class="java.lang.Double">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="remark" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<variable name="s_no" class="java.lang.Integer" calculation="Count">
+			<variableExpression><![CDATA[$V{COLUMN_COUNT}]]></variableExpression>
+		</variable>
+	</subDataset>
+	<subDataset name="Engineering_Dataset" whenResourceMissingType="Empty" uuid="c587dac2-223b-4860-a194-07645be2057d">
+		<parameter name="Date_Prompt" class="java.util.Date" isForPrompting="false"/>
+		<parameter name="Shift_Prompt" class="java.lang.String" isForPrompting="false"/>
+		<parameter name="RUNNoPrompt" class="java.lang.String" isForPrompting="false"/>
+		<queryString>
+			<![CDATA[SELECT m.run_no, ed.eng_from_time, ed.eng_to_time, ed.eng_duration, ed.eng_reason
+FROM t_shift_report_mast AS m
+, t_shift_eng_interruption_detail AS ed
+, (SELECT masters_id,NAME,shift_from_time AS start_time, shift_to_time AS end_time FROM m_masters WHERE m_form_name='Shift Master' AND deleted_flag = 0) AS shift
+WHERE m.deleted_flag = 0 AND ed.deleted_flag = 0
+AND m.shift_report_id = ed.shift_report_id
+AND m.shift_id=shift.masters_id
+AND m.shift_report_date = $P{Date_Prompt}
+AND shift.NAME = $P{Shift_Prompt}
+AND m.run_no = $P{RUNNoPrompt};]]>
+		</queryString>
+		<field name="run_no" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="eng_from_time" class="java.sql.Time">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="eng_to_time" class="java.sql.Time">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="eng_duration" class="java.sql.Time">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="eng_reason" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<variable name="s_no" class="java.lang.Integer" calculation="Count">
+			<variableExpression><![CDATA[$V{COLUMN_COUNT}]]></variableExpression>
+		</variable>
+	</subDataset>
+	<subDataset name="Spinning_Dataset" whenResourceMissingType="Empty" uuid="a34b5466-d14a-4f4c-89e6-97305b080e46">
+		<parameter name="Date_Prompt" class="java.util.Date" isForPrompting="false"/>
+		<parameter name="Shift_Prompt" class="java.lang.String" isForPrompting="false"/>
+		<parameter name="RUNNoPrompt" class="java.lang.String" isForPrompting="false"/>
+		<queryString>
+			<![CDATA[SELECT m.run_no, sd.spin_from_time, sd.spin_to_time, sd.spin_duration, sd.spin_reason
+, IFNULL(m.shift_history,'') AS shift_history
+FROM t_shift_report_mast AS m , t_shift_spin_interruption_detail AS sd
+, (SELECT masters_id,NAME,shift_from_time AS start_time, shift_to_time AS end_time FROM m_masters WHERE m_form_name='Shift Master' AND deleted_flag = 0) AS shift
+WHERE m.deleted_flag = 0
+AND m.shift_report_id = sd.shift_report_id
+AND m.shift_id=shift.masters_id
+AND m.shift_report_date = $P{Date_Prompt}
+AND shift.NAME = $P{Shift_Prompt}
+AND m.run_no = $P{RUNNoPrompt};]]>
+		</queryString>
+		<field name="run_no" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="spin_from_time" class="java.sql.Time">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="spin_to_time" class="java.sql.Time">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="spin_duration" class="java.sql.Time">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="spin_reason" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="shift_history" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<variable name="s_no" class="java.lang.Integer" calculation="Count">
+			<variableExpression><![CDATA[$V{COLUMN_COUNT}]]></variableExpression>
+		</variable>
+	</subDataset>
+	<parameter name="Date_Prompt" class="java.util.Date"/>
+	<parameter name="Shift_Prompt" class="java.lang.String"/>
+	<parameter name="RUNNoPrompt" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT s.shift_report_date
+, UPPER(s.run_no) AS run_no
+, IFNULL(shift.start_time,'') AS start_time
+, IFNULL(shift.end_time,'') AS end_time
+, IFNULL(UPPER(s.shift_engineer_name),'') AS shift_engineer_name
+, IFNULL(s.shift_operation_time,'') AS shift_operation_time
+, IFNULL(s.melting_time,'') AS melting_time
+, IFNULL(s.pouting_time,'') AS pouting_time
+, IFNULL(s.spining_time,'') AS spining_time
+, IFNULL(s.initial_pool_level,0) AS initial_pool_level
+, IFNULL(s.final_pool_level,0) AS final_pool_level
+, IFNULL(s.h2cy_main,0) AS h2cy_main
+, IFNULL(s.h2cy_spare,0) AS h2cy_spare
+, IFNULL(s.h2cy_used,0) AS h2cy_used
+, IFNULL(s.diesel_used,0) AS diesel_used
+, IFNULL(s.lpg_used,0) AS lpg_used
+, IFNULL(s.melter_power,0) AS melter_power
+, IFNULL(s.md,0) AS md
+, IFNULL(s.kwh,0) AS kwh
+, IFNULL(s.kvah,0) AS kvah
+, IFNULL(s.power_fector,0) AS power_fector
+, IFNULL(s.spining_set1,0) AS spining_set1
+, IFNULL(s.spining_set2,0) AS spining_set2
+, IFNULL(shift.NAME,'') AS shift
+, IFNULL(s.no_of_blankets,0) AS no_of_blankets
+, IFNULL(s.blankets_weigth,0) AS blankets_weigth
+, IFNULL(s.short_length_blankets_weight,0) AS short_length_blankets_weight
+, IFNULL(s.edge_trim_weight,0) AS edge_trim_weight
+, IFNULL(s.bulk_fibre_weight,0) AS bulk_fibre_weight
+, IFNULL(s.total_weight,0) AS total_weight
+, IFNULL(s.ht_weight,0) AS htz_weight
+, IFNULL(s.rt_weight,0) AS rt_weight
+, IFNULL(s.rtz_weight,0) AS rtz_weight
+, IFNULL(s.shot,0) AS shot
+, IFNULL(s.lt_panel,0) AS lt_panel
+, IFNULL(s.total_rm_consuption_weight,0) AS total_rm_consuption_weight
+, s.shift_remark
+FROM t_shift_report_mast AS s,
+(SELECT masters_id,NAME,shift_from_time AS start_time, shift_to_time AS end_time FROM m_masters WHERE m_form_name='Shift Master' AND deleted_flag = 0) AS shift
+WHERE s.deleted_flag = 0
+AND s.shift_id = shift.masters_id
+AND s.shift_report_date = $P{Date_Prompt}
+AND shift.NAME = $P{Shift_Prompt}
+AND s.run_no = $P{RUNNoPrompt};]]>
+	</queryString>
+	<field name="shift_report_date" class="java.util.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="run_no" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="start_time" class="java.sql.Time"/>
+	<field name="end_time" class="java.sql.Time"/>
+	<field name="shift_engineer_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="shift_operation_time" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="melting_time" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="pouting_time" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="spining_time" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="initial_pool_level" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="final_pool_level" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="h2cy_main" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="h2cy_spare" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="h2cy_used" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="diesel_used" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="lpg_used" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="melter_power" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="md" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="kwh" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="kvah" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="power_fector" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="spining_set1" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="spining_set2" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="shift" class="java.lang.String"/>
+	<field name="no_of_blankets" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="blankets_weigth" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="short_length_blankets_weight" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="edge_trim_weight" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="bulk_fibre_weight" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="total_weight" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="htz_weight" class="java.lang.Double"/>
+	<field name="rt_weight" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="rtz_weight" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="total_rm_consuption_weight" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="shift_remark" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="shot" class="java.lang.Double"/>
+	<field name="lt_panel" class="java.lang.Double"/>
+	<variable name="s_no" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$V{REPORT_COUNT}]]></variableExpression>
+	</variable>
+	<pageHeader>
+		<band height="227">
+			<staticText>
+				<reportElement uuid="b1292d43-67ea-4d11-a39a-170050b653be" x="0" y="0" width="666" height="19" forecolor="#000000"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Shift Report]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="4dcc55f7-fb68-40f2-bfc3-318f1f1a47e2" x="266" y="25" width="65" height="13"/>
+				<textElement verticalAlignment="Top">
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Run No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ad9d6cd6-dbe3-4263-a9a0-9e62e53d7b1b" x="473" y="25" width="113" height="13"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Shift]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7ce8a44e-01d1-410c-a711-121bc3b76add" x="473" y="54" width="113" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Blankets]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="772e5895-e3d6-425e-acc9-f858b6d036f1" x="5" y="25" width="100" height="13"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d89a659d-0b08-41c1-a868-7812635eee7d" x="473" y="40" width="113" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[No. of Blankets]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c93ae5ce-9fc3-450a-88dd-4899ee8ca70e" x="266" y="70" width="65" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[H2 Cyl. Used]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="874349ca-614e-4773-8021-ccb2e0c76757" x="473" y="69" width="113" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Short Length Blanket]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="98b50df3-7ec1-4caa-8447-ad331e544d2f" x="0" y="23" width="666" height="1"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement uuid="33c5657f-9665-4045-beec-0acce6169d06" x="261" y="69" width="1" height="142"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement uuid="2f34f9b9-2f6c-4066-9629-2d4d7a58d933" x="468" y="23" width="1" height="188"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement uuid="557dd297-23c9-4667-8e14-7c6eb7b7f3b6" stretchType="RelativeToBandHeight" x="0" y="23" width="1" height="204"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement uuid="82ad80dd-cc87-43e7-a11c-a267783809d4" stretchType="RelativeToBandHeight" x="666" y="23" width="1" height="204"/>
+			</line>
+			<staticText>
+				<reportElement uuid="dbcd3236-6ab3-48de-8657-3bc57bfd0e34" x="266" y="84" width="65" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Diesel Used]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7b5f1bdb-2f41-414e-9b0e-192f8841ca68" x="266" y="98" width="65" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[LPG Used]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="8cb56a07-2242-4e2b-a751-e003bea02664" x="473" y="83" width="113" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Edge Trim]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="99ad195c-2e52-465b-8833-a76fb8f56be5" x="0" y="210" width="666" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="cfb52a7a-ff27-499b-b432-2999cbe01728" x="5" y="54" width="100" height="13"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Shift Engineer Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5e7d674a-5561-43e8-ad67-74e0d4ce021f" x="5" y="40" width="100" height="13"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Shift Start Time]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="2722f1d1-af0c-4b37-8d71-ee201d8a6281" x="0" y="68" width="468" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="af913b6d-539a-4015-833d-826487b47b9b" x="5" y="70" width="100" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Operation]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a8d6f368-2397-4873-acd0-41703b5a6a73" x="5" y="84" width="100" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Melting Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="27464368-5bd9-4641-b7e6-aa64a3132ea7" x="5" y="98" width="100" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Pouring Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="2f8aa8d2-f342-474c-aa65-731aa10c7a29" x="5" y="112" width="100" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Spinning Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e16c9342-9a20-485c-a69a-9324be10dd88" x="5" y="126" width="100" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Initial Pool Level]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="61587804-8a71-45d3-875b-17457af1400f" x="5" y="154" width="100" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[H2 Cy pr Main]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="60351bde-3cc3-4c0a-ac12-6db62ffb7ccb" x="5" y="140" width="100" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Final Pool Level]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="26a9b18b-3a14-43bc-af2d-e32329d7e8c1" x="5" y="168" width="100" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[H2 Cy pr Spare]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="516cbb2d-17b2-4a4a-8c71-803d8184c18a" positionType="Float" x="0" y="226" width="666" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="bbaa21e6-1fa5-4e12-abb7-e36419191272" x="0" y="39" width="666" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="72000205-e1dc-4887-af02-6b623fdab4f6" x="0" y="53" width="468" height="1"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement uuid="3c460ab7-78c6-4c42-af32-e69d84b212d5" x="261" y="23" width="1" height="30"/>
+			</line>
+			<staticText>
+				<reportElement uuid="00698112-5ff9-4ccc-8458-4f536dea86b2" x="266" y="40" width="65" height="13"/>
+				<textElement verticalAlignment="Top">
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[End Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="eca1b747-23c2-464e-b345-fd6595526a02" x="266" y="112" width="65" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Melter Power]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5d3611a6-e064-45b2-9d17-5df6a4488d07" x="266" y="168" width="65" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Power Factor]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5f49e12a-e9e4-4ded-b08c-3b14e4df574e" x="266" y="126" width="65" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[M.D.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="075dbb73-79b5-400a-9cda-ee462f32efb8" x="266" y="140" width="65" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[KWH]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ca41a84c-e63a-45e1-9782-d5fa75277953" x="266" y="154" width="65" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[KVAH]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="de06c382-078e-42e7-aec7-a548708fc4c2" x="473" y="97" width="113" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Bulk Fibre]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7a417387-32aa-437b-bf40-433e158d75fe" x="473" y="154" width="113" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[RT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="391d848e-69f1-454d-b0b2-552009218ced" x="473" y="111" width="113" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="1b1abf97-cbf7-4d60-9d72-4509e7da1544" x="473" y="126" width="113" height="14" isPrintWhenDetailOverflows="true"/>
+				<textElement>
+					<font size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[R/M CONSUMPTION :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="314d8a79-dedc-4a04-b6dc-be64b3d355d4" x="473" y="140" width="113" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[HTZ]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="8b4d8b0e-5242-4ff5-a7d5-10c499ce5d11" x="469" y="125" width="197" height="1"/>
+			</line>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement uuid="d1c91a08-e91a-4648-8f11-3aaf7400469b" x="117" y="25" width="80" height="13"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{shift_report_date}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="4e774c55-5743-4bdf-a094-e65d4b240ff5" x="342" y="25" width="60" height="13"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{run_no}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="HH:mm" isBlankWhenNull="true">
+				<reportElement uuid="6bd4dc70-1cf4-4c78-9587-6638d0b6ba36" x="117" y="40" width="80" height="13"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{start_time}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="HH:mm" isBlankWhenNull="true">
+				<reportElement uuid="88755a5e-4830-4ec3-9a52-0ee5abb95d56" x="342" y="40" width="60" height="13"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{end_time}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="c70fb5d4-88b0-4924-94f4-29dcf4a1599d" x="117" y="55" width="261" height="13"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{shift_engineer_name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="9b841d94-2b38-4656-b0e9-87bdc3a5fede" x="117" y="70" width="70" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{shift_operation_time}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="5e8e5a99-cb33-4d2f-bfb7-58b89d0cfd0f" x="117" y="84" width="70" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{melting_time}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="8ba52dd8-37b0-4e67-bd92-92798636b284" x="117" y="98" width="70" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pouting_time}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="fd6c5004-6c9c-4591-bc82-3443b57cbe33" x="117" y="112" width="70" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{spining_time}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="3620dab3-f2bc-45cc-a80b-96d12c4f2a2c" x="117" y="126" width="70" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{initial_pool_level}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="e1b235c1-e953-4509-8c24-f16255d70b12" x="117" y="140" width="70" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{final_pool_level}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="d592d821-20c1-4a55-b626-cc5ca2e6d7ac" x="117" y="154" width="70" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{h2cy_main}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="5d6d56e7-cbbb-43b6-b017-cc62f5014515" x="117" y="168" width="70" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{h2cy_spare}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="379f3cd9-19fe-448c-ab3a-cfc0a9fc67cf" x="342" y="70" width="60" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{h2cy_used}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="1e03c7b8-aac3-4048-b637-be805346d3a0" x="342" y="84" width="60" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{diesel_used}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="ee45ca1b-1815-4e4c-81e2-fc8add66e3a5" x="342" y="98" width="60" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{lpg_used}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="285c3767-a13e-45ef-bad6-d00ca5cc6ceb" x="342" y="112" width="60" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{melter_power}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="824fa2b9-9caf-4162-baca-142f0a8cd989" x="342" y="126" width="60" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{md}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="799e27ee-7f49-4797-8424-1b2e64bebbe9" x="342" y="140" width="60" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{kwh}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="a89bcb6c-7865-446a-bc91-caf7d112332d" x="342" y="154" width="60" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{kvah}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="f9a602d0-188c-41db-bcec-9f6ab9c996d3" x="342" y="168" width="60" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{power_fector}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="809a5969-e2f0-4821-8eb5-f900aa150227" x="590" y="26" width="50" height="13"/>
+				<textElement textAlignment="Center">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{shift}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="c7a2c32e-7009-43a4-9ac5-7e7d3bc5fac6" x="590" y="40" width="50" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{no_of_blankets}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="247455f1-e56c-4ab4-8adc-1ecdb38fb8f5" x="590" y="54" width="50" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{blankets_weigth}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="0099b6af-3248-4079-bb72-544ad63cbbfa" x="590" y="69" width="50" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{short_length_blankets_weight}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="f84f6ae1-8fc2-49db-b155-347ca2cb6a90" x="590" y="83" width="50" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{edge_trim_weight}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="46fd975b-c257-4ba9-b6af-6f74f0efd755" x="590" y="97" width="50" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bulk_fibre_weight}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="cac73e87-c5e6-4ee6-9f19-cc67a0ca3b5e" x="590" y="111" width="50" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_weight}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="2f5fd182-98ef-4942-be3b-562dd18cf676" x="590" y="141" width="50" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{htz_weight}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="ae1bd271-d5c8-4263-a16d-937e75c13831" x="590" y="155" width="50" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rt_weight}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="366fe7e0-08db-47c0-8549-190722220f89" x="5" y="211" width="45" height="15"/>
+				<textElement verticalAlignment="Top">
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Remark :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="6fc0080e-14ab-406a-a735-2a184abb86c6" x="55" y="211" width="608" height="15"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{shift_remark}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="019cb9b3-9857-4719-9a9f-bfcc75641b5a" x="5" y="182" width="100" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Spining Set-I]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="1ce8267d-ffcf-4552-a8ac-20da47a2add7" x="266" y="182" width="65" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Spining Set-II]]></text>
+			</staticText>
+			<textField pattern="###0.00">
+				<reportElement uuid="5194f597-8e8c-4cf9-a53d-7e6d49587636" x="117" y="182" width="70" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{spining_set1}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement uuid="a9299083-7291-467b-a461-4c45b42d4ff3" x="342" y="182" width="60" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{spining_set2}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="7521ab00-439b-47e0-8bdb-9a93638ba0fe" x="190" y="70" width="33" height="14"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Hrs]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="6de0ef70-817d-406f-b4a2-67b903419ff9" x="190" y="84" width="33" height="14"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Hrs]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="de5d8ac9-312e-4708-9469-ea668e9f032e" x="190" y="98" width="33" height="14"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Hrs]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="9f950257-841b-4448-85a8-989eee342a16" x="190" y="112" width="33" height="14"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Hrs]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="3171f677-166c-4a8f-86f3-07e124780e2c" x="190" y="126" width="33" height="14"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[mm]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="380dcaea-b5d2-4539-a838-24395a0c190d" x="190" y="140" width="33" height="14"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[mm]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d9fd6892-6577-4044-8d85-6ec5b3b4894a" x="190" y="154" width="33" height="14"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Kg/cm2]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b8d92991-b602-4c33-ba48-ffd83f068e8d" x="190" y="168" width="33" height="14"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Kg/cm2]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f94ac1a9-8f02-47e3-bfb3-dbe708df78e4" x="473" y="168" width="113" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[RTZ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="006b9b12-0986-462a-b90b-df53502c3960" x="473" y="197" width="113" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="73c7ad64-dc21-45e4-a65a-e3e02cbc5e92" x="405" y="70" width="33" height="14"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Nos.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="27e69724-3c9b-4082-a4df-6557bc4b2d5a" x="405" y="84" width="33" height="14"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Ltr.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="3c2012b5-b59b-4415-a6e5-e70fbecc641a" x="405" y="98" width="33" height="14"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Ltr.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="16038a97-694d-40d7-98d3-96b5bdb00414" x="405" y="112" width="33" height="14"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[KWH]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="75158a40-10d8-48cc-9e25-b72aaf40b513" x="405" y="126" width="33" height="14"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[KVA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="91e9f33b-9f06-4eab-ac85-3dabeeea40ce" x="405" y="168" width="33" height="14"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[KWH]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ddbcedc5-8993-4f4a-833f-163243701a98" x="643" y="40" width="20" height="14"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Nos]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f45cc495-4122-4478-a0ff-32d5a2cd0e2d" x="643" y="54" width="20" height="14"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Kgs]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="88ea0257-ec10-4f80-b67d-01cf00041cbb" x="643" y="69" width="20" height="14"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Kgs]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e6cffc36-ce6a-43c3-80d5-5ece8e184719" x="643" y="83" width="20" height="14"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Kgs]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="4cd460c8-cfb0-411d-9fae-2b8940652f5b" x="643" y="97" width="20" height="14"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Kgs]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="6e298bd2-dc69-44c2-b233-24caedbe9011" x="643" y="111" width="20" height="14"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Kgs]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a5997126-a078-49ad-8653-4dd96ea492a6" x="643" y="142" width="20" height="13"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Kgs]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d3811d81-c459-4985-88d0-8a7aef79ef38" x="643" y="156" width="20" height="13"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Kgs]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="edb913be-0c71-4a7d-a32e-77b1520d66f0" x="590" y="169" width="50" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rtz_weight}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="fc8666b5-016c-46fe-8407-b84374c85db9" x="590" y="198" width="50" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_rm_consuption_weight}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="9fe45b1f-0f1c-48ca-9d09-0b2362a6ea32" x="643" y="170" width="20" height="13"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Kgs]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b18b0d58-ca54-472a-9bb7-e9c7526540c9" x="643" y="198" width="20" height="14"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Kgs]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="74046783-c02c-4a33-adf4-6a71c28485a8" x="469" y="196" width="197" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="8319c4e8-e53c-4993-a761-244cd8012500" x="473" y="182" width="113" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Shot]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="18b98854-bdc5-4161-bd13-6eb10cc6a263" x="590" y="182" width="50" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{shot}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement uuid="3aebf61e-8469-4762-b31c-712ed6ed295f" x="117" y="196" width="70" height="14"/>
+				<textElement textAlignment="Right">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{lt_panel}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="9897bfe6-6f30-418f-ac95-a57957208e02" x="5" y="196" width="100" height="14"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[LT Panel / MPEB]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<summary>
+		<band height="135">
+			<componentElement>
+				<reportElement uuid="8a3d12ae-e7d9-403d-a3f4-9c5fa985fd32" key="table 2" isPrintRepeatedValues="false" x="0" y="5" width="666" height="40" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="Item_Group_Name_Dataset" uuid="a02f273b-425e-4f30-abf6-c037d7968547">
+						<datasetParameter name="Date_Prompt">
+							<datasetParameterExpression><![CDATA[$P{Date_Prompt}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="Shift_Prompt">
+							<datasetParameterExpression><![CDATA[$P{Shift_Prompt}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="RUNNoPrompt">
+							<datasetParameterExpression><![CDATA[$P{RUNNoPrompt}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:columnGroup width="430" uuid="95f36936-882b-4982-a786-d0f476c72674">
+						<jr:columnGroup width="430" uuid="fba195ee-9477-40df-87d2-30f0e83ffd4f">
+							<jr:tableHeader style="table_TH" height="18" rowSpan="1">
+								<staticText>
+									<reportElement uuid="c2cb5859-750f-46f5-bf7f-0a0cf53983c2" x="0" y="0" width="132" height="18" isPrintWhenDetailOverflows="true" forecolor="#000000" backcolor="#FFFFFF"/>
+									<textElement textAlignment="Left" verticalAlignment="Middle">
+										<font fontName="SansSerif" size="11" isBold="true"/>
+									</textElement>
+									<text><![CDATA[ Item Group Flag Name :]]></text>
+								</staticText>
+								<textField isStretchWithOverflow="true">
+									<reportElement uuid="edd62454-d391-4c63-8ebd-851078f210d5" x="132" y="0" width="298" height="18" isPrintWhenDetailOverflows="true"/>
+									<textElement verticalAlignment="Middle"/>
+									<textFieldExpression><![CDATA[$F{ITEM_GROUP_FLAG_Name}]]></textFieldExpression>
+								</textField>
+							</jr:tableHeader>
+							<jr:column width="37" uuid="848d3fde-730f-43a4-8c84-3472a049bb4e">
+								<jr:columnHeader style="table_CH" height="15" rowSpan="1">
+									<staticText>
+										<reportElement uuid="9d0baaee-0c32-4ca6-9719-2570e34dd74a" x="0" y="0" width="37" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+										<textElement textAlignment="Center" verticalAlignment="Top">
+											<font fontName="SansSerif" isBold="true"/>
+										</textElement>
+										<text><![CDATA[S.No.]]></text>
+									</staticText>
+								</jr:columnHeader>
+								<jr:detailCell style="table_TD" height="14" rowSpan="1">
+									<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+										<reportElement uuid="a51240f5-46ba-4590-b2d3-b29c4664003a" x="0" y="0" width="37" height="14"/>
+										<textElement textAlignment="Center"/>
+										<textFieldExpression><![CDATA[$V{s_no}]]></textFieldExpression>
+									</textField>
+								</jr:detailCell>
+							</jr:column>
+							<jr:column width="393" uuid="18829f3d-e0a1-4b08-b9b2-a42751969244">
+								<jr:columnHeader style="table_CH" height="15" rowSpan="1">
+									<staticText>
+										<reportElement uuid="c2cb5859-750f-46f5-bf7f-0a0cf53983c2" x="3" y="0" width="390" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+										<textElement textAlignment="Left" verticalAlignment="Top">
+											<font fontName="SansSerif" isBold="true"/>
+										</textElement>
+										<text><![CDATA[Item Name]]></text>
+									</staticText>
+								</jr:columnHeader>
+								<jr:detailCell style="table_TD" height="14" rowSpan="1">
+									<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+										<reportElement uuid="45bafba3-f5eb-42c8-ac81-86e3984aae05" x="3" y="0" width="390" height="14"/>
+										<textElement/>
+										<textFieldExpression><![CDATA[$F{item_name}]]></textFieldExpression>
+									</textField>
+								</jr:detailCell>
+							</jr:column>
+						</jr:columnGroup>
+					</jr:columnGroup>
+					<jr:column width="75" uuid="34b9bd8b-b47e-46d8-99c7-a3feb647aca6">
+						<jr:tableHeader height="18" rowSpan="1"/>
+						<jr:columnHeader style="table_CH" height="15" rowSpan="1">
+							<staticText>
+								<reportElement uuid="c2cb5859-750f-46f5-bf7f-0a0cf53983c2" x="0" y="0" width="75" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+								<textElement textAlignment="Center" verticalAlignment="Top">
+									<font fontName="SansSerif" isBold="true" isStrikeThrough="false"/>
+								</textElement>
+								<text><![CDATA[UOM]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="table_TD" height="14" rowSpan="1">
+							<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+								<reportElement uuid="00ad57de-f39a-44df-98b0-34e67cd0e1e0" x="0" y="0" width="75" height="14"/>
+								<textElement textAlignment="Center"/>
+								<textFieldExpression><![CDATA[$F{unit}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="65" uuid="7cbb8b6a-723c-45f8-9fff-e5b9e54dc581">
+						<jr:tableHeader height="18" rowSpan="1"/>
+						<jr:columnHeader style="table_CH" height="15" rowSpan="1">
+							<staticText>
+								<reportElement uuid="c2cb5859-750f-46f5-bf7f-0a0cf53983c2" x="0" y="0" width="65" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+								<textElement textAlignment="Right" verticalAlignment="Top">
+									<font fontName="SansSerif" isBold="true"/>
+								</textElement>
+								<text><![CDATA[Quantity]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="table_TD" height="14" rowSpan="1">
+							<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+								<reportElement uuid="d93a4596-ae71-4e8a-a3e7-3fa8436f24fd" x="0" y="0" width="65" height="14"/>
+								<textElement textAlignment="Right"/>
+								<textFieldExpression><![CDATA[( ($F{quantity}.doubleValue()-$F{quantity}.intValue())> new Double(0) ? $F{quantity} :
+new DecimalFormat("###0").format($F{quantity}) )]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="97" uuid="ddcfd4ea-3852-4b01-b86e-e19fdccdacea">
+						<jr:tableHeader height="18" rowSpan="1"/>
+						<jr:columnHeader style="table_CH" height="15" rowSpan="1">
+							<staticText>
+								<reportElement uuid="f455776e-1869-4d80-8637-4ded33b9b4b7" x="0" y="0" width="97" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+								<textElement textAlignment="Center" verticalAlignment="Top">
+									<font fontName="SansSerif" isBold="true"/>
+								</textElement>
+								<text><![CDATA[Remark]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="table_TD" height="14" rowSpan="1">
+							<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+								<reportElement uuid="c6a5e64b-e478-4ad1-9c9a-fb727adec6e2" x="0" y="0" width="97" height="14"/>
+								<textElement textAlignment="Center"/>
+								<textFieldExpression><![CDATA[$F{remark}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+			<componentElement>
+				<reportElement uuid="ac99daa7-3d42-4664-82dc-c52ce72b68ce" key="table 2" positionType="Float" isPrintRepeatedValues="false" x="0" y="50" width="666" height="40" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="Engineering_Dataset" uuid="aa2cde81-3051-4b09-a22b-a0b146075b6c">
+						<datasetParameter name="Date_Prompt">
+							<datasetParameterExpression><![CDATA[$P{Date_Prompt}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="Shift_Prompt">
+							<datasetParameterExpression><![CDATA[$P{Shift_Prompt}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="RUNNoPrompt">
+							<datasetParameterExpression><![CDATA[$P{RUNNoPrompt}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:columnGroup width="132" uuid="a2c5f2d2-d1d7-495f-b471-4cefbd3cdef9">
+						<jr:columnHeader style="table_TH" height="18" rowSpan="1">
+							<staticText>
+								<reportElement uuid="a3d32267-1d37-44c2-97c6-43202aff70d8" x="0" y="0" width="132" height="18" isPrintWhenDetailOverflows="true"/>
+								<textElement verticalAlignment="Middle">
+									<font size="11" isBold="true"/>
+								</textElement>
+								<text><![CDATA[ Engineering Breakdown]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:column width="37" uuid="178a6354-8528-4e12-9bcb-82efb5a8176c">
+							<jr:columnHeader style="table_CH" height="15" rowSpan="1">
+								<staticText>
+									<reportElement uuid="9d0baaee-0c32-4ca6-9719-2570e34dd74a" x="0" y="0" width="37" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+									<textElement textAlignment="Center" verticalAlignment="Top">
+										<font fontName="SansSerif" isBold="true"/>
+									</textElement>
+									<text><![CDATA[S.No.]]></text>
+								</staticText>
+							</jr:columnHeader>
+							<jr:detailCell style="table_TD" height="15" rowSpan="1">
+								<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+									<reportElement uuid="a51240f5-46ba-4590-b2d3-b29c4664003a" x="0" y="0" width="37" height="15"/>
+									<textElement textAlignment="Center"/>
+									<textFieldExpression><![CDATA[$V{s_no}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="95" uuid="66a0befb-872a-4482-b986-b3ca7cdc4d11">
+							<jr:columnHeader style="table_CH" height="15" rowSpan="1">
+								<staticText>
+									<reportElement uuid="9ab7240e-ede9-4884-ae8a-dedcd928a230" x="0" y="0" width="95" height="15"/>
+									<textElement textAlignment="Center">
+										<font isBold="true"/>
+									</textElement>
+									<text><![CDATA[From Time]]></text>
+								</staticText>
+							</jr:columnHeader>
+							<jr:detailCell style="table_TD" height="15" rowSpan="1">
+								<textField isStretchWithOverflow="true" pattern="HH:mm" isBlankWhenNull="true">
+									<reportElement uuid="a60191dc-ce5e-496a-8a73-25e83596bda4" x="3" y="0" width="92" height="15"/>
+									<textElement textAlignment="Center"/>
+									<textFieldExpression><![CDATA[$F{eng_from_time}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+					</jr:columnGroup>
+					<jr:columnGroup width="90" uuid="46290d32-fe17-4bc7-a6e8-901976853d40">
+						<jr:columnHeader height="18" rowSpan="1"/>
+						<jr:column width="90" uuid="8d87270e-14d3-4bb9-9d5b-a8d2b455269d">
+							<jr:tableHeader height="0" rowSpan="1"/>
+							<jr:columnHeader style="table_CH" height="15" rowSpan="1">
+								<staticText>
+									<reportElement uuid="2e0ebe36-dc7a-459f-84b5-1a9947b4bc29" x="0" y="0" width="90" height="15"/>
+									<textElement textAlignment="Center">
+										<font isBold="true"/>
+									</textElement>
+									<text><![CDATA[To Time]]></text>
+								</staticText>
+							</jr:columnHeader>
+							<jr:detailCell style="table_TD" height="15" rowSpan="1">
+								<textField isStretchWithOverflow="true" pattern="HH:mm" isBlankWhenNull="true">
+									<reportElement uuid="facc4235-1a7c-418e-83bc-447d05c415e7" x="3" y="0" width="87" height="15"/>
+									<textElement textAlignment="Center"/>
+									<textFieldExpression><![CDATA[$F{eng_to_time}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+					</jr:columnGroup>
+					<jr:columnGroup width="90" uuid="5d7f62e6-13d0-43b5-9f88-dfe016ef2d3d">
+						<jr:columnHeader height="18" rowSpan="1"/>
+						<jr:column width="90" uuid="84b2ca0b-de0f-491c-8060-4f69260565ab">
+							<jr:tableHeader height="0" rowSpan="1"/>
+							<jr:columnHeader style="table_CH" height="15" rowSpan="1">
+								<staticText>
+									<reportElement uuid="a0e3c933-dda2-4b8a-b4b0-9bad206406bc" x="0" y="0" width="90" height="15"/>
+									<textElement textAlignment="Center">
+										<font isBold="true"/>
+									</textElement>
+									<text><![CDATA[Duration]]></text>
+								</staticText>
+							</jr:columnHeader>
+							<jr:detailCell style="table_TD" height="15" rowSpan="1">
+								<textField isStretchWithOverflow="true" pattern="HH:mm" isBlankWhenNull="true">
+									<reportElement uuid="c5dada6e-1ab4-42af-ac0d-1e08161f2425" x="3" y="0" width="87" height="15"/>
+									<textElement textAlignment="Center"/>
+									<textFieldExpression><![CDATA[$F{eng_duration}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+					</jr:columnGroup>
+					<jr:columnGroup width="354" uuid="a0c7f7d6-4e47-47b8-9103-f155827dd43a">
+						<jr:columnHeader height="18" rowSpan="1"/>
+						<jr:columnGroup width="354" uuid="5826fae2-c6df-4172-87c9-a051f4e80f4c">
+							<jr:column width="354" uuid="4575d941-9fb4-4583-af05-d060364a47d1">
+								<jr:tableHeader height="0" rowSpan="1"/>
+								<jr:columnHeader style="table_CH" height="15" rowSpan="1">
+									<staticText>
+										<reportElement uuid="5ab3d580-95ae-48c9-bab1-5c713acf5b3c" x="3" y="0" width="351" height="15"/>
+										<textElement textAlignment="Left">
+											<font isBold="true"/>
+										</textElement>
+										<text><![CDATA[Reason]]></text>
+									</staticText>
+								</jr:columnHeader>
+								<jr:detailCell style="table_TD" height="15" rowSpan="1">
+									<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+										<reportElement uuid="0edf7b58-5fdc-42c5-8aad-ebd211b87105" x="3" y="0" width="351" height="15"/>
+										<textElement/>
+										<textFieldExpression><![CDATA[$F{eng_reason}]]></textFieldExpression>
+									</textField>
+								</jr:detailCell>
+							</jr:column>
+						</jr:columnGroup>
+					</jr:columnGroup>
+				</jr:table>
+			</componentElement>
+			<componentElement>
+				<reportElement uuid="2d6a5743-e43b-4169-94f9-f1ec06d2bac9" key="table 2" positionType="Float" isPrintRepeatedValues="false" x="0" y="95" width="666" height="40" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="Spinning_Dataset" uuid="6d47bf25-436f-4eb8-aad9-f603e0b06e33">
+						<datasetParameter name="Date_Prompt">
+							<datasetParameterExpression><![CDATA[$P{Date_Prompt}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="Shift_Prompt">
+							<datasetParameterExpression><![CDATA[$P{Shift_Prompt}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="RUNNoPrompt">
+							<datasetParameterExpression><![CDATA[$P{RUNNoPrompt}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:columnGroup width="132" uuid="8c3f3a47-ed0e-4d6f-ba05-d5084fbd6972">
+						<jr:tableHeader style="table_TH" height="18" rowSpan="1">
+							<staticText>
+								<reportElement uuid="a3d32267-1d37-44c2-97c6-43202aff70d8" x="0" y="0" width="132" height="18"/>
+								<textElement verticalAlignment="Middle">
+									<font size="11" isBold="true"/>
+								</textElement>
+								<text><![CDATA[ Spinning Interruption]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:columnFooter style="table 1_TH" height="15" rowSpan="1">
+							<staticText>
+								<reportElement uuid="c2cb5859-750f-46f5-bf7f-0a0cf53983c2" x="0" y="0" width="132" height="15" isPrintWhenDetailOverflows="true" forecolor="#000000" backcolor="#FFFFFF"/>
+								<textElement textAlignment="Left" verticalAlignment="Top">
+									<font fontName="SansSerif" size="11" isBold="true"/>
+								</textElement>
+								<text><![CDATA[ Shift History]]></text>
+							</staticText>
+						</jr:columnFooter>
+						<jr:column width="37" uuid="02643b07-e01c-412e-86f2-45ba0baddfd8">
+							<jr:columnHeader style="table_CH" height="15" rowSpan="1">
+								<staticText>
+									<reportElement uuid="59e71c3b-4076-472d-bd91-20fb62ea4855" x="0" y="0" width="37" height="15"/>
+									<textElement textAlignment="Center" verticalAlignment="Top">
+										<font isBold="true"/>
+									</textElement>
+									<text><![CDATA[S No.]]></text>
+								</staticText>
+							</jr:columnHeader>
+							<jr:detailCell style="table_TD" height="15" rowSpan="1">
+								<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+									<reportElement uuid="2fcef20d-66d0-4fd8-b4cf-f629b157dff9" x="0" y="0" width="37" height="15"/>
+									<textElement textAlignment="Center"/>
+									<textFieldExpression><![CDATA[$V{s_no}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="95" uuid="7fba8c3d-e7b0-41a9-a484-3f338de625ab">
+							<jr:columnHeader style="table_CH" height="15" rowSpan="1">
+								<staticText>
+									<reportElement uuid="74db9126-c7b1-497b-9d82-8c7cdf64a6fa" x="0" y="0" width="95" height="15"/>
+									<textElement textAlignment="Center" verticalAlignment="Top">
+										<font isBold="true"/>
+									</textElement>
+									<text><![CDATA[From Time]]></text>
+								</staticText>
+							</jr:columnHeader>
+							<jr:detailCell style="table_TD" height="15" rowSpan="1">
+								<textField isStretchWithOverflow="true" pattern="HH:mm" isBlankWhenNull="true">
+									<reportElement uuid="fcdc7152-4dcd-4132-8935-07eda6d7468f" x="0" y="0" width="95" height="15"/>
+									<textElement textAlignment="Center"/>
+									<textFieldExpression><![CDATA[$F{spin_from_time}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+					</jr:columnGroup>
+					<jr:columnGroup width="534" uuid="e1a63d85-0167-4db1-809d-ea869bab4b24">
+						<jr:columnFooter style="table 1_TD" height="15" rowSpan="1">
+							<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+								<reportElement uuid="8af28740-7826-421e-ac4e-14dfb82b1bc2" x="0" y="0" width="534" height="15" isPrintWhenDetailOverflows="true"/>
+								<textElement/>
+								<textFieldExpression><![CDATA[$F{shift_history}]]></textFieldExpression>
+							</textField>
+						</jr:columnFooter>
+						<jr:column width="90" uuid="67899843-5d32-48c4-b71b-3d6e6249262d">
+							<jr:columnHeader style="table_CH" height="15" rowSpan="1">
+								<staticText>
+									<reportElement uuid="c4912f5e-eb30-4047-bc24-77de80733d77" x="0" y="0" width="90" height="15"/>
+									<textElement textAlignment="Center" verticalAlignment="Top">
+										<font isBold="true"/>
+									</textElement>
+									<text><![CDATA[To Time]]></text>
+								</staticText>
+							</jr:columnHeader>
+							<jr:detailCell style="table_TD" height="15" rowSpan="1">
+								<textField isStretchWithOverflow="true" pattern="HH:mm" isBlankWhenNull="true">
+									<reportElement uuid="759b8073-a780-46d3-aba8-7aadce949084" x="0" y="0" width="90" height="15"/>
+									<textElement textAlignment="Center"/>
+									<textFieldExpression><![CDATA[$F{spin_to_time}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="90" uuid="3dba4220-082e-4990-be55-5270442dbe8e">
+							<jr:columnHeader style="table_CH" height="15" rowSpan="1">
+								<staticText>
+									<reportElement uuid="f5d05c7c-ced2-4c44-9628-f62cd12e820d" x="3" y="0" width="87" height="15"/>
+									<textElement textAlignment="Center" verticalAlignment="Top">
+										<font isBold="true"/>
+									</textElement>
+									<text><![CDATA[Duration]]></text>
+								</staticText>
+							</jr:columnHeader>
+							<jr:detailCell style="table_TD" height="15" rowSpan="1">
+								<textField isStretchWithOverflow="true" pattern="HH:mm" isBlankWhenNull="true">
+									<reportElement uuid="1cde9aa0-d1ab-4799-a91a-4efd7f51e4c4" x="3" y="0" width="87" height="15"/>
+									<textElement textAlignment="Center"/>
+									<textFieldExpression><![CDATA[$F{spin_duration}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="354" uuid="08d180ca-8f27-4d67-a0b2-f9b18ba8f560">
+							<jr:columnHeader style="table_CH" height="15" rowSpan="1">
+								<staticText>
+									<reportElement uuid="28faa89f-aced-4d6c-813f-2bed3ef7b442" x="3" y="0" width="351" height="15"/>
+									<textElement textAlignment="Left" verticalAlignment="Top">
+										<font isBold="true"/>
+									</textElement>
+									<text><![CDATA[Reason]]></text>
+								</staticText>
+							</jr:columnHeader>
+							<jr:detailCell style="table_TD" height="15" rowSpan="1">
+								<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+									<reportElement uuid="9fc83249-012c-45cb-940d-204babea477f" x="3" y="0" width="351" height="15"/>
+									<textElement/>
+									<textFieldExpression><![CDATA[$F{spin_reason}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+					</jr:columnGroup>
+				</jr:table>
+			</componentElement>
+		</band>
+	</summary>
+	<noData>
+		<band height="29">
+			<staticText>
+				<reportElement uuid="6f858c37-f1e3-4529-84be-145bfb6ed5f8" x="0" y="0" width="667" height="29" forecolor="#FF3300"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="20"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>

@@ -1,0 +1,588 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Delivery_Challan" pageWidth="503" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="499" leftMargin="2" rightMargin="2" topMargin="0" bottomMargin="0" uuid="adb966ca-3e51-40ab-8c9c-a90ba317de17">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="192"/>
+	<style name="style1" mode="Opaque">
+		<paragraph lineSpacing="Single"/>
+	</style>
+	<parameter name="InvoiceNoPrompt" class="java.lang.String"/>
+	<parameter name="InvoiceNoNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{InvoiceNoPrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Image_Loc" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT cmp.comp_name,cmp.comp_add, cmp.exciseeccno, SUBSTRING(cmp.vatno, 1, LENGTH(cmp.vatno)-2) AS tin_no
+, t_proforma_mast.delivery_note_no AS delivery_note_no
+, CAST(t_proforma_mast.delivery_note_date AS DATE) AS delivery_note_date
+, IFNULL(t_proforma_mast.motor_vehicle_no,'') AS motor_vehicle_no
+, t_proforma_mast.buyer_po_no
+, IFNULL(consignee.party_name,'') AS consignee_party
+, IFNULL(consignee.billing_address,'') AS billing_address
+, IFNULL(consignee.vat_no,'') AS consignee_vatno
+, IFNULL(m_item.invoice_name,'') AS item_name
+, IFNULL(m_masters.NAME,'') AS UOM
+, IFNULL(t_proforma_detail.no_of_packet,0) AS no_of_packet
+, IFNULL(t_proforma_detail.qty_per_packet,0) AS qty_per_packet
+, IFNULL(t_proforma_detail.quantity,0) AS quantity
+, IFNULL(UPPER(t_proforma_mast.bill_remark),'') AS description
+FROM t_proforma_detail , m_item, (SELECT * FROM m_masters WHERE m_form_name='Measurement Unit' AND deleted_flag=0) AS m_masters
+, t_proforma_mast, m_party AS consignee
+, (SELECT comp_name,comp_add,exciseeccno,vatno FROM m_company WHERE deleted_flag=0) AS cmp
+WHERE t_proforma_detail.deleted_flag=0 AND m_item.deleted_flag=0 AND m_masters.deleted_flag=0
+AND t_proforma_detail.item_id=m_item.item_id AND t_proforma_detail.measurement_Unit_id = m_masters.masters_id
+AND t_proforma_detail.invoice_number = t_proforma_mast.invoice_number AND t_proforma_mast.deleted_flag=0
+AND consignee.deleted_flag=0 AND t_proforma_mast.consignee_id = consignee.party_id
+AND t_proforma_mast.invoice_number = $P{InvoiceNoPrompt} OR 1 = $P{InvoiceNoNull_FlagPrompt};]]>
+	</queryString>
+	<field name="comp_name" class="java.lang.String"/>
+	<field name="comp_add" class="java.lang.String"/>
+	<field name="exciseeccno" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="tin_no" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="delivery_note_no" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="delivery_note_date" class="java.util.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="motor_vehicle_no" class="java.lang.String"/>
+	<field name="buyer_po_no" class="java.lang.String"/>
+	<field name="consignee_party" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="consignee_vatno" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="item_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="no_of_packet" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="UOM" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="description" class="java.lang.String"/>
+	<field name="billing_address" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="qty_per_packet" class="java.lang.Double"/>
+	<field name="quantity" class="java.lang.Integer"/>
+	<variable name="s_no" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$V{REPORT_COUNT}]]></variableExpression>
+	</variable>
+	<variable name="qty_total" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{no_of_packet}]]></variableExpression>
+	</variable>
+	<variable name="qty_total_page" class="java.lang.Integer" resetType="Page" calculation="Sum">
+		<variableExpression><![CDATA[$F{no_of_packet}]]></variableExpression>
+	</variable>
+	<variable name="s_no_1" class="java.lang.Integer" resetType="None">
+		<variableExpression><![CDATA[$V{PAGE_NUMBER}]]></variableExpression>
+	</variable>
+	<variable name="totalqty" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{quantity}]]></variableExpression>
+	</variable>
+	<background>
+		<band height="842">
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="0" y="289" width="1" height="443"/>
+			</line>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="39" y="289" width="1" height="443"/>
+			</line>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="220" y="289" width="1" height="443"/>
+			</line>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="290" y="289" width="1" height="443"/>
+			</line>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="358" y="289" width="1" height="443"/>
+			</line>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="498" y="289" width="1" height="443"/>
+			</line>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="417" y="289" width="1" height="443"/>
+			</line>
+		</band>
+	</background>
+	<pageHeader>
+		<band height="272">
+			<textField>
+				<reportElement uuid="14a94450-81c6-4184-92e6-a47fe0199556" x="1" y="54" width="497" height="18"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{comp_name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="c45938eb-02b6-487c-bbe0-5637c48d9b51" x="1" y="129" width="496" height="30" forecolor="#000000"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Delivery Challan]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="0345e3ac-edca-4caf-be3b-d1f857676c5d" x="1" y="77" width="497" height="20"/>
+				<textElement textAlignment="Center">
+					<font isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{comp_add}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="d36d4ff1-b7a9-428d-9ada-8157b0f446d8" x="1" y="110" width="74" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[ TIN. No.   :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="aa5a7bd1-2b90-47aa-960f-a85c0b207fca" x="75" y="110" width="124" height="18"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tin_no}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="d36d4ff1-b7a9-428d-9ada-8157b0f446d8" x="268" y="110" width="77" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[ ECC. No.   :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="aa5a7bd1-2b90-47aa-960f-a85c0b207fca" x="350" y="110" width="148" height="18"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{exciseeccno}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="aa5a7bd1-2b90-47aa-960f-a85c0b207fca" x="1" y="172" width="266" height="18"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{consignee_party}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="290" y="172" width="1" height="99"/>
+			</line>
+			<staticText>
+				<reportElement uuid="d36d4ff1-b7a9-428d-9ada-8157b0f446d8" x="291" y="172" width="77" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="SansSerif" size="11" isBold="false" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[ D.C. NO.       ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d36d4ff1-b7a9-428d-9ada-8157b0f446d8" x="291" y="196" width="77" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="SansSerif" size="11" isBold="false" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[ DATE           ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d36d4ff1-b7a9-428d-9ada-8157b0f446d8" x="291" y="219" width="77" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="SansSerif" size="11" isBold="false" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[ VEHICLE NO.]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="d0614450-c4bf-4128-8508-3745232add16" x="373" y="172" width="124" height="18"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{delivery_note_no}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd-MMM-yyyy" isBlankWhenNull="true">
+				<reportElement uuid="d0614450-c4bf-4128-8508-3745232add16" x="373" y="196" width="124" height="18"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{delivery_note_date}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="d0614450-c4bf-4128-8508-3745232add16" x="373" y="219" width="124" height="20"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{motor_vehicle_no}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="818c0ff9-f730-4e2e-93c3-39d886123d83" positionType="Float" mode="Transparent" x="0" y="271" width="499" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="818c0ff9-f730-4e2e-93c3-39d886123d83" positionType="Float" mode="Transparent" x="1" y="171" width="497" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="818c0ff9-f730-4e2e-93c3-39d886123d83" positionType="Float" mode="Transparent" x="1" y="128" width="497" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="d36d4ff1-b7a9-428d-9ada-8157b0f446d8" x="1" y="239" width="74" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="SansSerif" size="11" isBold="false" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[ TIN. No.   :]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="0" y="2" width="1" height="269"/>
+			</line>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="498" y="2" width="1" height="269"/>
+			</line>
+			<line>
+				<reportElement uuid="818c0ff9-f730-4e2e-93c3-39d886123d83" positionType="Float" mode="Transparent" x="0" y="1" width="499" height="1"/>
+			</line>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="aa5a7bd1-2b90-47aa-960f-a85c0b207fca" x="1" y="190" width="266" height="49"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{billing_address}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="d36d4ff1-b7a9-428d-9ada-8157b0f446d8" x="368" y="172" width="5" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="SansSerif" size="11" isBold="false" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d36d4ff1-b7a9-428d-9ada-8157b0f446d8" x="368" y="196" width="5" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="SansSerif" size="11" isBold="false" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d36d4ff1-b7a9-428d-9ada-8157b0f446d8" x="368" y="219" width="5" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="SansSerif" size="11" isBold="false" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d36d4ff1-b7a9-428d-9ada-8157b0f446d8" x="368" y="239" width="5" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="SansSerif" size="11" isBold="false" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d36d4ff1-b7a9-428d-9ada-8157b0f446d8" x="291" y="239" width="77" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="SansSerif" size="11" isBold="false" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[ REF NO.        ]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="d0614450-c4bf-4128-8508-3745232add16" x="373" y="239" width="124" height="30"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="SansSerif" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{buyer_po_no}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="aa5a7bd1-2b90-47aa-960f-a85c0b207fca" x="75" y="239" width="192" height="18"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="SansSerif" size="10" isBold="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{consignee_vatno}]]></textFieldExpression>
+			</textField>
+			<image scaleImage="RetainShape">
+				<reportElement uuid="3ecfe66f-7483-4df9-b9ed-f55d32974edb" x="209" y="3" width="80" height="51"/>
+				<imageExpression><![CDATA[$P{Image_Loc}]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="40">
+			<staticText>
+				<reportElement uuid="d36d4ff1-b7a9-428d-9ada-8157b0f446d8" x="1" y="0" width="38" height="39" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[ S. No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d36d4ff1-b7a9-428d-9ada-8157b0f446d8" x="40" y="0" width="180" height="39" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[ Description Of Goods]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d36d4ff1-b7a9-428d-9ada-8157b0f446d8" x="418" y="0" width="79" height="39" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[ Units]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d36d4ff1-b7a9-428d-9ada-8157b0f446d8" x="359" y="0" width="57" height="39" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Quantity ]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="818c0ff9-f730-4e2e-93c3-39d886123d83" positionType="Float" mode="Transparent" x="1" y="39" width="498" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="498" y="0" width="1" height="39"/>
+			</line>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="0" y="0" width="1" height="40"/>
+			</line>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="358" y="0" width="1" height="39"/>
+			</line>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="220" y="0" width="1" height="39"/>
+			</line>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="39" y="0" width="1" height="39"/>
+			</line>
+			<staticText>
+				<reportElement uuid="d36d4ff1-b7a9-428d-9ada-8157b0f446d8" x="221" y="0" width="137" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="SansSerif" size="11" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Packing]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d36d4ff1-b7a9-428d-9ada-8157b0f446d8" x="291" y="16" width="66" height="23" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="SansSerif" size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Qty Per
+Packets]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d36d4ff1-b7a9-428d-9ada-8157b0f446d8" x="221" y="16" width="68" height="23" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="SansSerif" size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[No. of
+Packets]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="417" y="0" width="1" height="40"/>
+			</line>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="220" y="16" width="138" height="1"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="25">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="false">
+				<reportElement uuid="2d816f6c-d467-485b-aa87-0d47802913ff" isPrintRepeatedValues="false" x="1" y="0" width="38" height="11"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{s_no}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00">
+				<reportElement uuid="72ce07e9-1561-4d6b-be93-580e1402c4c8" x="359" y="0" width="57" height="11"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="">
+				<reportElement uuid="abe2ce9c-eed3-4219-88cd-caa7c15011a8" x="291" y="0" width="66" height="11"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{qty_per_packet}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="ea14928a-b0b6-463e-bd14-033f9906b176" x="40" y="0" width="180" height="11"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{item_name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="d0614450-c4bf-4128-8508-3745232add16" x="418" y="0" width="79" height="11"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{UOM}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="0" y="0" width="1" height="25"/>
+			</line>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="39" y="0" width="1" height="25"/>
+			</line>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="220" y="0" width="1" height="25"/>
+			</line>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="358" y="0" width="1" height="25"/>
+			</line>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="498" y="0" width="1" height="25"/>
+			</line>
+			<textField isStretchWithOverflow="true" pattern="">
+				<reportElement uuid="72ce07e9-1561-4d6b-be93-580e1402c4c8" x="221" y="0" width="68" height="11"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[( ($F{no_of_packet}.doubleValue()-$F{no_of_packet}.intValue())> new Double(0) ? $F{no_of_packet} :
+new DecimalFormat("###0").format($F{no_of_packet}) )]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="417" y="0" width="1" height="25"/>
+			</line>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="111">
+			<line>
+				<reportElement uuid="818c0ff9-f730-4e2e-93c3-39d886123d83" positionType="Float" mode="Transparent" x="1" y="0" width="497" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="1a73b1dc-5839-43de-b046-2606d4f440c6" x="141" y="1" width="79" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="SansSerif" size="11" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[ Total: ]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="818c0ff9-f730-4e2e-93c3-39d886123d83" positionType="Float" mode="Transparent" x="1" y="17" width="497" height="1"/>
+			</line>
+			<textField isStretchWithOverflow="true" evaluationTime="Auto" isBlankWhenNull="true">
+				<reportElement uuid="72ce07e9-1561-4d6b-be93-580e1402c4c8" x="221" y="1" width="69" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[( $V{s_no_1}==$V{PAGE_NUMBER} ? ( ($V{qty_total}.doubleValue()-$V{qty_total}.intValue())> new Double(0) ? $V{qty_total} :new DecimalFormat("###0").format($V{qty_total}) ) : ( $V{PAGE_NUMBER}==1 ? ( ($V{qty_total}.doubleValue()-$V{qty_total}.intValue())> new Double(0) ? $V{qty_total} :new DecimalFormat("###0").format($V{qty_total}) ) : "" ) )]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="818c0ff9-f730-4e2e-93c3-39d886123d83" positionType="Float" mode="Transparent" x="1" y="74" width="497" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="d36d4ff1-b7a9-428d-9ada-8157b0f446d8" x="279" y="58" width="218" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[ For SHREE CERAMIC FIBRES PVT. LTD.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d36d4ff1-b7a9-428d-9ada-8157b0f446d8" x="55" y="58" width="168" height="16" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[ Signature]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="0" y="0" width="1" height="18"/>
+			</line>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="0" y="18" width="1" height="57"/>
+			</line>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="498" y="0" width="1" height="75"/>
+			</line>
+			<textField evaluationTime="Auto">
+				<reportElement uuid="c9cdd98e-9c65-448c-a745-b32a57d1efed" x="359" y="95" width="138" height="16"/>
+				<textElement textAlignment="Right" markup="none">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page " + $V{s_no_1} + " of "+ $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="220" y="1" width="1" height="17"/>
+			</line>
+			<line>
+				<reportElement uuid="4c04e30a-5c9f-4c00-b093-930740a972cc" stretchType="RelativeToBandHeight" mode="Transparent" x="290" y="1" width="1" height="17"/>
+			</line>
+			<textField isStretchWithOverflow="true" evaluationTime="Auto" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="72ce07e9-1561-4d6b-be93-580e1402c4c8" x="359" y="2" width="59" height="16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[( $V{s_no_1}==$V{PAGE_NUMBER} ? ( ($V{totalqty}.doubleValue()-$V{totalqty}.intValue())> new Double(0) ? $V{totalqty} :new DecimalFormat("###0.00").format($V{totalqty}) ) : ( $V{PAGE_NUMBER}==1 ? ( ($V{totalqty}.doubleValue()-$V{totalqty}.intValue())> new Double(0) ? $V{totalqty} :new DecimalFormat("###0.00").format($V{totalqty}) ) : "" ) )]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<noData>
+		<band height="69">
+			<staticText>
+				<reportElement uuid="e7d311ab-af39-4138-8cf0-69a6ea30b40b" x="1" y="0" width="497" height="20" forecolor="#000000"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Delivery Challan]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ee9bf626-0ebb-4564-b8a8-a733f695563d" x="1" y="20" width="497" height="29" forecolor="#FF3300"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="20"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c73e8c4e-7f6b-4c49-b9ed-afd97ee9c03a" x="1" y="49" width="497" height="20" forecolor="#0099FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[(Please Check Your Selection Criteria)]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>

@@ -1,0 +1,19 @@
+package com.advanz.erp.masters.service.business;
+
+import com.advanz.erp.common.service.business.IAdvanzErpBaseSerivce;
+import com.advanz.erp.masters.model.msg.LeaveApplicationInputMessage;
+import com.advanz.erp.masters.model.msg.LeaveApplicationOutputMessage;
+
+public interface ILeaveApplicationService extends IAdvanzErpBaseSerivce{	
+	public LeaveApplicationOutputMessage createLeaveApplication(LeaveApplicationInputMessage leaveApplicationInputMessage);
+	
+	public LeaveApplicationOutputMessage updateLeaveApplication(LeaveApplicationInputMessage leaveApplicationInputMessage);
+	
+	public LeaveApplicationOutputMessage deleteLeaveApplication(LeaveApplicationInputMessage leaveApplicationInputMessage);
+	
+	public LeaveApplicationOutputMessage findLeaveApplicationById(LeaveApplicationInputMessage leaveApplicationInputMessage);
+	
+	public LeaveApplicationOutputMessage findAllLeaveApplication();
+	public LeaveApplicationOutputMessage search(LeaveApplicationInputMessage leaveApplicationInputMessage);
+	public LeaveApplicationOutputMessage findLeaveByEmployeeIdAndDate(LeaveApplicationInputMessage leaveApplicationInputMessage);
+}

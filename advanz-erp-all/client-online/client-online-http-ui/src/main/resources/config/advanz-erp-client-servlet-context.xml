@@ -1,0 +1,581 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:p="http://www.springframework.org/schema/p" 
+	
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
+
+
+	<!-- Properties configuration -->
+	<beans:bean id="placeholderConfig" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">    
+		<beans:property name="locations">
+			<beans:list>
+				<beans:value>classpath:properties/services.properties</beans:value>
+				<beans:value>classpath:properties/database.properties</beans:value>
+			</beans:list>
+		</beans:property>
+		<beans:property name="nullValue" value="null"/>
+	</beans:bean>
+	
+	
+	<!-- <beans:bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+	    <beans:property name="driverClassName" value="${user.db.driverClassName}"/>
+	    <beans:property name="url" value="${user.db.url}"/>
+	    <beans:property name="username" value="${user.db.username}" />
+		<beans:property name="password" value="${user.db.password}" />
+  	</beans:bean> -->	
+	<!-- DispatcherServlet Context: defines this servlet's request-processing 
+		infrastructure -->
+
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<annotation-driven />
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
+		up static resources in the ${webappRoot}/resources directory -->
+	<resources mapping="/static/**" location="/static/" />
+
+	
+	<!-- A default view resolver -->
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources 
+		in the /WEB-INF/views directory -->
+	<!-- Take note of the order. Since we're using TilesViewResolver as well 
+			We need to define which ViewResolver is called first. 
+			We chose this InternalResourceViewResolver to be at the bottom order -->
+	<beans:bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/jsps/" />
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean>
+
+	<!-- Resolves view names based on the names declared on the declared xml location
+	All our Jasper views are declared inside the specified xml location.
+	Take note of the ordering of this ViewResolver.
+	 -->
+
+	 
+	<beans:bean class="org.springframework.web.servlet.view.XmlViewResolver"
+			p:location="classpath:/config/advanz-erp-client-jasper-views.xml"  p:order="1" />
+
+	<context:component-scan base-package="com.advanz.erp.client.http.controller" />
+	<beans:bean id="companyService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.company.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.ICompanyService" />
+	</beans:bean>
+	
+ <beans:bean id="branchService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.branch.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IBranchService" />
+	</beans:bean>
+	<beans:bean id="batchService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/BatchService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IBatchService" />
+	</beans:bean>
+	
+	<beans:bean id="itemGroupService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+	value="http://localhost:8181/masters-http/remote/ItemGroupService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IItemGroupService" />
+	</beans:bean>
+	
+	<beans:bean id="partyTypeService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.partytype.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IPartyTypeService" />
+	</beans:bean>
+	
+		<beans:bean id="itemCategoryService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+	value="http://localhost:8181/masters-http/remote/ItemCategoryService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IItemCategoryService" />
+	</beans:bean>
+	
+	<beans:bean id="itemService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+	value="http://localhost:8181/masters-http/remote/ItemService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IItemService" />
+	</beans:bean>
+	
+	<beans:bean id="itemGroupFlagService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+	value="http://localhost:8181/masters-http/remote/ItemGroupFlagService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IItemGroupFlagService" />
+	</beans:bean>
+	
+	<beans:bean id="countryService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/CountryService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.ICountryService" />
+	</beans:bean>
+	
+	<beans:bean id="zoneService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/ZoneService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IZoneService" />
+	</beans:bean>
+	
+	<beans:bean id="stateService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/StateService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IStateService" />
+	</beans:bean>
+	
+	<beans:bean id="regionService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/RegionService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IRegionService" />
+	</beans:bean>
+		<beans:bean id="areaService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/AreaService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IAreaService" />
+	</beans:bean>
+	
+	<beans:bean id="cityService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/CityService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.ICityService" />
+	</beans:bean>
+	
+	<beans:bean id="salaryHeadService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/SalaryHeadService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.ISalaryHeadService" />
+	</beans:bean>
+	
+	<beans:bean id="leaveTypeMastService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/LeaveTypeMastService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.ILeaveTypeMastService" />
+	</beans:bean>
+
+	<beans:bean id="storeLocationService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.storelocation.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IStoreLocationService" />
+	</beans:bean>
+	
+	<beans:bean id="transporterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.transporter.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.ITransporterService" />
+	</beans:bean>
+	<beans:bean id="mastersService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.masters.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IMastersService" />
+	</beans:bean>	
+	<beans:bean id="partyService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.party.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IPartyService" />
+	</beans:bean>	
+	<beans:bean id="employeeService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/EmployeeService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IEmployeeService" />
+	</beans:bean>
+
+<beans:bean id="transactionTypeService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.tranType.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.ITransactionTypeService" />
+	</beans:bean>
+	<beans:bean id="salesOrderMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.salesOrderMaster.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.ISalesOrderMasterService" />
+	</beans:bean>
+	
+	<beans:bean id="professionalTaxService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/ProfessionalTaxService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IProfessionalTaxService" />
+	</beans:bean>
+
+	<beans:bean id="professionalTaxDeductTypeService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/ProfessionalTaxDeductTypeService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IProfessionalTaxDeductTypeService" />
+	</beans:bean>
+	<beans:bean id="purchaseOrderMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.purchaseOrderMaster.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IPurchaseOrderMasterService" />
+	</beans:bean>
+
+	<beans:bean id="finishedGoodsMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/FinishedGoodsMasterService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IFinishedGoodsMasterService" />
+	</beans:bean>
+	
+	<beans:bean id="quotationMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.quotation.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IQuotationMasterService" />
+	</beans:bean>
+	
+		<beans:bean id="billService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.bill.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IBillService" />
+	</beans:bean>
+	
+	<beans:bean id="billDetailService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.billdetail.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IBillDetailService" />
+	</beans:bean>
+	
+	
+	
+	<beans:bean id="proformaMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.proformaMaster.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IProformaMasterService" />
+	</beans:bean>
+	
+	<beans:bean id="proformaDetailService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.proformaDetail.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IProformaDetailService" />
+	</beans:bean>
+	
+	
+	
+		<beans:bean id="stockLedgerService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.stockLedger.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IStockLedgerService" />
+	</beans:bean>
+	
+	<beans:bean id="dispatchDetailService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.dispatchdetail.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IDispatchDetailService" />
+	</beans:bean>
+	
+		<beans:bean id="dispatchMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.dispatchmaster.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IDispatchMasterService" />
+	</beans:bean>
+
+	<beans:bean id="blanketProductionMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.blanketProductionMaster.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IBlanketProductionMasterService" />
+	</beans:bean>
+	
+	<beans:bean id="blanketProductionMasterNewService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/BlanketProductionMasterNewService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IBlanketProductionMasterNewService" />
+	</beans:bean>
+	
+	<beans:bean id="barcodeLedgerService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/BarcodeLedgerService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IBarcodeLedgerService" />
+	</beans:bean>
+	
+	
+	<beans:bean id="annealingOvenService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.annealingOvenService.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IAnnealingOvenService" />
+	</beans:bean>
+
+	<beans:bean id="issueTypeMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.issueTypeMaster.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IIssueTypeMasterService" />
+	</beans:bean>
+	
+	<beans:bean id="issueService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.issue.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IIssueMasterService" />
+	</beans:bean>
+	
+	<beans:bean id="melterLogSummaryService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/MelterLogSummaryService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IMelterLogSummaryService" />
+	</beans:bean>
+	
+	<beans:bean id="melterTrollyLogService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/MelterTrollyLogService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IMelterTrollyLogService" />
+	</beans:bean>
+	
+	<beans:bean id="melterLogBookService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/MelterLogBookService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IMelterLogBookService" />
+	</beans:bean>
+	
+	<beans:bean id="userMasterRoleService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/UserMasterRoleService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IUserMasterRoleService" />
+	</beans:bean>
+	
+		<beans:bean id="userRoleService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/UserRoleService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IUserRoleService" />
+	</beans:bean>
+	
+	
+	<beans:bean id="userRoleAndRightsServiceImpl"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/UserRoleAndRightsService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IUserRoleAndRightsService" />
+	</beans:bean>
+
+	
+	<beans:bean id="grnMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.grnMaster.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IGrnMasterService" />
+	</beans:bean>
+	
+	<beans:bean id="shiftReportMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/ShiftReportMasterService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IShiftReportMasterService" />
+	</beans:bean>
+	
+	<beans:bean id="moduleMenuMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.moduleMaster.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IModuleMenuMasterService" />
+	</beans:bean>
+
+	<beans:bean id="roleService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.role.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IRoleService" />
+	</beans:bean>
+	
+	<beans:bean id="exciseLedgerService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/ExciseLedgerService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IExciseLedgerService" />
+	</beans:bean>
+	    <beans:bean id="masterFormulaService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="http://localhost:8181/masters-http/remote/MasterFormulaService" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IMasterFormulaService" />
+	</beans:bean>
+	                
+	<beans:bean id="debitDutyMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.debitDuty.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IDebitDutyMasterService" />
+	</beans:bean>
+	
+	
+		<beans:bean id="getPassMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.getPass.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IGetPassMasterService" />
+	</beans:bean>
+	
+	
+	
+		<beans:bean id="returnGetPassMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.returnGetPass.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IReturnGetPassMasterService" />
+	</beans:bean>
+	
+	<beans:bean id="issueReturnService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.issueReturn.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IIssueReturnService" />
+	</beans:bean>
+	
+	
+	<beans:bean id="bulkFiberMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.bulkFiberMaster.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IBulkFiberMasterService" />
+	</beans:bean>
+	<beans:bean id="attandanceMasterService" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl" value="${service.attandance.url}" />
+		<beans:property name="serviceInterface" value="com.advanz.erp.masters.service.business.IAttandanceMasterService" />
+	</beans:bean>
+	
+	<beans:bean id="advanceAmountService" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl" value="http://localhost:8181/masters-http/remote/AdvanceAmountService" />
+		<beans:property name="serviceInterface" value="com.advanz.erp.masters.service.business.IAdvanceAmountService" />
+	</beans:bean>
+	
+	
+	<beans:bean id="salaryNoteService" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl" value="http://localhost:8181/masters-http/remote/SalaryNoteService" />
+		<beans:property name="serviceInterface" value="com.advanz.erp.masters.service.business.ISalaryNoteService" />
+	</beans:bean>
+	
+	<beans:bean id="leaveApplicationService" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl" value="${service.leave.url}" />
+		<beans:property name="serviceInterface" value="com.advanz.erp.masters.service.business.ILeaveApplicationService" />
+	</beans:bean>
+	
+	
+	<beans:bean id="indentMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.indent.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.IIndentMasterService" />
+	</beans:bean>
+	
+		<beans:bean id="salaryMasterService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.salary.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.ISalaryMasterService" />
+	</beans:bean>
+	
+	
+	<beans:bean id="capativeConsuptionService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<beans:property name="serviceUrl"
+			value="${service.capasitiveconsuption.url}" />
+		<beans:property name="serviceInterface"
+			value="com.advanz.erp.masters.service.business.ICapativeConsuptionService" />
+	</beans:bean>
+	
+	<beans:bean id="roleValidator" class="com.advanz.erp.client.http.controller.validator.RoleValidator"/>
+
+
+	<mvc:annotation-driven />
+</beans:beans>

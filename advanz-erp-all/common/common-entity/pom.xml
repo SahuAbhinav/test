@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>common</artifactId>
+		<groupId>com.advanz.erp</groupId>
+		<version>1_0_0</version>
+	</parent>
+	<artifactId>common-entity</artifactId>
+	<name>common-entity</name>
+	<url>http://maven.apache.org</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>${hibernate.version.core}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.persistence</groupId>
+			<artifactId>persistence-api</artifactId>
+			<version>${persistence.api.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.advanz.erp</groupId>
+			<artifactId>common-util</artifactId>
+			<version>${common.version}</version>
+		</dependency>
+		
+		<!-- TODO :Have to check the use of the validator otherwise removed this 
+			dependency -->
+		<!-- <dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>${hibernate.validator.version}</version>
+		</dependency> -->
+		<!-- TODO:Have to check the use of the search otherwise removed this dependency -->
+
+		<!-- <dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-search</artifactId>
+			<version>${hibernate.search.version}</version>
+		</dependency> -->
+          
+	</dependencies>
+	<version>${common.entity}</version>
+</project>

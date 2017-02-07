@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Item_List" pageWidth="1198" pageHeight="842" columnWidth="1198" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="479"/>
+	<property name="ireport.y" value="0"/>
+	<style name="style1" mode="Opaque" lineSpacing="Single">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 ==0)]]></conditionExpression>
+			<style backcolor="#E6F3F7" lineSpacing="Single" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="Item_Group_Flag" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Item_Group_FlagNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{Item_Group_Flag}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Item_Group" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Item_GroupNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{Item_Group}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Category" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CategoryNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{Category}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ItemNamePrompt" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ItemNameNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ItemNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Grade" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="GradeNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{Grade}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Class" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ClassNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{Class}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Item_Status_Prompt" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Item_StatusNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{Item_Status_Prompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT UPPER(itemcode) AS itemcode,UPPER(item_name) AS item_name,
+UPPER(pack.name) AS pack_type ,UPPER(measure.name) AS unit
+, UPPER(grade.name) AS grade, UPPER(item_class.name) AS class,
+UPPER(m_item_category.ITEM_CATEGORY_NAME) AS cat
+, UPPER(m_item_group.ITEM_GROUP_NAME) AS group_name
+, UPPER(f.ITEM_GROUP_FLAG_Name) AS g_flag_name
+, ROUND(IFNULL(sales_rate,0),2) AS sales_rate
+, ROUND(IFNULL(purchase_rate,0),2) AS purchase_rate,
+ROUND(IFNULL(vat_perc,0),2) AS vat_perc
+, ROUND(IFNULL(cst_perc,0),2) AS cst_perc,
+  ROUND(IFNULL(discount_per,0),2) AS discount_per,
+  ROUND(IFNULL(excise_perc,0),2) AS excise_perc,
+  ROUND(IFNULL(net_rate,0),2) AS net_rate,
+  ROUND(IFNULL(opening_stock,0),2) AS opening_stock,
+  ROUND(IFNULL(closing_stock,0),2) AS closing_stock
+FROM m_item , m_item_category, m_item_group, m_item_group_flag AS f
+, (SELECT  masters_id ,NAME FROM m_masters WHERE m_form_name='Item Grade' AND deleted_flag=0) AS grade
+, (SELECT  masters_id  ,NAME FROM m_masters WHERE m_form_name='Pack Type' AND deleted_flag=0) AS pack
+, (SELECT  masters_id,NAME FROM m_masters WHERE m_form_name='Measurement Unit' AND deleted_flag=0) AS measure
+, (SELECT  masters_id,NAME FROM m_masters WHERE m_form_name='Item Class' AND deleted_flag=0) AS item_class
+WHERE m_item.deleted_flag=0
+AND m_item_category.deleted_flag=0
+AND m_item_group.deleted_flag=0
+AND m_item.item_category_id=m_item_category.ITEM_CATEGORY_ID
+AND m_item_category.ITEM_GROUP_ID= m_item_group.ITEM_GROUP_ID
+AND m_item_group.ITEM_GROUP_FLAG_ID = f.ITEM_GROUP_FLAG_ID
+AND grade.masters_id=m_item.item_grade_id
+AND pack.masters_id=m_item.pack_type_id
+AND measure.masters_id=m_item.measurement_Unit_id
+AND item_class.masters_id=m_item.item_class_id
+AND (m_item.active_status=$P{Item_Status_Prompt} OR 1=$P{Item_StatusNull_FlagPrompt})
+AND (m_item.item_name=$P{ItemNamePrompt} OR 1=$P{ItemNameNull_FlagPrompt})
+AND (m_item_category.ITEM_CATEGORY_NAME=$P{Category} OR 1=$P{CategoryNull_FlagPrompt})
+AND (m_item_group.ITEM_GROUP_NAME=$P{Item_Group} OR 1=$P{Item_GroupNull_FlagPrompt})
+AND (f.ITEM_GROUP_FLAG_Name =$P{Item_Group_Flag} OR 1=$P{Item_Group_FlagNull_FlagPrompt})
+AND (grade.name =$P{Grade} OR 1=$P{GradeNull_FlagPrompt})
+AND (item_class.name =$P{Class} OR 1=$P{ClassNull_FlagPrompt})
+ORDER BY m_item.item_name;]]>
+	</queryString>
+	<field name="itemcode" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="item_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="pack_type" class="java.lang.String"/>
+	<field name="unit" class="java.lang.String"/>
+	<field name="grade" class="java.lang.String"/>
+	<field name="class" class="java.lang.String"/>
+	<field name="cat" class="java.lang.String"/>
+	<field name="group_name" class="java.lang.String"/>
+	<field name="g_flag_name" class="java.lang.String"/>
+	<field name="sales_rate" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="purchase_rate" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="vat_perc" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cst_perc" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="discount_per" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="excise_perc" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="net_rate" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="opening_stock" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="closing_stock" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="s_no" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$V{REPORT_COUNT}]]></variableExpression>
+	</variable>
+	<background>
+		<band/>
+	</background>
+	<pageHeader>
+		<band height="35">
+			<staticText>
+				<reportElement x="0" y="0" width="1198" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Item List]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="20" width="1198" height="15" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" lineSpacing="Single" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Item Group Flag : " + ($P{Item_Group_FlagNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{Item_Group_Flag}+"</style>")
++ " , Item Group : " + ($P{Item_GroupNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{Item_Group}.replaceAll( "&", "&amp;" )+"</style>")
++ " , Category : " + ($P{CategoryNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{Category}.replaceAll( "&", "&amp;" )+"</style>")
++ " , Item Name : " + ($P{ItemNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++ " , Grade : " + ($P{GradeNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{Grade}+"</style>")
++ " , Class : " + ($P{ClassNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{Class}+"</style>")
++ ", Active Status : " + ($P{Item_StatusNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+ ($P{Item_Status_Prompt}.intValue()==1?"Yes":"No") +"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="22">
+			<staticText>
+				<reportElement x="0" y="1" width="33" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[S.No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="33" y="1" width="70" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Item Code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="353" y="1" width="100" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pack Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="453" y="1" width="80" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Unit]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="593" y="1" width="77" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Class]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="533" y="1" width="60" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Grade]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="798" y="1" width="200" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Item Group]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="103" y="1" width="250" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Item Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="670" y="1" width="128" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Item Category]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="0" width="1198" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="21" width="1198" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="998" y="1" width="200" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Item Group Flag]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="26">
+			<frame>
+				<reportElement style="style1" x="0" y="0" width="1198" height="26"/>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="998" y="1" width="200" height="25"/>
+					<textElement lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{g_flag_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement isPrintRepeatedValues="false" x="0" y="1" width="33" height="25"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$V{s_no}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement isPrintRepeatedValues="false" x="33" y="1" width="70" height="25"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{itemcode}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement isPrintRepeatedValues="false" x="103" y="1" width="250" height="25"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{item_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="353" y="1" width="100" height="25"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{pack_type}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="453" y="1" width="80" height="25"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{unit}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="533" y="1" width="60" height="25"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{grade}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="593" y="1" width="77" height="25"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{class}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="798" y="1" width="200" height="25"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{group_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="670" y="1" width="128" height="25"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{cat}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<summary>
+		<band height="2">
+			<line>
+				<reportElement x="0" y="1" width="1198" height="1"/>
+			</line>
+		</band>
+	</summary>
+	<noData>
+		<band height="86">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="22" width="1198" height="15" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" lineSpacing="Single" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Item Group Flag : " + ($P{Item_Group_FlagNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{Item_Group_Flag}+"</style>")
++ " , Item Group : " + ($P{Item_GroupNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{Item_Group}.replaceAll( "&", "&amp;" )+"</style>")
++ " , Category : " + ($P{CategoryNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{Category}.replaceAll( "&", "&amp;" )+"</style>")
++ " , Item Name : " + ($P{ItemNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++ " , Grade : " + ($P{GradeNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{Grade}+"</style>")
++ " , Class : " + ($P{ClassNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{Class}+"</style>")]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="37" width="1198" height="29" forecolor="#FF3300"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="SansSerif" size="20"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="66" width="1198" height="20" forecolor="#0099FF"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(Please Check Your Selection Criteria)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="2" width="1198" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Item List]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>

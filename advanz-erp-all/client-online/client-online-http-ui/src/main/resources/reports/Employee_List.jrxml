@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Employee_List" pageWidth="1320" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="1320" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="344"/>
+	<property name="ireport.y" value="0"/>
+	<style name="style1" mode="Opaque" lineSpacing="Single">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 ==0)]]></conditionExpression>
+			<style backcolor="#E6F3F7" lineSpacing="Single" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="Dept" class="java.lang.String"/>
+	<parameter name="DeptNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{Dept}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Shift" class="java.lang.String"/>
+	<parameter name="ShiftNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{Shift}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Status" class="java.lang.String"/>
+	<parameter name="StatusNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{Status}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+UPPER(s.state_name) AS state
+, UPPER(ct.city_name) AS city
+, UPPER(e.employee_code) AS employee_code
+, UPPER(mtype.name) AS emp_type
+, UPPER(CONCAT(employee_first_name,' ',employee_last_name)) AS employee_name
+, UPPER(mdep.name) AS department
+, UPPER(mdes.name) AS designation
+, DATE_FORMAT(e.join_date,"%d-%m-%Y") AS join_date
+, UPPER(e.employee_local_address) AS local_address
+, UPPER(ms.name) AS shift
+, IF (e.active_status = 1,'Active', 'InActive') AS active_status
+FROM m_employee AS e LEFT JOIN m_masters ms ON (e.shift_id=ms.masters_id AND ms.deleted_flag = 0)
+ LEFT JOIN m_masters mdep ON (e.department_id=mdep.masters_id AND mdep.deleted_flag = 0)
+ LEFT JOIN m_masters mdes ON (e.designation_id=mdes.masters_id AND mdes.deleted_flag = 0)
+ LEFT JOIN m_masters mtype ON (e.employee_type_id = mtype.masters_id AND mtype.deleted_flag = 0)
+, m_city AS ct ,m_region AS r, m_area AS a,m_state AS s
+WHERE e.deleted_flag=0 AND e.employee_local_city_id=ct.city_id
+AND ct.deleted_Flag=0
+AND ct.Area_ID=a.Area_ID AND a.deleted_flag=0
+AND a.region_id=r.region_id AND r.deleted_flag=0
+AND r.state_id=s.state_id AND s.deleted_flag=0
+AND (mdep.name=$P{Dept} OR 1=$P{DeptNull_FlagPrompt})
+AND (ms.name=$P{Shift} OR 1=$P{ShiftNull_FlagPrompt})
+AND (CASE WHEN ($P{Status}='' OR 1 = $P{StatusNull_FlagPrompt})
+THEN (IFNULL(e.active_status,0) = 0 OR e.active_status = 1)
+WHEN $P{Status}='Active'
+THEN e.active_status = 1
+ELSE IFNULL(e.active_status,0) = 0
+END)
+ORDER BY s.state_name,ct.city_name,mtype.name,(CONCAT(employee_first_name,' ',employee_last_name));]]>
+	</queryString>
+	<field name="state" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="city" class="java.lang.String"/>
+	<field name="employee_code" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="emp_type" class="java.lang.String"/>
+	<field name="employee_name" class="java.lang.String"/>
+	<field name="department" class="java.lang.String"/>
+	<field name="designation" class="java.lang.String"/>
+	<field name="join_date" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="local_address" class="java.lang.String"/>
+	<field name="shift" class="java.lang.String"/>
+	<field name="active_status" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="s_no" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$V{REPORT_COUNT}]]></variableExpression>
+	</variable>
+	<variable name="designation_1" class="java.lang.Integer" resetType="Column" calculation="Count">
+		<variableExpression><![CDATA[$F{designation}]]></variableExpression>
+	</variable>
+	<pageHeader>
+		<band height="36">
+			<staticText>
+				<reportElement x="0" y="0" width="1320" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Employee List]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="21" width="1320" height="15" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" lineSpacing="Single" markup="styled">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[" Department : " + ($P{DeptNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+ $P{Dept}.replaceAll( "&", "&amp;" )+"</style>")
++ ", Shift : " + ($P{ShiftNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+ $P{Shift}+"</style>")
++ ",  Status : " + ($P{StatusNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{Status}+"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="26">
+			<line>
+				<reportElement x="0" y="1" width="1320" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="262" y="2" width="101" height="22" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Employee Code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="464" y="2" width="226" height="22" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Employee Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="891" y="2" width="66" height="22" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Join Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="2" width="33" height="22" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[S.No.]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="25" width="1320" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="957" y="2" width="243" height="22" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Local Address]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="144" y="2" width="118" height="22" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[City]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="33" y="2" width="111" height="22" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[State]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1200" y="2" width="70" height="22" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Shift]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="363" y="2" width="101" height="22" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Employee Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="690" y="2" width="101" height="22" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Department]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="791" y="2" width="100" height="22"/>
+				<textElement lineSpacing="Single">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Designation]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1270" y="2" width="50" height="22" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Status]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="13">
+			<frame>
+				<reportElement style="style1" x="0" y="0" width="1320" height="13"/>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="262" y="0" width="101" height="13"/>
+					<textElement lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{employee_code}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="464" y="0" width="226" height="13"/>
+					<textElement lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{employee_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="891" y="0" width="66" height="13"/>
+					<textElement lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{join_date}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement isPrintRepeatedValues="false" x="0" y="0" width="33" height="13"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$V{s_no}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="144" y="0" width="118" height="13"/>
+					<textElement lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{city}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="33" y="0" width="111" height="13"/>
+					<textElement lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{state}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="363" y="0" width="101" height="13"/>
+					<textElement lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{emp_type}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="791" y="0" width="100" height="13"/>
+					<textElement lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{designation}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="690" y="0" width="101" height="13"/>
+					<textElement lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{department}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="1200" y="0" width="70" height="13"/>
+					<textElement lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{shift}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="1270" y="0" width="50" height="13"/>
+					<textElement lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{active_status}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="957" y="0" width="243" height="13"/>
+					<textElement lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{local_address}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<summary>
+		<band height="5">
+			<line>
+				<reportElement x="0" y="2" width="1320" height="1"/>
+			</line>
+		</band>
+	</summary>
+	<noData>
+		<band height="84">
+			<staticText>
+				<reportElement x="0" y="0" width="1320" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Employee List]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="35" width="1320" height="29" forecolor="#FF3300"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="SansSerif" size="20"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="64" width="1320" height="20" forecolor="#0099FF"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(Please Check Your Selection Criteria)]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="20" width="1320" height="15" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" lineSpacing="Single" markup="styled">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[" Department : " + ($P{DeptNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+ $P{Dept}.replaceAll( "&", "&amp;" )+"</style>")
++ ", Shift : " + ($P{ShiftNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+ $P{Shift}+"</style>")
++ ",  Status : " + ($P{StatusNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{Status}+"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</noData>
+</jasperReport>

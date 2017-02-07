@@ -1,0 +1,1108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+<tiles-definitions>
+
+	<!-- We declare a new template named template-main. This template is used 
+		for displaying the main page. It has 4 attributes. These attributes are placeholder 
+		for our contents For each attribute, we have assigned a corresponding JSP -->
+	<definition name="template-main" template="/WEB-INF/jsps/layouts/mainLayout.jsp">
+		<put-attribute name="banner-content" value="/WEB-INF/jsps/sections/banner.jsp" />
+		<put-attribute name="title-content" value="Advanz ERP" />
+		<put-attribute name="page-header" value="" />
+		<put-attribute name="primary-content" value="" />
+		<put-attribute name="menu-content" value="/WEB-INF/jsps/sections/menu.jsp" />
+		<put-attribute name="footer-content" value="/WEB-INF/jsps/sections/footer.jsp" />
+	</definition>
+
+	<!-- Concrete page. -->
+	<definition name="company_detail" extends="template-main">
+		<put-attribute name="page-header" value="Company Detail" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/company_detail.jsp" />
+	</definition>
+
+	<definition name="company_detail_edit" extends="template-main">
+		<put-attribute name="page-header" value="Company Detail" />
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/company_detail_edit.jsp" />
+	</definition>
+
+	<definition name="company_list" extends="template-main">
+		<put-attribute name="page-header" value="Company List" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/company_list.jsp" />
+	</definition>
+
+	<definition name="branch_detail" extends="template-main">
+		<put-attribute name="page-header" value="Branch Detail" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/branch_detail.jsp" />
+	</definition>
+
+	<definition name="branch_detail_edit" extends="template-main">
+		<put-attribute name="page-header" value="Branch Detail" />
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/branch_detail_edit.jsp" />
+	</definition>
+
+	<definition name="branch_list" extends="template-main">
+		<put-attribute name="page-header" value="Branch List" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/branch_list.jsp" />
+	</definition>
+
+	<definition name="batch-form" extends="template-main">
+		<put-attribute name="page-header" value="Batch List" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/batchForm.jsp" />
+	</definition>
+
+	<definition name="itemGroup" extends="template-main">
+		<put-attribute name="page-header" value="Item List" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/itemGroup.jsp" />
+	</definition>
+
+
+	<definition name="addItemGroup" extends="template-main">
+		<put-attribute name="page-header" value="Add Item Group" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/addItemGroup.jsp" />
+	</definition>
+
+	<definition name="batch-detail" extends="template-main">
+		<put-attribute name="page-header" value="Batch Detail" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/batch_detail.jsp" />
+	</definition>
+	<definition name="batch-edit" extends="template-main">
+		<put-attribute name="page-header" value="Batch Edit" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/batch_edit.jsp" />
+	</definition>
+	<definition name="batch-list" extends="template-main">
+		<put-attribute name="page-header" value="Batch List" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/batch_list.jsp" />
+	</definition>
+
+	<definition name="partytype_detail" extends="template-main">
+		<put-attribute name="page-header" value="Party Type Detail" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/partytype_detail.jsp" />
+	</definition>
+
+	<definition name="partytype_detail_edit" extends="template-main">
+		<put-attribute name="page-header" value="Party Type Detail" />
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/partytype_detail_edit.jsp" />
+	</definition>
+
+	<definition name="partytype_list" extends="template-main">
+		<put-attribute name="page-header" value="Party Type List" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/partytype_list.jsp" />
+	</definition>
+
+	<definition name="itemCategory-list" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/itemCategory_list.jsp" />
+	</definition>
+	<definition name="itemCategory-detail" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/itemCategory_detail.jsp" />
+	</definition>
+	<definition name="itemCategory-edit" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/itemCategory_edit.jsp" />
+	</definition>
+	<definition name="addItem" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/item_add.jsp" />
+	</definition>
+
+	<definition name="item" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/item_list.jsp" />
+	</definition>
+
+	<definition name="edit_item" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/item_edit.jsp" />
+	</definition>
+
+	<definition name="edit_itemGroup" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/item_editGroup.jsp" />
+	</definition>
+	<definition name="country-form" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/countryForm.jsp" />
+	</definition>
+
+	<definition name="country-list" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/country_list1.jsp" />
+	</definition>
+
+
+	<definition name="country-edit" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/country_edit.jsp" />
+	</definition>
+
+
+	<definition name="addZone" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/zone_add.jsp" />
+	</definition>
+
+	<definition name="zone-list" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/zone_list.jsp" />
+	</definition>
+
+	<definition name="zone-edit" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/zone_edit.jsp" />
+	</definition>
+
+	<definition name="area-form" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/areaForm.jsp" />
+	</definition>
+
+	<definition name="area-list" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/area_list.jsp" />
+	</definition>
+
+	<definition name="state-form" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/stateForm.jsp" />
+	</definition>
+
+	<definition name="state-list" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/state_list.jsp" />
+	</definition>
+
+	<definition name="state-edit" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/state_edit.jsp" />
+	</definition>
+
+	<definition name="region-form" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/regionForm.jsp" />
+	</definition>
+
+	<definition name="region-detail" extends="template-main">
+		<put-attribute name="page-header" value="Region Detail" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/region_detail.jsp" />
+	</definition>
+	<definition name="region-edit" extends="template-main">
+		<put-attribute name="page-header" value="Region Edit" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/region_edit.jsp" />
+	</definition>
+	<definition name="region-list" extends="template-main">
+		<put-attribute name="page-header" value="Regions List" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/region_list.jsp" />
+	</definition>
+
+	<definition name="area-detail" extends="template-main">
+		<put-attribute name="page-header" value="Area Detail" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/area_detail.jsp" />
+	</definition>
+	<definition name="area-edit" extends="template-main">
+		<put-attribute name="page-header" value="Area Edit" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/area_edit.jsp" />
+	</definition>
+	<definition name="area-list" extends="template-main">
+		<put-attribute name="page-header" value="Area List" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/area_list.jsp" />
+	</definition>
+
+	<definition name="city-form" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/cityForm.jsp" />
+	</definition>
+
+	<definition name="city-list" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/city_list.jsp" />
+	</definition>
+
+
+	<definition name="city-detail" extends="template-main">
+		<put-attribute name="page-header" value="Area Detail" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/city-detail.jsp" />
+	</definition>
+
+
+
+
+	<definition name="city-edit" extends="template-main">
+		<put-attribute name="page-header" value="Area Edit" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/city_edit.jsp" />
+	</definition>
+
+
+	<definition name="salaryHead-list" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/salary_head_list.jsp" />
+	</definition>
+
+	<definition name="salaryHead-detail" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/salary_head_detail.jsp" />
+	</definition>
+
+	<definition name="salaryHead-edit" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/salaryHead_edit.jsp" />
+	</definition>
+
+
+
+	<definition name="masters-detail" extends="template-main">
+		<put-attribute name="page-header" value="Masters" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/masters_detail.jsp" />
+	</definition>
+	<definition name="masters-list" extends="template-main">
+		<put-attribute name="page-header" value="Masters" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/masters_list.jsp" />
+	</definition>
+	<definition name="masters-edit" extends="template-main">
+		<put-attribute name="page-header" value="Masters" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/masters_edit.jsp" />
+	</definition>
+
+	<definition name="leaveType-list" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/leave_type_list.jsp" />
+	</definition>
+
+	<definition name="leaveType-detail" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/leave_type_detail.jsp" />
+	</definition>
+
+	<definition name="leaveType-edit" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/leave_type_edit.jsp" />
+	</definition>
+
+	<!-- Concrete page. -->
+	<definition name="store_location_detail" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/store_location_detail.jsp" />
+	</definition>
+
+	<definition name="store_location_edit" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/store_location_edit.jsp" />
+	</definition>
+
+	<definition name="store_location_list" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/store_location_list.jsp" />
+	</definition>
+
+	<definition name="transporter_detail" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/transporter_detail.jsp" />
+	</definition>
+
+	<definition name="transporter_detail_edit" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/transporter_detail_edit.jsp" />
+	</definition>
+
+	<definition name="transporter_list" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/transporter_list.jsp" />
+	</definition>
+
+	<definition name="party_detail" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/party_detail.jsp" />
+	</definition>
+
+	<definition name="party_detail_edit" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/party_detail_edit.jsp" />
+	</definition>
+
+	<definition name="party_list" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/party_list.jsp" />
+	</definition>
+
+	<definition name="employee_add" extends="template-main">
+		<put-attribute name="page-header" value="Employee Add" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/employee_add.jsp" />
+	</definition>
+
+	<definition name="employee_show" extends="template-main">
+		<put-attribute name="page-header" value="Employee List" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/employee_show.jsp" />
+	</definition>
+
+	<definition name="employee_edit" extends="template-main">
+		<put-attribute name="page-header" value="Employee Edit" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/employee_edit.jsp" />
+	</definition>
+
+	<definition name="employee_remove" extends="template-main">
+		<put-attribute name="page-header" value="Employee Remove" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/employee_remove.jsp" />
+	</definition>
+	<definition name="item-list-for-so" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/item_list_for_so.jsp" />
+	</definition>
+	<definition name="salesOrder-entry" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/salesOrder_entry.jsp" />
+	</definition>
+	<definition name="salesOrder-list" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/salesOrder_list.jsp" />
+	</definition>
+
+		<definition name="salesOrder-invoice-list" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/salesOrder_invoice_list.jsp" />
+	   </definition>
+	
+	<definition name="item_remove" extends="template-main">
+		<put-attribute name="page-header" value="Item Remove" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/item_remove.jsp" />
+	</definition>
+
+
+	<definition name="professionalTax_list" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/professionalTax_list.jsp" />
+	</definition>
+	<definition name="professionalTax_detail" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/professionalTax_detail.jsp" />
+	</definition>
+
+	<definition name="professionalTax_detail_edit" extends="template-main">
+		<put-attribute name="page-header" value="ProfessionalTax Detail" />
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/professionalTax_detail_edit.jsp" />
+	</definition>
+
+
+	<definition name="invoice_list" extends="template-main">
+		<put-attribute name="page-header" value="Invoice Add" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/invoice_list.jsp" />
+	</definition>
+
+<definition name="proforma_list" extends="template-main">
+		<put-attribute name="page-header" value="Proforma" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/proforma_list.jsp" />
+	</definition>
+
+
+
+	<definition name="invoice_add" extends="template-main">
+		<put-attribute name="page-header" value="Invoice Add" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/invoice_add.jsp" />
+	</definition>
+
+<definition name="proforma_add" extends="template-main">
+		<put-attribute name="page-header" value="Invoice Add" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/proforma_add.jsp" />
+	</definition>
+	
+	<definition name="invoice_edit" extends="template-main">
+		<put-attribute name="page-header" value="Invoice Edite" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/invoice_edit.jsp" />
+	</definition>
+
+	<definition name="item_invoice_list" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/item_invoice_list.jsp" />
+	</definition>
+
+	<definition name="dispatch_add" extends="template-main">
+		<put-attribute name="page-header" value="Dispatch Add" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/dispatch_add.jsp" />
+	</definition>
+
+	<definition name="dispatch_list" extends="template-main">
+		<put-attribute name="page-header" value="Dispatch List" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/dispatch_list.jsp" />
+	</definition>
+
+<definition name="dispatch_invoice_list" extends="template-main">
+	    <put-attribute name="page-header" value="Dispatch List" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/dispatch_invoice_list.jsp" />
+</definition>
+
+
+	<definition name="quotation-entry" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/quotation_entry.jsp" />
+	</definition>
+	<definition name="quotation-list" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/quotation_list.jsp" />
+	</definition>
+
+
+	<definition name="finishedGoods-list" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/finishedGoods_list.jsp" />
+	</definition>
+
+	<definition name="purchaseOrder_add" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/purchaseOrder_add.jsp" />
+	</definition>
+	
+	<definition name="indent-list_for_purchase" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/indent/indent_list_for_purchase.jsp" />
+	</definition>
+
+	<definition name="finishedGoods-entry" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/finishedGoods_entry.jsp" />
+	</definition>
+
+	<definition name="item-list-for-fg" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/item_list_for_fg.jsp" />
+	</definition>
+
+	<definition name="get-batch-list-for-item" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/batch_list_for_finish_good.jsp" />
+	</definition>
+
+	<definition name="item_list_po" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/select_item_po.jsp" />
+	</definition>
+
+	<definition name="purchaseOrder_list" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/purchaseOrder_list.jsp" />
+	</definition>
+
+	<definition name="blanketProduction-entry" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/blanketProduction_entry.jsp" />
+	</definition>
+	<definition name="blanketProduction-list" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/blanketProduction_list.jsp" />
+	</definition>
+	
+	<!-- new Blanket Product Form -->
+	
+		<definition name="blanketProduction-entry_new" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/blanketProduction_entry_new.jsp" />
+	</definition>
+	<definition name="blanketProduction-list_new" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/blanketProduction_list_new.jsp" />
+	</definition>
+	
+	
+	<definition name="annealing_oven_migration" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/annealing_oven_migration.jsp" />
+	</definition>
+	
+	<definition name="annealing_oven_migration_new" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/annealing_oven_migration_new.jsp" />
+	</definition>
+	
+	<definition name="rejection_migration" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/balnket_rejection_migration.jsp" />
+	</definition>
+	
+	<definition name="rejection_migration_new" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/balnket_rejection_migration_new.jsp" />
+	</definition>
+
+<definition name="approved_blanket" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/balnket_approve.jsp" />
+	</definition>
+	
+<definition name="approved_blanket_new" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/balnket_approve_new.jsp" />
+	</definition>	
+
+	 <definition name="issue-list" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/materialIssuesJsps/issue_list.jsp" />
+		</definition>
+
+	<definition name="annealingOven_add" extends="template-main">
+	<put-attribute name="page-header" value="Annealing Oven" />
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/annealingOverAdd.jsp" />
+
+	</definition>
+
+	 <definition name="issue-detail" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/materialIssuesJsps/material_issue_entry.jsp" />
+	</definition>
+	
+	<definition name="item-list-for-issue" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/materialIssuesJsps/item_list_for_issue.jsp" />
+	</definition>
+
+	<definition name="blanketProduction-entry" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/blanketProduction_entry.jsp" />
+</definition>
+
+	<definition name="annealingOven_list" extends="template-main">
+	<put-attribute name="page-header" value="Annealing Oven &amp; Gasifier Operation List" />
+		<put-attribute name="primary-content"	value="/WEB-INF/jsps/annealingOvenList.jsp" />
+
+	</definition>
+	
+	<definition name="grn_po_item" extends="template-main">
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/grn_po_item.jsp" />
+	</definition>
+	
+	<definition name="grn_add" extends="template-main">
+	<put-attribute name="page-header" value="Annealing Oven &amp; Gasifier Operation List" />
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/grnMasterAdd.jsp" />
+	</definition>
+	
+	<definition name="purchaseOrderGrn_list" extends="template-main">
+	<put-attribute name="page-header" value="Annealing Oven &amp; Gasifier Operation List" />
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/purchaseOrderGrn_list.jsp" />
+	</definition>
+	
+	<definition name="grn_list" extends="template-main">
+	<put-attribute name="page-header" value="Annealing Oven &amp; Gasifier Operation List" />
+		<put-attribute name="primary-content"
+			value="/WEB-INF/jsps/grnMasterList.jsp" />
+	</definition>
+	
+	<definition name="melter_log_summary_list" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/melter_log_summary_list.jsp" />
+	</definition>
+	
+	<definition name="melter_log_summary_detail" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/melter_log_summary_detail.jsp" />
+	</definition>
+	
+	<definition name="melter_trolly_list" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/melter_trolly_list.jsp" />
+	</definition>
+	
+	<definition name="melter_trolly_detail" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/melter_trolly_detail.jsp" />
+	</definition>
+
+	<definition name="melter_log_book_list" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/melter_log_book_list.jsp" />
+	</definition>
+	
+	<definition name="melter_log_book_detail" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/melter_log_book_detail.jsp" />
+	</definition>
+	
+	<definition name="user_master_list" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/user_master_list.jsp" />
+	</definition>
+	
+	<definition name="user_master_detail" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/user_master_detail.jsp" />
+	</definition>
+	
+
+	<definition name="batch_invoice_item_list" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/invoice_item_batch_list.jsp" />
+	</definition>
+	
+
+	<definition name="shiftReport-list" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/shiftMaster/shiftMaster_list.jsp" />
+	</definition>
+	
+	<definition name="shiftReport-detail" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/shiftMaster/shift_detail.jsp" />
+	</definition>
+	
+	<definition name="item-list-for-shift" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/shiftMaster/item_list_for_shift.jsp" />
+	</definition>
+	
+	<definition name="item_list_grn" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/item_list_grn.jsp" />
+	</definition>
+	
+	<!-- Report definitions -->
+	<definition name="geographic_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/geographic_report.jsp" />
+	</definition>
+	
+	<definition name="invoice_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/invoice_report.jsp" />
+	</definition>
+	
+		<definition name="proforma_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/proforma_report.jsp" />
+	</definition>
+	
+	<definition name="sales_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/sales_report.jsp" />
+	</definition>
+	
+	<definition name="area_list_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/area_list_report.jsp" />
+	</definition>
+	
+	<definition name="city_list_report_view" extends="template-main">
+        <put-attribute name="primary-content" value="/WEB-INF/jsps/report/city_list_report.jsp" />
+    </definition>
+    
+    <definition name="country_list_report_view" extends="template-main">
+        <put-attribute name="primary-content" value="/WEB-INF/jsps/report/country_list_report.jsp" />
+    </definition>
+    
+    <definition name="employee_list_report_view" extends="template-main">
+        <put-attribute name="primary-content" value="/WEB-INF/jsps/report/employee_list_report.jsp" />
+    </definition>
+    
+    <definition name="item_category_list_report_view" extends="template-main">
+        <put-attribute name="primary-content" value="/WEB-INF/jsps/report/item_category_list_report.jsp" />
+    </definition>
+    
+    <definition name="item_list_report_view" extends="template-main">
+        <put-attribute name="primary-content" value="/WEB-INF/jsps/report/item_list_report.jsp" />
+    </definition>
+    	
+    <definition name="leave_list_report_view" extends="template-main">
+        <put-attribute name="primary-content" value="/WEB-INF/jsps/report/leave_list_report.jsp" />
+    </definition>
+    
+    <definition name="masters_list_report_view" extends="template-main">
+        <put-attribute name="primary-content" value="/WEB-INF/jsps/report/masters_list_report.jsp" />
+    </definition>
+    	
+    <definition name="party_list_report_view" extends="template-main">
+        <put-attribute name="primary-content" value="/WEB-INF/jsps/report/party_list_report.jsp" />
+    </definition>
+    	
+    <definition name="region_list_report_view" extends="template-main">
+        <put-attribute name="primary-content" value="/WEB-INF/jsps/report/region_list_report.jsp" />
+    </definition>
+    
+    <definition name="reorder_list_report_view" extends="template-main">
+        <put-attribute name="primary-content" value="/WEB-INF/jsps/report/reorder_list_report.jsp" />
+    </definition>
+    	
+    <definition name="salary_head_list_report_view" extends="template-main">
+        <put-attribute name="primary-content" value="/WEB-INF/jsps/report/salary_head_list_report.jsp" />
+    </definition>
+    
+    <definition name="sales_list_report_view" extends="template-main">
+        <put-attribute name="primary-content" value="/WEB-INF/jsps/report/sales_list_report.jsp" />
+    </definition>
+    	 <definition name="sales_register_report_view" extends="template-main">
+        <put-attribute name="primary-content" value="/WEB-INF/jsps/report/sales_register_report.jsp" />
+    </definition>
+    	
+    	
+    	 <definition name="item_wise_party_sales_report_view" extends="template-main">
+        <put-attribute name="primary-content" value="/WEB-INF/jsps/report/item_wise_party_sales_report.jsp" />
+    </definition>
+    	
+    	
+    <definition name="state_list_report_view" extends="template-main">
+        <put-attribute name="primary-content" value="/WEB-INF/jsps/report/state_list_report.jsp" />
+    </definition>
+    
+    <definition name="store_location_list_report_view" extends="template-main">
+        <put-attribute name="primary-content" value="/WEB-INF/jsps/report/store_location_list_report.jsp" />
+    </definition>
+    
+    <definition name="transporter_list_report_view" extends="template-main">
+        <put-attribute name="primary-content" value="/WEB-INF/jsps/report/transporter_list_report.jsp" />
+    </definition>
+    
+    <definition name="zone_list_report_view" extends="template-main">
+        <put-attribute name="primary-content" value="/WEB-INF/jsps/report/zone_list_report.jsp" />
+    </definition>
+    	
+    	<definition name="issues_summury_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/issues_summury_report.jsp" />
+	</definition>
+		<definition name="issues_detail_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/issues_detail_report.jsp" />
+	</definition>
+	
+	<definition name="item_stock_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/item_stock_report.jsp" />
+	</definition>
+    
+    	
+    	<definition name="purchase_summury_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/purchase_summury_report.jsp" />
+	</definition>
+		<definition name="purchase_detail_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/purchase_detail_report.jsp" />
+	</definition>
+	
+	<definition name="item_wise_monthely_sales_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/ItemWiseMonthelySalesReport.jsp" />
+	</definition>
+	<definition name="item_stock_detail_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/item_stock_detail_report.jsp" />
+	</definition>
+	
+		<definition name="party_item_invoice_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/PartyWiseItemWiseInvoiceReport.jsp" />
+	</definition>
+	
+	
+	<definition name="finish_good_list_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/finishGoodListReport.jsp" />
+	</definition>
+	<definition name="issue_list_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/issuesListReport.jsp" />
+	</definition>
+	<definition name="item_wise_grn_detail_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/item_wise_grn_detail_report.jsp" />
+	</definition>
+	
+	<!-- Welcome page -->
+	<definition name="welcome_page" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/welcome.jsp" />
+	</definition>
+	<definition name="welcome_page1" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/error500.jsp" />
+	</definition>
+	
+	<definition name="shiftReport-edit" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/shiftMaster/shift_edit.jsp" />
+	</definition>
+	
+	
+	<definition name="debit_duty_add" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/debitDutyEntry.jsp" />
+	</definition>
+	<definition name="debit_duty_list" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/debitDutyList.jsp" />
+	</definition>
+	
+	<!-- Role definitions -->
+	<definition name="role-add-edit-screen" extends="template-main">
+		<put-attribute name="page-header" value="Add Roles" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/role/role_add.jsp" />
+	</definition>
+
+	<definition name="role-search-screen" extends="template-main">
+		<put-attribute name="page-header" value="Search Roles" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/role/role_list.jsp" />
+	</definition>
+	
+	<definition name="role-edit-screen" extends="template-main">
+		<put-attribute name="page-header" value="Search Roles" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/role/role_edit_remove.jsp" />
+	</definition>
+	
+		<definition name="report_link_list" extends="template-main">
+		<put-attribute name="page-header" value="Report Link List" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/Report_Link_List.jsp" />
+	    </definition>
+	
+	
+	
+	
+	<!-- BEGIN MASTER FORMULA-->
+<definition name="master_formula_list" extends="template-main">
+<put-attribute name="page-header" value="Master Formula" />
+<put-attribute name="primary-content" value="/WEB-INF/jsps/master_formula_list.jsp" />
+</definition>
+
+
+<definition name="master_formula_entry" extends="template-main">
+<put-attribute name="page-header" value="Master Formula" />
+<put-attribute name="primary-content" value="/WEB-INF/jsps/master_formula_entry.jsp" />
+</definition>
+
+
+<definition name="get_pass_add" extends="template-main">
+<put-attribute name="page-header" value="Get_Pass" />
+<put-attribute name="primary-content" value="/WEB-INF/jsps/gatePass/gatePassAdd.jsp" />
+</definition>
+<definition name="get_pass_list" extends="template-main">
+<put-attribute name="page-header" value="Get_Pass" />
+<put-attribute name="primary-content" value="/WEB-INF/jsps/gatePass/gatePassList.jsp" />
+</definition>
+
+<definition name="get_pass_item_list" extends="template-main">
+<put-attribute name="page-header" value="Get Pass Item List" />
+<put-attribute name="primary-content" value="/WEB-INF/jsps/gatePass/get_pass_item_list.jsp" />
+</definition>
+
+
+
+
+
+<definition name="return_get_pass_add" extends="template-main">
+<put-attribute name="page-header" value="Return_Get_Pass" />
+<put-attribute name="primary-content" value="/WEB-INF/jsps/gatePass/returnGatePassAdd.jsp" />
+</definition>
+<definition name="return_get_pass_list" extends="template-main">
+<put-attribute name="page-header" value="Return_Get_Pass" />
+<put-attribute name="primary-content" value="/WEB-INF/jsps/gatePass/returnGatePassList.jsp" />
+</definition>
+
+<definition name="return_get_pass_item_list" extends="template-main">
+<put-attribute name="page-header" value="Return Get Pass Item List" />
+<put-attribute name="primary-content" value="/WEB-INF/jsps/gatePass/return_get_pass_item_list.jsp" />
+</definition>
+
+<definition name="get_pass_list_for_return_gate" extends="template-main">
+<put-attribute name="page-header" value="Return Get Pass Item List" />
+<put-attribute name="primary-content" value="/WEB-INF/jsps/gatePass/gatePassListForReturnGatePass.jsp" />
+</definition>
+
+<!-- END MASTER FORMULA -->
+		<!-- BEGIN ISSUE RETURN-->
+	<definition name="issue_return_list" extends="template-main">
+		<put-attribute name="page-header" value="Issue Return" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/materialIssueReturn/issue_return_list.jsp" />
+	</definition>
+	
+	
+	<definition name="issue_return_entry" extends="template-main">
+		<put-attribute name="page-header" value="Issue Return" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/materialIssueReturn/issue_return_entry.jsp" />
+	</definition>
+	
+	<definition name="item_list_for_issue_return" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/materialIssueReturn/item_list_for_issue_return.jsp" />
+	</definition>
+<!-- END ISSUE RETURN -->
+	<!-- Bulk Fiber Start -->
+	<definition name="bulkFiber-entry" extends="template-main">
+<put-attribute name="primary-content" value="/WEB-INF/jsps/bulkFiber_entry.jsp" />
+</definition>
+<definition name="bulkFiber-list" extends="template-main">
+<put-attribute name="primary-content" value="/WEB-INF/jsps/bulkFiber_list.jsp" />
+</definition>
+<!-- Bulk Fiber End -->
+	
+<!--  Attandance Entry Start -->
+<definition name="attandance_entry" extends="template-main">
+<put-attribute name="primary-content" value="/WEB-INF/jsps/attendance/attendance_entry.jsp" />
+</definition>
+
+<definition name="attandance_edite" extends="template-main">
+<put-attribute name="primary-content" value="/WEB-INF/jsps/attendance/attendance_edite.jsp" />
+</definition>
+
+<definition name="attandanceForm" extends="template-main">
+<put-attribute name="primary-content" value="/WEB-INF/jsps/attendance/attandanceForm.jsp" />
+</definition>
+<!--  Attandance Entry End -->
+
+
+<!--  Attandance Entry Start -->
+<definition name="advanceAmount_list" extends="template-main">
+<put-attribute name="primary-content" value="/WEB-INF/jsps/advanceAmount/advanceAmount_list.jsp" />
+</definition>
+
+<definition name="advanceAmount_Add" extends="template-main">
+<put-attribute name="primary-content" value="/WEB-INF/jsps/advanceAmount/advanceAmountDetail.jsp" />
+</definition>
+<!--  Attandance Entry End -->
+
+<!--  Salary Note Start -->
+<definition name="salary_note_list" extends="template-main">
+	<put-attribute name="primary-content" value="/WEB-INF/jsps/salaryNote/salary_note_list.jsp" />
+</definition>
+<definition name="salary_note_detail" extends="template-main">
+	<put-attribute name="primary-content" value="/WEB-INF/jsps/salaryNote/salary_note_detail.jsp" />
+</definition>
+
+<!--  Salary Note End -->
+
+
+<!--  Leave Application Entry Start -->
+<definition name="leave_application_entry" extends="template-main">
+<put-attribute name="primary-content" value="/WEB-INF/jsps/leave_application_entry.jsp" />
+</definition>
+
+<definition name="leave_application_list" extends="template-main">
+<put-attribute name="primary-content" value="/WEB-INF/jsps/leave_application_list.jsp" />
+</definition>
+
+<!--   Leave Application Entry End -->
+	
+	<!-- BEGIN INDENT-->
+	<definition name="indent-list" extends="template-main">
+		<put-attribute name="page-header" value="Indent List" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/indent/indent_list.jsp" />
+	</definition>
+	
+	
+	<definition name="indent-detail" extends="template-main">
+		<put-attribute name="page-header" value="Indent Entry" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/indent/indent_entry.jsp" />
+	</definition>
+	
+	<definition name="item-list-for-indent" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/indent/item_list_for_indent.jsp" />
+	</definition>
+	<!-- END INDENT-->
+	
+	
+	<!-- BEGIN SALARY-->
+	<definition name="salary-list" extends="template-main">
+		<put-attribute name="page-header" value="Salary List" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/salary/salary_list.jsp" />
+	</definition>
+	
+	
+	<definition name="salary-detail" extends="template-main">
+		<put-attribute name="page-header" value="Salary Entry" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/salary/salary_entry.jsp" />
+	</definition>
+
+<definition name="capative_consumption" extends="template-main">
+		<put-attribute name="page-header" value="Capative Consumption" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/capacitive_consuption.jsp"/>
+	</definition>
+	
+	<definition name="capative_consumption_list" extends="template-main">
+		<put-attribute name="page-header" value="Capative Consumption List" />
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/capative_consumption_list.jsp"/>
+	</definition>
+	<!-- END SALARY-->
+	
+	
+	<!-- Short Inventory Report definitions -->    	
+	<definition name="short_inventory_report" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/short_inventory_report.jsp" />
+	</definition>
+	<!-- Short Inventory Report definitions END -->
+	
+	<!-- RG_23_A_PART-I Report definitions -->
+	<definition name="rg_23a_partI_report" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/rg_23a_partI_report.jsp" />
+	</definition>
+	<!-- RG_23_A_PART-I Report definitions  END-->
+
+	<!-- RG_23_A_PART-II Report definitions -->
+	<definition name="rg_23a_partII_report" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/rg_23a_partII_report.jsp" />
+	</definition>
+	<!-- RG_23_A_PART-I Report definitions  END-->
+	<!-- RG_23_A_PART-II Report definitions -->
+	
+	<definition name="rg1_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/rg1_report.jsp" />
+	</definition>
+	<!-- RG_23_A_PART-II Report definitions  END-->
+		
+		
+	<!-- Supplier Wise Grn Detail defintions  -->
+	
+	<definition name="show_grn_list_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/supplier_wise_grn_detail_report.jsp" />
+	</definition>
+	<!-- Supplier Wise Grn Detail defintions   END-->
+		
+<!-- Pending Sales Order defintions  -->
+	
+	<definition name="pending_sales_order_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/pending_sales_order_report.jsp" />
+	</definition>
+	<!-- Pending Sales Order defintions   END-->
+	
+	<!-- Booked Finished Good defintions  -->
+	
+	<definition name="booked_finish_good_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/booked_finish_good_report.jsp" />
+	</definition>
+	<!-- Booked Finished Good defintions   END-->
+	
+	
+	<!-- Finished Good Inventory Status defintions  -->
+	
+	<definition name="finished_good_inventory_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/finished_good_inventory_report.jsp" />
+	</definition>
+	<!-- Finished Good Inventory Status defintions   END-->
+	
+	<!-- Manufacturing Planing Reports Start -->
+	<!-- Annealing Over -->
+	<definition name="annealing_over_report" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/annealing_over_report.jsp" />
+	</definition>
+	
+	<!-- Pending Gate Pass Report defintions  -->
+	<definition name="pending_gate_pass_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/pending_gate_pass_report.jsp" />
+	</definition>
+	<!-- Pending Gate Pass Report defintions   END-->
+	
+	
+	<!-- Pending Indent Report defintions  -->
+	<definition name="pending_indent_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/pending_indent_report.jsp" />
+	</definition>
+	<!-- Pending Indent Report defintions   END-->
+	
+	<!-- Salary Calculation Report Begin -->
+	<definition name="salary_report" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/salary_cal_report.jsp" />
+	</definition>
+	<!-- Salary Calculation Report END-->
+	
+	<!-- Salary Calculation Report Begin -->
+	<definition name="salary_slip_report" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/salary_slip_report.jsp" />
+	</definition>
+	<!-- Salary Calculation Report END-->
+	
+	<!-- Attendance Calculation Report Begin -->
+	<definition name="attendance_report" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/attendance_report.jsp" />
+	</definition>
+	<!-- Attendance Calculation Report END-->
+	
+	<!-- Blanket Production -->
+	<definition name="blanket_production_report" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/blanket_production_report.jsp" />
+	</definition>
+	
+	<!-- Blanket Production New -->
+	<definition name="blanket_production_report_new" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/blanket_production_report_new.jsp" />
+	</definition>
+	
+	<!-- Melter Log Book -->
+	<definition name="melter_log_book_report" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/melter_log_book_report.jsp" />
+	</definition>
+	
+	<!--Melter Log Book Summary -->
+	<definition name="melter_log_book_summary_report" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/melter_log_book_summary_report.jsp" />
+	</definition>
+	
+	<!--Shift Report -->
+	<definition name="shift_report_report" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/shift_report.jsp" />
+	</definition>
+	
+	<definition name="shift_report_report_new" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/shift_report_new.jsp" />
+	</definition>
+	<!-- Manufacturing Planing Reports End -->
+	
+	<!--Master Formula Report -->
+	<definition name="master_formula_report" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/master_formula_report.jsp" />
+	</definition>
+	
+	<!--Consolidate Row Material Report -->
+	<definition name="consolidate_row_material_report_view" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/consolidate_row_material_report.jsp" />
+	</definition>
+	
+	<!--Blanket Production Summury Report -->
+	<definition name="balket_production_sumury_report" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/blanket_production_summury_report.jsp" />
+	</definition>
+	<definition name="balket_production_sumury_report_new" extends="template-main">
+		<put-attribute name="primary-content" value="/WEB-INF/jsps/report/blanket_production_summury_report_new.jsp" />
+	</definition>
+	<!--Blanket Production Summury Report -->
+	<definition name="sendEmail" extends="template-main">
+	<put-attribute name="primary-content" value="/WEB-INF/jsps/report/sendEmail.jsp" />
+	</definition>
+	<!--Finished Stock With Sales Order Report -->
+	<definition name="finish_stock_with_sales_order_view" extends="template-main">
+	<put-attribute name="primary-content" value="/WEB-INF/jsps/report/finished_stock_with_sales_order_report.jsp" />
+	</definition>
+	
+	<!--Show Sales Order Email Report -->
+	<definition name="sales_email_report_view" extends="template-main">
+	<put-attribute name="primary-content" value="/WEB-INF/jsps/report/send_email_sales_order_report.jsp" />
+	</definition>
+</tiles-definitions>

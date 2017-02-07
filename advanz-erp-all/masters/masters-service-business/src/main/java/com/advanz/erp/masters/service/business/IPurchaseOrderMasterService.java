@@ -1,0 +1,36 @@
+package com.advanz.erp.masters.service.business;
+
+import com.advanz.erp.common.service.business.IAdvanzErpBaseSerivce;
+import com.advanz.erp.masters.model.msg.PurchaseOrderMasterInputMessage;
+import com.advanz.erp.masters.model.msg.PurchaseOrderMasterOutputMessage;
+
+public interface IPurchaseOrderMasterService extends IAdvanzErpBaseSerivce{
+
+	
+	public PurchaseOrderMasterOutputMessage createPurchaseOrderMaster(PurchaseOrderMasterInputMessage purchaseOrderMasterInputMessage);
+	
+	public PurchaseOrderMasterOutputMessage updatePurchaseOrderMaster(PurchaseOrderMasterInputMessage purchaseOrderMasterInputMessage);
+	
+	public PurchaseOrderMasterOutputMessage deletePurchaseOrderMaster(PurchaseOrderMasterInputMessage purchaseOrderMasterInputMessage);
+	
+	public PurchaseOrderMasterOutputMessage findPurchaseOrderMasterById(PurchaseOrderMasterInputMessage purchaseOrderMasterInputMessage);
+	
+	public PurchaseOrderMasterOutputMessage findAllPurchaseOrderMasters();
+	
+	public PurchaseOrderMasterOutputMessage search(PurchaseOrderMasterInputMessage purchaseOrderMasterInputMessage);
+	
+	public PurchaseOrderMasterOutputMessage getNewPurchaseOrderSeriesNo(PurchaseOrderMasterInputMessage purchaseOrderMasterInputMessage);
+	
+	public PurchaseOrderMasterOutputMessage FindPurchaseOrderByItemAndPoId(PurchaseOrderMasterInputMessage purchaseOrderMasterInputMessage);
+	
+	public PurchaseOrderMasterOutputMessage PurchaseOrderUpdateForGrn(PurchaseOrderMasterInputMessage purchaseOrderMasterInputMessage);
+	public PurchaseOrderMasterOutputMessage findPurchaseOrderMasterByPoNumber(PurchaseOrderMasterInputMessage purchaseOrderMasterInputMessage);
+	
+	public PurchaseOrderMasterOutputMessage findPurchaseOrderMasterBySupplierId(PurchaseOrderMasterInputMessage purchaseOrderMasterInputMessage);
+	public PurchaseOrderMasterOutputMessage FindPurchaseOrderByItemAndPoNumber(PurchaseOrderMasterInputMessage purchaseOrderMasterInputMessage);
+	public Double FindPoQtyByItemAndIndentNumber(Integer itemId,String indentNumber);
+	public Boolean findByPurchaseOrderDetailByIndentNumberAndItemId(
+			String indentNumber, Integer itemId);
+	public PurchaseOrderMasterOutputMessage findPurchaseOrderForPagination(PurchaseOrderMasterInputMessage purchaseOrderMasterInputMessage);
+
+}

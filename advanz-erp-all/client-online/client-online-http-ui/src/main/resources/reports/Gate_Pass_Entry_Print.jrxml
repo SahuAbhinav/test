@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Gate_Pass_Entry_Print" printOrder="Horizontal" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="592" leftMargin="1" rightMargin="2" topMargin="2" bottomMargin="0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="style1" mode="Opaque" lineSpacing="Single">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 ==0)]]></conditionExpression>
+			<style backcolor="#E6F3F7" lineSpacing="Single" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="GatePassNoPrompt" class="java.lang.String"/>
+	<parameter name="GatePassNoNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{GatePassNoPrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT b.Branch_NAME
+, b.Branch_ADDRESS
+, g.gate_pass_type, g.gate_pass_number
+, DATE_FORMAT(CAST(g.gate_pass_date AS DATE),'%d-%m-%Y') AS gate_pass_date
+, IFNULL(g.gate_pass_issued_by,'') AS gate_pass_issued_by
+, IFNULL(g.gate_pass_issue_time,'') AS gate_pass_issue_time
+, IFNULL(g.sent_through,'') AS sent_through
+, p.party_name AS party_name
+, IFNULL(g.vehical_number,'') AS vehical_number
+, UPPER(IFNULL(i.item_name,'')) AS item_name
+, IFNULL(m.NAME,'') AS UOM
+, IFNULL(d.gate_pass_quantity,0) AS gate_pass_quantity
+, d.remark
+, IFNULL(g.gate_pass_purpose,'') AS gate_pass_purpose
+, IF(g.approved = 1, 'Approved','') AS approved
+, gatepasscopy
+FROM t_gate_pass_mast AS g,
+(SELECT '1' AS gatepasscopy UNION SELECT '2' UNION SELECT '3') AS gatepass,
+m_branch AS b, m_party AS p, m_item AS i,
+t_gate_pass_detail AS d
+LEFT JOIN (SELECT m.masters_id, m.NAME FROM m_masters AS m WHERE m.deleted_flag = 0) AS m
+ON d.measurement_Unit_id = m.masters_id
+WHERE g.deleted_flag = 0 AND d.deleted_flag = 0 AND b.DELETED_FLAG = 0 AND p.deleted_flag = 0 AND
+i.deleted_flag = 0 AND
+g.gate_pass_number = d.gate_pass_number AND
+b.Branch_ID = g.branch_id AND
+p.party_id = g.party_id AND
+i.item_id = d.item_id AND
+(g.gate_pass_number = $P{GatePassNoPrompt} OR 1 = $P{GatePassNoNull_FlagPrompt})
+ORDER BY gatepasscopy,d.sno;]]>
+	</queryString>
+	<field name="Branch_NAME" class="java.lang.String"/>
+	<field name="Branch_ADDRESS" class="java.lang.String"/>
+	<field name="gate_pass_type" class="java.lang.String"/>
+	<field name="gate_pass_number" class="java.lang.String"/>
+	<field name="gate_pass_date" class="java.lang.String"/>
+	<field name="gate_pass_issued_by" class="java.lang.String"/>
+	<field name="gate_pass_issue_time" class="java.lang.String"/>
+	<field name="sent_through" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="party_name" class="java.lang.String"/>
+	<field name="vehical_number" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="item_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="UOM" class="java.lang.String"/>
+	<field name="gate_pass_quantity" class="java.lang.Double"/>
+	<field name="gate_pass_purpose" class="java.lang.String"/>
+	<field name="approved" class="java.lang.String"/>
+	<field name="remark" class="java.lang.String"/>
+	<field name="gatepasscopy" class="java.lang.String"/>
+	<variable name="s_no" class="java.lang.Integer" resetType="Group" resetGroup="gatepasscopy" calculation="Count">
+		<variableExpression><![CDATA[$V{REPORT_COUNT}]]></variableExpression>
+	</variable>
+	<group name="gatepasscopy">
+		<groupExpression><![CDATA[$F{gatepasscopy}]]></groupExpression>
+		<groupHeader>
+			<band height="145">
+				<staticText>
+					<reportElement x="1" y="10" width="589" height="20" forecolor="#000000"/>
+					<textElement textAlignment="Center" lineSpacing="Single">
+						<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+					</textElement>
+					<text><![CDATA[Gate Pass]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="301" y="85" width="81" height="14"/>
+					<textElement verticalAlignment="Top" lineSpacing="Single">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Vehical Number]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="4" y="71" width="100" height="14"/>
+					<textElement verticalAlignment="Top" lineSpacing="Single">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Gate Pass Number]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="4" y="85" width="100" height="14"/>
+					<textElement verticalAlignment="Top" lineSpacing="Single">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Gate Pass Type]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="4" y="114" width="100" height="14"/>
+					<textElement verticalAlignment="Top" lineSpacing="Single">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Party Name]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="1" y="30" width="589" height="20"/>
+					<textElement textAlignment="Center" lineSpacing="Single">
+						<font size="14" isBold="true" isUnderline="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{Branch_NAME}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="104" y="71" width="190" height="14"/>
+					<textElement verticalAlignment="Top" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[": " + $F{gate_pass_number}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="104" y="114" width="486" height="14"/>
+					<textElement verticalAlignment="Top" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[": " + $F{party_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="104" y="85" width="190" height="14"/>
+					<textElement verticalAlignment="Top" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[": " + $F{gate_pass_type}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="1" y="70" width="590" height="1"/>
+				</line>
+				<line direction="BottomUp">
+					<reportElement x="297" y="71" width="1" height="42"/>
+				</line>
+				<line direction="BottomUp">
+					<reportElement x="0" y="9" width="1" height="136"/>
+				</line>
+				<line direction="BottomUp">
+					<reportElement x="591" y="9" width="1" height="136"/>
+				</line>
+				<line>
+					<reportElement x="0" y="9" width="591" height="1"/>
+				</line>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="382" y="71" width="90" height="14"/>
+					<textElement verticalAlignment="Top" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[": " + $F{gate_pass_date}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="301" y="71" width="81" height="14"/>
+					<textElement verticalAlignment="Top" lineSpacing="Single">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Gate Pass Date]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="513" y="71" width="77" height="14"/>
+					<textElement verticalAlignment="Top" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[": " + $F{gate_pass_issue_time}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="472" y="71" width="41" height="14"/>
+					<textElement verticalAlignment="Top" lineSpacing="Single">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Time]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="301" y="99" width="81" height="14"/>
+					<textElement verticalAlignment="Top" lineSpacing="Single">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Sent Through]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="382" y="99" width="208" height="14"/>
+					<textElement verticalAlignment="Top" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[": " + $F{sent_through}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="4" y="99" width="100" height="14"/>
+					<textElement verticalAlignment="Top" lineSpacing="Single">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Issued By (Incharge)]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="104" y="99" width="190" height="14"/>
+					<textElement verticalAlignment="Top" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[": " + $F{gate_pass_issued_by}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="382" y="85" width="208" height="14"/>
+					<textElement verticalAlignment="Top" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[": " + $F{vehical_number}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="1" y="50" width="589" height="20"/>
+					<textElement textAlignment="Center" lineSpacing="Single">
+						<font size="14" isBold="true" isUnderline="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{Branch_ADDRESS}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="1" y="128" width="590" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="2" y="129" width="30" height="15" isPrintWhenDetailOverflows="true" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" lineSpacing="Single">
+						<font fontName="SansSerif" size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[S.No.]]></text>
+				</staticText>
+				<line>
+					<reportElement positionType="FixRelativeToBottom" x="0" y="144" width="591" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="32" y="129" width="265" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" lineSpacing="Single">
+						<font fontName="SansSerif" size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Item Name]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="297" y="129" width="74" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" lineSpacing="Single">
+						<font fontName="SansSerif" size="10" isBold="true" isStrikeThrough="false"/>
+					</textElement>
+					<text><![CDATA[UOM]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="371" y="129" width="80" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
+						<font fontName="SansSerif" size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Quantity]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="451" y="129" width="139" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" lineSpacing="Single">
+						<font fontName="SansSerif" size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Remark]]></text>
+				</staticText>
+				<line>
+					<reportElement x="1" y="113" width="590" height="1"/>
+				</line>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="70">
+				<line>
+					<reportElement x="0" y="15" width="591" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="2" y="0" width="50" height="15"/>
+					<textElement lineSpacing="Single">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Purpose :]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="52" y="0" width="399" height="15"/>
+					<textElement lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{gate_pass_purpose}]]></textFieldExpression>
+				</textField>
+				<line direction="BottomUp">
+					<reportElement x="591" y="0" width="1" height="16"/>
+				</line>
+				<staticText>
+					<reportElement x="451" y="0" width="52" height="15"/>
+					<textElement lineSpacing="Single">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Status :]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="503" y="0" width="87" height="15"/>
+					<textElement lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{approved}]]></textFieldExpression>
+				</textField>
+				<line direction="BottomUp">
+					<reportElement x="0" y="0" width="1" height="16"/>
+				</line>
+				<line>
+					<reportElement x="0" y="18" width="591" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="61" width="591" height="1"/>
+				</line>
+				<line direction="BottomUp">
+					<reportElement x="0" y="18" width="1" height="43"/>
+				</line>
+				<line direction="BottomUp">
+					<reportElement x="591" y="18" width="1" height="43"/>
+				</line>
+				<staticText>
+					<reportElement x="393" y="47" width="196" height="14"/>
+					<textElement textAlignment="Center" lineSpacing="Single">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[(Approving Authority)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="197" y="47" width="196" height="14"/>
+					<textElement textAlignment="Center" lineSpacing="Single">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Store Incharge Signature]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="47" width="196" height="14"/>
+					<textElement textAlignment="Center" lineSpacing="Single">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Signature Of Receiver]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
+	<detail>
+		<band height="14">
+			<frame>
+				<reportElement mode="Transparent" x="0" y="0" width="592" height="14" isPrintInFirstWholeBand="true"/>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="2" y="0" width="30" height="12" isPrintInFirstWholeBand="true" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$V{s_no}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="32" y="0" width="265" height="12" isPrintInFirstWholeBand="true"/>
+					<textElement verticalAlignment="Middle" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{item_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="297" y="0" width="74" height="12" isPrintInFirstWholeBand="true"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{UOM}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement x="371" y="0" width="80" height="12" isPrintInFirstWholeBand="true"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[( ($F{gate_pass_quantity}.doubleValue()-$F{gate_pass_quantity}.intValue())> new Double(0) ? $F{gate_pass_quantity} :
+new DecimalFormat("###0").format($F{gate_pass_quantity}) )]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="###0.00;-###0.00" isBlankWhenNull="true">
+					<reportElement x="451" y="0" width="139" height="12" isPrintInFirstWholeBand="true"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{remark}]]></textFieldExpression>
+				</textField>
+				<line direction="BottomUp">
+					<reportElement stretchType="RelativeToBandHeight" x="591" y="0" width="1" height="13" isPrintWhenDetailOverflows="true"/>
+				</line>
+				<line direction="BottomUp">
+					<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="1" height="13" isPrintWhenDetailOverflows="true"/>
+				</line>
+				<line>
+					<reportElement positionType="Float" x="0" y="13" width="591" height="1" isPrintInFirstWholeBand="true" isPrintWhenDetailOverflows="true"/>
+				</line>
+			</frame>
+		</band>
+	</detail>
+	<noData>
+		<band height="29">
+			<staticText>
+				<reportElement x="0" y="0" width="591" height="29" forecolor="#FF3300"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="SansSerif" size="20"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>

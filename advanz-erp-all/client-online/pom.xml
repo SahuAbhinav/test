@@ -1,0 +1,34 @@
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>advanz-erp-all</artifactId>
+		<groupId>com.advanz.erp</groupId>
+		<version>1_0_0</version>
+	</parent>
+	<artifactId>client-online</artifactId>
+	<packaging>pom</packaging>
+	<name>Advanz ERP Client Online module</name>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+			        <source>1.6</source>
+			        <target>1.6</target>
+			    </configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
+	<dependencies>
+	</dependencies>
+	<properties>
+	  	<jackson.version>1.7.6</jackson.version>
+	</properties>
+	<modules>
+		<module>client-online-http-controller</module>
+		<module>client-online-http-authentication</module>
+		<module>client-online-http-ui</module>
+	</modules>
+</project>

@@ -1,0 +1,33 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>sales</artifactId>
+		<groupId>com.advanz.erp</groupId>
+		<version>${sales.version}</version>
+	</parent>
+	<artifactId>sales-model</artifactId>
+	<version>${sales.service}</version>
+	<packaging>jar</packaging>
+
+	<name>sales-model</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.advanz.erp</groupId>
+			<artifactId>common-model</artifactId>
+			<version>${common.service}</version>
+		</dependency>
+	</dependencies>
+</project>

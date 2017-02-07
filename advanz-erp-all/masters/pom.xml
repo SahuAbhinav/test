@@ -1,0 +1,38 @@
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>advanz-erp-all</artifactId>
+		<groupId>com.advanz.erp</groupId>
+		<version>1_0_0</version>
+	</parent>
+	<artifactId>masters</artifactId>
+	<version>${masters.version}</version>
+	<packaging>pom</packaging>
+	<name>Advanz ERP Services</name>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<properties>
+	</properties>
+	<modules>
+		<module>masters-service</module>
+		<module>masters-service-business</module>
+		<module>masters-http</module>
+		<module>masters-entity</module>
+		<module>masters-storage</module>
+		<module>masters-model</module>
+	</modules>
+</project>

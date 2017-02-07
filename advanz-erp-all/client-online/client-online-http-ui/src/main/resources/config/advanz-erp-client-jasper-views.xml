@@ -1,0 +1,2306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<!-- Declare Spring's View Resolvers for Jasper Based on the bean names 
+		we can infer that: * pdfReport is for generating PDFs * xlsReport is for 
+		Excel format reports * htmlReport is for HTML reports * csvReport is for 
+		CSV reports -->
+	<!-- id: the name to be used as a reference in the controller url: the path 
+		where the Jasper JRXML file is located reportDateKey: the name of the datasource. 
+		This is passed by the controller -->
+
+	<!-- Geographic Report -->
+
+
+	<bean id="pdfGeographic"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Geography_hierarchy_Report.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Geography_Report.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsGeographic"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Geography_hierarchy_Report.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Geography_Report.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlGeographic"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Geography_hierarchy_Report.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="csvGeographic"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Geography_hierarchy_Report.jasper"
+		p:reportDataKey="datasource" />
+
+
+	<!-- INVOICE REPORT -->
+	<bean id="pdfInvoice"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Excise_Invoice_report.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Invoice_Report.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="pdfDeliveryChallan"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Delivery_Challan.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Delivery_Challan_Report.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsInvoice"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Excise_Invoice_report.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="htmlInvoice"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Excise_Invoice_report.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="csvInvoice"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Excise_Invoice_report.jasper"
+
+		p:reportDataKey="datasource" />
+	<!-- INVOICE REPORT END -->
+
+
+	<!-- PROFORMA REPORT -->
+	<bean id="pdfProforma"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Proforma_Invoice_report.jasper"
+		p:reportDataKey="datasource">
+
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Proforma_Report.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsProforma"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Proforma_Invoice_report.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Proforma_Report.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlProforma"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Proforma_Invoice_report.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="csvProforma"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Proforma_Invoice_report.jasper"
+
+		p:reportDataKey="datasource" />
+	<!-- PROFORMA REPORT END -->
+
+
+
+	<!-- AREA LIST REPORT -->
+	<bean id="pdfArea"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Area_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Area_List.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsArea"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Area_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Area_List.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlArea"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Area_List.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvArea"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Area_List.jasper" p:reportDataKey="datasource" />
+
+	<!-- AREA LIST REPORT END -->
+
+
+	<!-- CITY REPORT -->
+	<bean id="pdfCity"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/City_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=City_List.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsCity"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/City_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=City_List.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlCity"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/City_List.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvCity"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/City_List.jasper" p:reportDataKey="datasource" />
+
+	<!-- CITY REPORT END -->
+
+
+	<!-- COUNTRY REPORT -->
+	<bean id="pdfCountry"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Country_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Country_List.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsCountry"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Country_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Country_List.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlCountry"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Country_List.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvCountry"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Country_List.jasper" p:reportDataKey="datasource" />
+	<!-- COUNTRY REPORT END -->
+
+	<!-- EMPLOYEE REPORT -->
+	<bean id="pdfEmployee"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Employee_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Employee_List.pdf;
+				</prop>
+			</props>
+		</property>
+
+	</bean>
+	<bean id="xlsEmployee"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Employee_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Employee_List.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+
+	<bean id="htmlEmployee"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Employee_List.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvEmployee"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Employee_List.jasper" p:reportDataKey="datasource" />
+
+	<!-- EMPLOYEE REPORT END -->
+
+	<!-- ITEM CATEGORY REPORT -->
+	<bean id="pdfItemCategory"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Item_Category_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Item_Category_List.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsItemCategory"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Item_Category_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Item_Category_List.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+	<bean id="htmlItemCategory"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Item_Category_List.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvItemCategory"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Item_Category_List.jasper" p:reportDataKey="datasource" />
+
+	<!-- ITEM CATEGORY REPORT END -->
+
+	<!-- ITEM REPORT -->
+	<bean id="pdfItem"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Item_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Item_List.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsItem"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Item_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Item_List.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlItem"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Item_List.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvItem"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Item_List.jasper" p:reportDataKey="datasource" />
+
+	<!-- ITEM REPORT END -->
+
+	<!-- LEAVE REPORT -->
+
+	<bean id="pdfLeave"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Leave_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Leave_List.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsLeave"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Leave_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Leave_List.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlLeave"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Leave_List.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvLeave"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Leave_List.jasper" p:reportDataKey="datasource" />
+
+	<!-- LEAVE REPORT END -->
+
+	<!-- MASTERS REPORT -->
+
+	<bean id="pdfMasters"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Masters_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Masters_List.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsMasters"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Masters_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Masters_List.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlMasters"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Masters_List.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvMasters"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Masters_List.jasper" p:reportDataKey="datasource" />
+
+	<!-- MASTERS REPORT END -->
+
+	<!-- PARTY REPORT -->
+
+	<bean id="pdfParty"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Party_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Party_List.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsParty"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Party_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Paryt_List.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlParty"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Party_List.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvParty"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Party_List.jasper" p:reportDataKey="datasource" />
+
+	<!-- PARTY REPORT END -->
+
+	<!-- REGION REPORT -->
+
+	<bean id="pdfRegion"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Region_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Region_List.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsRegion"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Region_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Region_List.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlRegion"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Region_List.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvRegion"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Region_List.jasper" p:reportDataKey="datasource" />
+
+	<!-- REGION REPORT END -->
+
+	<!-- REORDER REPORT -->
+
+	<bean id="pdfReorder"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Reorder_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Reorder_List.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsReorder"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Reorder_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Reorder_List.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlReorder"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Reorder_List.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvReorder"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Reorder_List.jasper" p:reportDataKey="datasource" />
+
+	<!-- REORDER REPORT END -->
+
+	<!-- SALARY HEAD REPORT -->
+
+	<bean id="pdfSalaryHead"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Salary_Head_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Salary_Head_List.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsSalaryHead"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Salary_Head_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Salary_Head_List.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlSalaryHead"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Salary_Head_List.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvSalaryHead"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Salary_Head_List.jasper" p:reportDataKey="datasource" />
+
+	<!-- SALARY HEAD REPORT END -->
+
+
+	<!-- Salary Calculation Report Begin -->
+	<bean id="pdfSalaryCal"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/sallary_summary_new.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Salary_Calculation.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsSalaryCal"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/sallary_summary_new.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Salary_Calculation.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlSalaryCal"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/sallary_summary_new.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvSalaryCal"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/sallary_summary_new.jasper" p:reportDataKey="datasource" />
+	<!-- Salary Calculation Report END -->
+
+
+	<!-- Salary Slip Report Begin -->
+	<bean id="pdfSalarySlip"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/salary_slip.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Salary_Slip.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsSalarySlip"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/salary_slip.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Salary_Slip.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlSalarySlip"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/salary_slip.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvSalarySlip"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/salary_slip.jasper" p:reportDataKey="datasource" />
+
+	<!-- Salary Slip Report END -->
+
+
+	<!-- Attendance Calculation Report Begin -->
+	<bean id="pdfAttendance"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/attendance_summary.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Attendance_Calculation.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsAttendance"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/attendance_summary.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Attendance_Calculation.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlAttendance"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/attendance_summary.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvAttendance"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/attendance_summary.jasper" p:reportDataKey="datasource" />
+
+	<!-- Attendance Calculation Report END -->
+
+	<!-- STATE REPORT -->
+
+	<bean id="pdfState"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/State_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=State_List.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+	<bean id="xlsState"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/State_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=State_List.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlState"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/State_List.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvState"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/State_List.jasper" p:reportDataKey="datasource" />
+
+	<!-- STATE REPORT END -->
+
+	<!-- STORE LOCATION REPORT -->
+
+	<bean id="pdfStoreLocation"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Store_Location_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Store_Location_List.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsStoreLocation"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Store_Location_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Store_Location_List.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlStoreLocation"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Store_Location_List.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvStoreLocation"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Store_Location_List.jasper" p:reportDataKey="datasource" />
+
+	<!-- STORE LOCATION REPORT END -->
+
+	<!-- TRANSPORTER REPORT -->
+
+	<bean id="pdfTransporter"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Transporter_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Transporter_List.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsTransporter"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Transporter_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Transporter_List.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlTransporter"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Transporter_List.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvTransporter"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Transporter_List.jasper" p:reportDataKey="datasource" />
+
+	<!-- TRANSPORTER REPORT END -->
+
+
+	<!-- ZONE REPORT -->
+
+	<bean id="pdfZone"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Zone_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Zone_List.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsZone"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Zone_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Zone_List.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlZone"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Zone_List.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvZone"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Zone_List.jasper" p:reportDataKey="datasource" />
+
+	<!-- ZONE REPORT END -->
+
+
+	<!-- SALES REPORT -->
+	<bean id="pdfSales"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Sales_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Sales_List.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsSales"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Sales_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Sales_List.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlSales"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Sales_List.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvSales"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Sales_List.jasper" p:reportDataKey="datasource" />
+
+	<!-- SALES REPORT END -->
+
+
+
+	<!-- SALES REGISTER REPORT -->
+	<bean id="pdfSalesRegister"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Sales_Register.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Sales_Register_Report.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsSalesRegister"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Sales_Register.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Sales_Register_Report.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlSalesRegister"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Sales_Register.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvSalesRegister"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Sales_Register.jasper" p:reportDataKey="datasource" />
+
+	<!-- SALES REGISTER END -->
+
+
+	<!-- ITEM WISE PARTY SALES REPORT -->
+	<bean id="pdfItemWisePartySales"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Item_wise_party_Sales.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Item_Wise_Party_Sales.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsItemWisePartySales"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Item_wise_party_Sales.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Item_Wise_Party_Sales.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlItemWisePartySales"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Item_wise_party_Sales.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="csvItemWisePartySales"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Item_wise_party_Sales.jasper"
+		p:reportDataKey="datasource" />
+
+	<!-- ITEM WISE PARTY SALES REPORT END -->
+
+	<!-- ITEM STOCK DETAIL REPORT -->
+	<bean id="pdfItemStockDetail"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Item_wise_Stock_Detail.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Item_Wise_Stock_Detail.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsItemStockDetail"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Item_wise_Stock_Detail.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Item_Wise_Stock_Detail.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlItemStockDetail"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Item_wise_Stock_Detail.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="csvItemStockDetail"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Item_wise_Stock_Detail.jasper"
+		p:reportDataKey="datasource" />
+
+	<!-- ITEM STOCK DETAIL REPORT END -->
+
+	<!-- Issuue Summury REPORT -->
+	<bean id="pdfIssuesSummury"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Issue_Summary.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Issue_Summary.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsIssuesSummury"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Issue_Summary.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Issue_Summary.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlIssuesSummury"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Issue_Summary.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvIssuesSummury"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Issue_Summary.jasper" p:reportDataKey="datasource" />
+
+	<!-- Issues Summury Report END -->
+
+	<!-- Issues Detail REPORT -->
+	<bean id="pdfIssuesDetail"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Issue_Detail_report.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Issue_Detail.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsIssuesDetail"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Issue_Detail_report.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Issue_Detail.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlIssuesDetail"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Issue_Detail_report.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvIssuesDetail"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Issue_Detail_report.jasper" p:reportDataKey="datasource" />
+	<!-- Issues Detail END -->
+
+
+	<!-- Item Wise Monthely Sales REPORT -->
+	<bean id="pdfItemWiseMSales"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/ItemWise_Monthly_Sales.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Item_Wise_Monthly_Sales.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsItemWiseMSales"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/ItemWise_Monthly_Sales.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Item_Wise_Monthly_Sales.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlItemWiseMSales"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/ItemWise_Monthly_Sales.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="csvItemWiseMSales"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/ItemWise_Monthly_Sales.jasper"
+		p:reportDataKey="datasource" />
+	<!-- Issues Detail END -->
+
+	<!-- Purchase Summury REPORT -->
+	<bean id="pdfPurchaseSummury"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/purchase_summary.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Purchase_Summary_report.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsPurchaseSummury"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/purchase_summary.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Purchase_Summary_report.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlPurchaseSummury"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/purchase_summary.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvPurchaseSummury"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/purchase_summary.jasper" p:reportDataKey="datasource" />
+
+	<!-- Purchase Summury Report END -->
+
+	<!-- Purchase Detail REPORT -->
+	<bean id="pdfPurchaseDetail"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Purchase_Detail_Report.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Purchase_Detail.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsPurchaseDetail"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Purchase_Detail_Report.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Purchase_Detail.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlPurchaseDetail"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Purchase_Detail_Report.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="csvPurchaseDetail"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Purchase_Detail_Report.jasper"
+		p:reportDataKey="datasource" />
+	<!-- Purchase Detail END -->
+
+	<!-- ITEM STOCK REPORT -->
+	<bean id="pdfItemStock"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Item_Stock_Ledger.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Item_Stock_Ledger.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsItemStock"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Item_Stock_Ledger.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Item_Stock_Ledger.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlItemStock"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Item_Stock_Ledger.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvItemStock"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Item_Stock_Ledger.jasper" p:reportDataKey="datasource" />
+	<!-- ITEM STOCK END -->
+
+
+	<!-- PARTY ITEM INVOICE REPORT -->
+	<bean id="pdfPartyItemInvoice"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Party_wise_Item wise_Sales.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Party_Item_Invoice.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsPartyItemInvoice"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Party_wise_Item wise_Sales.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Party_Item_Invoice.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlPartyItemInvoice"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Party_wise_Item wise_Sales.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="csvPartyItemInvoice"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Party_wise_Item wise_Sales.jasper"
+		p:reportDataKey="datasource" />
+	<!-- PARTY ITEM INVOICE REPORT END -->
+
+	<!-- FINISH GOOD LIST REPORT -->
+	<bean id="pdfFinishGoodList"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Finished_Goods_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Finished_Goods_List.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsFinishGoodList"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Finished_Goods_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Finished_Goods_List.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlFinishGoodList"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Finished_Goods_List.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvFinishGoodList"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Finished_Goods_List.jasper" p:reportDataKey="datasource" />
+	<!-- FINISH GOOD LIST REPORT END -->
+	<!-- Issues LIST REPORT -->
+	<bean id="pdfIssuesList"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/issue_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Issue_List.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+	<bean id="pdfIssuesListReport"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/issue_pass.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Issue_List_Report.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsIssueList"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/issue_List.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Issue_List.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlIssueList"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/issue_List.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvIssueList"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/issue_List.jasper" p:reportDataKey="datasource" />
+	<!-- Issues LIST REPORT END -->
+
+	<!-- ITEM WISE GRN DETAIL REPORT -->
+	<bean id="pdfItemWiseGrnDetail"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Item_wise_GRN_Detail.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Item_Wise_Grn_Detail.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsItemWiseGrnDetail"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Item_wise_GRN_Detail.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Item_Wise_Grn_Detail.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlItemWiseGrnDetail"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Item_wise_GRN_Detail.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="csvItemWiseGrnDetail"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Item_wise_GRN_Detail.jasper"
+		p:reportDataKey="datasource" />
+	<!-- ITEM WISE GRN DETAIL REPORT END -->
+
+
+	<!-- SHORT INVENTORY REPORT -->
+	<bean id="pdfShortInventory"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Short_Inventory_Report.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Short_Inventory_Report.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsShortInventory"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Short_Inventory_Report.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Short_Inventory_Report.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="shortInventoryHtml"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Short_Inventory_Report.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="csvShortInventory"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Short_Inventory_Report.jasper"
+		p:reportDataKey="datasource" />
+	<!-- SHORT INVENTORY REPORT END -->
+
+
+	<!-- SHORT RG 23APartI REPORT -->
+	<bean id="pdfRg23APartI"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/RG_23_A_PART_I.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=RG_23_A_Part_I.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsRg23APartI"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/RG_23_A_PART_I.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=RG_23_A_Part_I.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlRg23APartI"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/RG_23_A_PART_I.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvRg23APartI"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/RG_23_A_PART_I.jasper" p:reportDataKey="datasource" />
+	<!-- SHORT RG 23APartI REPORT END -->
+
+	<!-- SHORT RG 1 REPORT -->
+	<bean id="pdfRg1"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/RG1.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=RG1.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsRg1"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/RG1.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=RG1.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlRg1"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/RG1.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvRg1"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/RG1.jasper" p:reportDataKey="datasource" />
+	<!-- SHORT RG 1 REPORT END -->
+
+	<!-- Please add name of the report in comments before all the newly added 
+		entries -->
+
+
+	<!-- SHORT RG 23APartI REPORT -->
+	<bean id="pdfRg23APartII"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/RG_23_A_PART_II.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=RG_23_A_Part_II.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsRg23APartII"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/RG_23_A_PART_II.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=RG_23_A_Part_II.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlRg23APartII"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/RG_23_A_PART_II.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvRg23APartII"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/RG_23_A_PART_II.jasper" p:reportDataKey="datasource" />
+	<!-- SHORT RG 23APartI REPORT END -->
+
+
+	<!-- PENDING SALES ORDER REPORT -->
+	<bean id="pdfPendingSalesOrder"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Pending_Sales_order.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Pending_Sales_order.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsPendingSalesOrder"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Pending_Sales_order.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Pending_Sales_order.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlPendingSalesOrder"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Pending_Sales_order.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvPendingSalesOrder"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Pending_Sales_order.jasper" p:reportDataKey="datasource" />
+	<!-- PENDING SALES ORDER REPORT END -->
+
+	<!-- BOOKED FINISHED GOOD ORDER REPORT -->
+	<bean id="pdfBookedFinishGood"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Booked_Finished_Goods_Report.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Booked_Finish_Good.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsBookedFinishGood"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Booked_Finished_Goods_Report.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Booked_Finish_Good.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlBookedFinishGood"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Booked_Finished_Goods_Report.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="csvBookedFinishGood"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Booked_Finished_Goods_Report.jasper"
+		p:reportDataKey="datasource" />
+	<!-- BOOKED FINISH GOOD REPORT END -->
+
+
+
+
+	<!-- PENDING GATE PASS REPORT -->
+	<bean id="pdfPendingGatePass"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/pending_gate_pass.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Pending_gate_pass.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsPendingGatePass"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/pending_gate_pass.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Pending_gate_pass.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlPendingGatePass"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/pending_gate_pass.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvPendingGatePass"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/pending_gate_pass.jasper" p:reportDataKey="datasource" />
+	<!-- PENDING GATE PASS REPORT END -->
+
+
+	<!-- PENDING INDENT REPORT -->
+	<bean id="pdfPendingIndent"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Pending_Indent_Report.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Pending_Indent_Report.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsPendingIndent"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Pending_Indent_Report.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Pending_Indent_Report.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlPendingIndent"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Pending_Indent_Report.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="csvPendingIndent"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Pending_Indent_Report.jasper"
+		p:reportDataKey="datasource" />
+	<!-- PENDING INDENT REPORT END -->
+
+
+
+
+
+	<!-- GRN PRINT VIEW OPTION -->
+	<bean id="pdfGrnPrintView"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/GRN_Print_Report.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Grn_Print.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+	<!-- GRN PRINT VIEW OPTION END -->
+	<!--ISSUE PRINT VIEW OPTION -->
+	<bean id="pdfIssuePrintView"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/issue_pass.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Issue_Print.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+	<!-- ISSUE PRINT VIEW OPTION END -->
+	<!--INDENT PRINT VIEW OPTION -->
+	<bean id="pdfIndentPrintView"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/indent.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Indent_Print.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+	<!-- INDENT PRINT VIEW OPTION END -->
+
+	<!--PURCHASE ORDER PRINT VIEW OPTION -->
+	<bean id="pdfPurchaseOrderPrintView"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Purchase_Order_Print_Report.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Purchase_Order_Print.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+	<!-- PURCHASE ORDER PRINT VIEW OPTION END -->
+	<!--SALES ORDER PRINT VIEW OPTION -->
+	<bean id="pdfSalesOrderPrintView"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Sales_Order_Print_Report.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Sales_Order_Print.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+	<!-- SALES ORDER PRINT VIEW OPTION END -->
+	<!-- SHORT Supplier Grn Detail REPORT Begin -->
+	<bean id="pdfSuppGrnDtl"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Supplier_wise_GRN_Detail.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=supplierGrnDetailReport.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsSuppGrnDtl"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Supplier_wise_GRN_Detail.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=supplierGrnDetailReport.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlSuppGrnDtl"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Supplier_wise_GRN_Detail.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="csvSuppGrnDtl"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Supplier_wise_GRN_Detail.jasper"
+		p:reportDataKey="datasource" />
+	<!-- SHORT Supplier Grn Detail REPORT Begin END -->
+
+
+	<!-- FINISHED GOOD INVENTORY STATUS REPORT -->
+	<bean id="pdfFinishedGoodInventory"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Finished_goods_inventory_status.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Finished_Good_Inventory.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsFinishedGoodInventory"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Finished_goods_inventory_status.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Finished_Good_Inventory.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlFinishedGoodInventory"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Finished_goods_inventory_status.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="csvFinishedGoodInventory"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Finished_goods_inventory_status.jasper"
+		p:reportDataKey="datasource" />
+	<!-- FINISH GOOD INVENTORY STATUS REPORT END -->
+
+	<!--GATE PASS PRINT OPTION -->
+	<bean id="pdfGatePassPrintView"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Gate_Pass_Entry_Print.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Gate_Pass_Print.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+	<!--GATE PASS PRINT OPTION END -->
+	<!--GATE PASS RETURN PRINT OPTION -->
+	<bean id="pdfGatePassReturnPrintView"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Return_Gate_Pass_Entry_Print.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Gate_Pass_Return_Print.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+	<!--GATE PASS RETURN PRINT OPTION END -->
+	<!-- Issue RETURN PRINT OPTION -->
+	<bean id="pdfIssueReturnPrintView"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Issue_return_slip.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Issue_Return_Slip_Print.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+	<!--Issue RETURN PRINT OPTION END -->
+	<!-- SHIFT PRINT REPORT -->
+	<bean id="pdfShiftReportPrintView"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Shift_Print_Report.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Shift_Report_Print.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+	<!-- SHIFT PRINT REPORT END -->
+
+	<!-- MASTER FORMULA PRINT REPORT -->
+	<bean id="pdfMasterFormulaReportPrintView"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Master_Formula_Print.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Master_Formula_Report_Print.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+	<!-- MASTER FORMULA REPORT END -->
+	<!-- Manufacturing Report Start -->
+
+
+
+
+	<!-- Mleter Log Book REPORT -->
+	<bean id="pdfMelterLogBookSummary"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Melter_logbook_Summ.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Melter_Log_Book_Summary.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsMelterLogBookSummary"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Melter_logbook_Summ.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Melter_Log_Book_Summary.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htlmMelterLogBookSummary"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Melter_logbook_Summ.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvMelterLogBookSummary"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Melter_logbook_Summ.jasper" p:reportDataKey="datasource" />
+	<!-- Mleter Log Book Summary REPORT END -->
+
+	<!-- Mleter Log Book REPORT -->
+	<bean id="pdfMelterLogBook"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Melter_logbook.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Melter_Log_Book.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsMelterLogBook"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Melter_logbook.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Melter_Log_Book.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlMelterLogBook"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Melter_logbook.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvMelterLogBook"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Melter_logbook.jasper" p:reportDataKey="datasource" />
+	<!-- Mleter Log Book REPORT END -->
+
+
+
+	<!-- ANNEALING OVEN REPORT START -->
+	<bean id="pdfAnnealingOver"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Annealing_Oven_Detail_Reports.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Annealing_Oven_Detail_Reports.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsAnnealingOver"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Annealing_Oven_Detail_Reports.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Annealing_Oven_Detail_Reports.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlAnnealingOver"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Annealing_Oven_Detail_Reports.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="csvAnnealingOver"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Annealing_Oven_Detail_Reports.jasper"
+		p:reportDataKey="datasource" />
+	<!-- ANNEALING OVEN REPORT END -->
+
+
+	<!-- SHIF REPORT START -->
+	<bean id="pdfShiftReport"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Shift_report.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Shift_Print_Report.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="pdfShiftReportNew"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Shift_report_new.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Shift_Print_Report_New.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsShiftReport"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Shift_report.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Shift_Print_Report.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsShiftReportNew"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Shift_report_new.jasper" p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Shift_Print_Report_New.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlShiftReport"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Shift_report.jasper" p:reportDataKey="datasource" />
+
+	<bean id="htmlShiftReportNew"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Shift_report_new.jasper" p:reportDataKey="datasource" />
+
+
+	<bean id="csvShiftReport"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Shift_report.jasper" p:reportDataKey="datasource" />
+
+	<bean id="csvShiftReportNew"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Shift_report_new.jasper" p:reportDataKey="datasource" />
+	<!-- SHIF REPORT END -->
+
+
+	<!-- BLANKET PRODUCTION REPORT START -->
+	<bean id="pdfBlanketProduction"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Blanket_Production_report.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Blanket_Production_report.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="pdfBlanketProductionNew"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Blanket_Production_report_new.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Blanket_Production_report_new.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsBlanketProduction"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Blanket_Production_report.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Blanket_Production_report.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsBlanketProductionNew"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Blanket_Production_report_new.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Blanket_Production_report_new.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlBlanketProduction"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Blanket_Production_report.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="htmlBlanketProductionNew"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Blanket_Production_report_new.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="csvBlanketProduction"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Blanket_Production_report.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="csvBlanketProductionNew"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Blanket_Production_report_new.jasper"
+		p:reportDataKey="datasource" />
+	<!-- BLANKET PRODUCTION REPORT END -->
+
+
+	<!-- Manufacturing Report End -->
+	<!-- MASTER FORMULA REPORT START -->
+	<bean id="pdfMasterFormula"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Master_Formula_Print.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Master_Formula_Print.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsMasterFormula"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Master_Formula_Print.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Master_Formula_Print.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlMasterFormula"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Master_Formula_Print.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="csvMasterFormula"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Master_Formula_Print.jasper"
+		p:reportDataKey="datasource" />
+	<!-- MASTER FORMULA REPORT END -->
+
+	<!-- CONSOLIDATE ROW MATERIAL REPORT START -->
+	<bean id="pdfConsolidateRowMaterial"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Consolidated_Raw_Materia_Requirement.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Consolidated_Raw_Materia_Requirement.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsConsolidateRowMaterial"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Consolidated_Raw_Materia_Requirement.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Consolidated_Raw_Materia_Requirement.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlConsolidateRowMaterial"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Consolidated_Raw_Materia_Requirement.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="csvConsolidateRowMaterial"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Consolidated_Raw_Materia_Requirement.jasper"
+		p:reportDataKey="datasource" />
+	<!-- CONSOLIDATE ROW MATERIAL REPORT END -->
+
+
+	<!-- Blanket Production Summury REPORT START -->
+	<bean id="pdfBlanketProductionSummuryReport"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Blanket_Production_Summary.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Blanket_Production_Summary.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="pdfBlanketProductionSummuryReportNew"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Blanket_Production_Summary_new.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Blanket_Production_Summary_New.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsBlanketProductionSummuryReport"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Blanket_Production_Summary.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Blanket_Production_Summary_New.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsBlanketProductionSummuryReportNew"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Blanket_Production_Summary_new.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Blanket_Production_Summary_New.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlBlanketProductionSummuryReport"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Blanket_Production_Summary.jasper"
+		p:reportDataKey="datasource" />
+
+
+	<bean id="htmlBlanketProductionSummuryReportNew"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Blanket_Production_Summary_new.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="csvBlanketProductionSummuryReport"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Blanket_Production_Summary.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="csvBlanketProductionSummuryReportNew"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Blanket_Production_Summary_new.jasper"
+		p:reportDataKey="datasource" />
+	<!-- Blanket Production Summury REPORT END -->
+
+
+
+	<!-- Finished Stock With Sales Order Report START -->
+	<bean id="pdfFinishStockWithSalesOrder"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView"
+		p:url="classpath:/reports/Finish stock with sales order.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Finish_stock_with_sales_order.pdf;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="xlsFinishStockWithSalesOrder"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsXlsView"
+		p:url="classpath:/reports/Finish stock with sales order.jasper"
+		p:reportDataKey="datasource">
+		<property name="headers">
+			<props>
+				<prop key="Content-Disposition">
+					filename=Finish_stock_with_sales_order.xls;
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="htmlFinishStockWithSalesOrder"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView"
+		p:url="classpath:/reports/Finish stock with sales order.jasper"
+		p:reportDataKey="datasource" />
+
+	<bean id="csvFinishStockWithSalesOrder"
+		class="org.springframework.web.servlet.view.jasperreports.JasperReportsCsvView"
+		p:url="classpath:/reports/Finish stock with sales order.jasper"
+		p:reportDataKey="datasource" />
+	<!-- Finished Stock With Sales Order Report END -->
+	<!-- Please add name of the report in comments before all the newly added 
+		entries -->
+</beans>

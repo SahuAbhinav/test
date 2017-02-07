@@ -1,0 +1,129 @@
+ALTER TABLE `t_stock_ledger` ADD COLUMN `weighted_amt` DOUBLE(15,5) NULL AFTER `modified_user_id`, ADD COLUMN `weighted_rate` DOUBLE(15,5) NULL AFTER `weighted_amt`, ADD COLUMN `closing_balance` DOUBLE(15,5) NULL AFTER `weighted_rate`, ADD COLUMN `transaction_amt` DOUBLE(15,5) NULL AFTER `closing_balance`; 
+
+ALTER TABLE `t_stock_ledger` ADD COLUMN `master_rate` DOUBLE(15,5) NULL AFTER `transaction_amt`, ADD COLUMN `rate_for_weighed` DOUBLE(15,5) NULL AFTER `master_rate`; 
+
+
+ALTER TABLE `aspl_eng_erp`.`m_company` ADD COLUMN `blanket_cutoff_date` TIMESTAMP NULL AFTER `issue_lock_flag`; 
+
+CREATE TABLE `aspl_eng_erp`.`t_barcode_ledger`( `sno` INT(11) NOT NULL AUTO_INCREMENT, `item_id` INT(11), `barcode` VARCHAR(50), `barcode_sno` VARCHAR(50), `transaction_type` VARCHAR(10), `quantity` INT(10), `transaction_id` INT(11), `created_date` TIMESTAMP, `modified_date` TIMESTAMP, `created_user_id` INT(11), `modified_user_id` INT(11), `deleted_flag` INT(1), PRIMARY KEY (`sno`) );
+
+-- for Party Po number lenth change in sales order
+ALTER TABLE `aspl_eng_erp`.`t_sales_order_mast` CHANGE `party_po_no` `party_po_no` VARCHAR(50) CHARSET utf8 COLLATE utf8_general_ci NULL;
+
+-- (change for item name)
+-- in Item master
+ALTER TABLE `aspl_eng_erp`.`m_item` CHANGE `invoice_name` `invoice_name` VARCHAR(150) CHARSET utf8 COLLATE utf8_general_ci NULL, CHANGE `item_name` `item_name` VARCHAR(150) CHARSET utf8 COLLATE utf8_general_ci NULL;
+
+-- in erp_cls_bal
+ALTER TABLE `aspl_eng_erp`.`erp_cls_bal` CHANGE `item_name` `item_name` VARCHAR(150) CHARSET utf8 COLLATE utf8_general_ci NULL;
+
+-- (change for item code)
+-- in item master
+ALTER TABLE `aspl_eng_erp`.`m_item` CHANGE `itemcode` `itemcode` VARCHAR(30) CHARSET utf8 COLLATE utf8_general_ci NULL;
+
+-- in erp_cls_bal
+ALTER TABLE `aspl_eng_erp`.`erp_cls_bal` CHANGE `itemcode` `itemcode` VARCHAR(30) CHARSET utf8 COLLATE utf8_general_ci NULL;
+
+-- add column in profarma
+ALTER TABLE `aspl_eng_erp`.`t_proforma_mast`     ADD COLUMN `excise_type` VARCHAR(25) NULL AFTER `item_group_flag_id`;
+
+-- add column in bill
+ALTER TABLE `aspl_eng_erp`.`t_bill_mast`     ADD COLUMN `excise_type` VARCHAR(25) NULL AFTER `item_group_flag_id`;
+
+-- insert menus
+insert into `m_module_menu_master` (`menu_id`, `module_name`, `sub_module_name`, `menu_name`, `sub_menu_name`, `url_link`, `active_status`, `menu_seq_no`, `description`) values('110','Manufacturing Planning','Manufacturing Planning','Blanket Production New',NULL,'/get_blanketProduction_list_new','1','4013',NULL);
+insert into `m_module_menu_master` (`menu_id`, `module_name`, `sub_module_name`, `menu_name`, `sub_menu_name`, `url_link`, `active_status`, `menu_seq_no`, `description`) values('111','Manufacturing Planning','Manufacturing Planning','Annealing Oven Migration New',NULL,'/getAnnealingOverMigration_new','1','4014',NULL);
+insert into `m_module_menu_master` (`menu_id`, `module_name`, `sub_module_name`, `menu_name`, `sub_menu_name`, `url_link`, `active_status`, `menu_seq_no`, `description`) values('112','Manufacturing Planning','Manufacturing Planning','Rejected Blanket Migration New',NULL,'/getRejectionMigration_new','1','4015',NULL);
+insert into `m_module_menu_master` (`menu_id`, `module_name`, `sub_module_name`, `menu_name`, `sub_menu_name`, `url_link`, `active_status`, `menu_seq_no`, `description`) values('113','Manufacturing Planning','Manufacturing Planning','Blanket Approved New',NULL,'/getApprovedBlanket_new','1','4016',NULL);
+
+-- create blanket new table
+DROP TABLE IF EXISTS `t_blanket_production_detail_new`;
+
+
+
+CREATE TABLE `t_blanket_production_detail_new` (
+  `sno` int(11) NOT NULL AUTO_INCREMENT,
+  `blanket_prod_id` int(11) DEFAULT NULL,
+  `roll_no` int(11) DEFAULT NULL,
+  `length` double(15,5) DEFAULT NULL,
+  `width` double(15,5) DEFAULT NULL,
+  `thick` double(15,5) DEFAULT NULL,
+  `weight` double(15,5) DEFAULT NULL,
+  `density` double(15,5) DEFAULT NULL,
+  `spliter_type` varchar(10) DEFAULT NULL,
+  `remark` varchar(500) DEFAULT NULL,
+  `blanket_type` varchar(25) DEFAULT NULL,
+  `item_id` int(11) DEFAULT NULL,
+  `status` varchar(25) DEFAULT NULL,
+  `update_date` datetime DEFAULT NULL,
+  `rej_roll_no` int(11) DEFAULT NULL,
+  `rej_length` double(15,5) DEFAULT NULL,
+  `rej_width` double(15,5) DEFAULT NULL,
+  `rej_thick` double(15,5) DEFAULT NULL,
+  `rej_weight` double(15,5) DEFAULT NULL,
+  `rej_density` double(15,5) DEFAULT NULL,
+  `rej_remark` varchar(50) DEFAULT NULL,
+  `rej_item_id` int(11) DEFAULT NULL,
+  `rej_status` varchar(50) DEFAULT NULL,
+  `rej_update_date` datetime DEFAULT NULL,
+  `approved_status` tinyint(1) DEFAULT '0',
+  `approved_date` datetime DEFAULT NULL,
+  `finished_good` varchar(25) DEFAULT NULL,
+  `deleted_flag` tinyint(1) DEFAULT '0',
+  `created_date` datetime DEFAULT NULL,
+  `modified_date` datetime DEFAULT NULL,
+  `Created_User_ID` varchar(25) DEFAULT NULL,
+  `modified_user_id` int(11) DEFAULT NULL,
+  `rejected_user_id` int(11) DEFAULT NULL,
+  `ra_user_id` int(11) DEFAULT NULL,
+  `approved_user_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`sno`)
+) ENGINE=MyISAM AUTO_INCREMENT=100 DEFAULT CHARSET=utf8;
+
+
+
+/*Data for the table `t_blanket_production_detail_new` */
+
+
+
+/*Table structure for table `t_blanket_production_mast_new` */
+
+
+
+DROP TABLE IF EXISTS `t_blanket_production_mast_new`;
+
+
+
+CREATE TABLE `t_blanket_production_mast_new` (
+  `blanket_prod_id` int(11) NOT NULL AUTO_INCREMENT,
+  `blanket_prod_date` date DEFAULT NULL,
+  `run_no` varchar(15) DEFAULT NULL,
+  `grade_id` int(11) DEFAULT NULL,
+  `spliter_count` int(11) DEFAULT NULL,
+  `shift_id` int(11) DEFAULT NULL,
+  `shift_engineer_name` varchar(65) DEFAULT NULL,
+  `production_planning` text,
+  `batch_number` varchar(15) DEFAULT NULL,
+  `blanket_prod_remark` text,
+  `roll_packed` double(15,5) DEFAULT NULL,
+  `carton_used` double(15,5) DEFAULT NULL,
+  `short_lenght` double(15,5) DEFAULT NULL,
+  `edge_trim` double(15,5) DEFAULT NULL,
+  `bulk_fiber` double(15,5) DEFAULT NULL,
+  `approve_status` int(1) DEFAULT NULL,
+  `approve_user_id` varchar(5) DEFAULT NULL,
+  `approve_date` datetime DEFAULT NULL,
+  `deleted_flag` tinyint(1) DEFAULT '0',
+  `created_date` datetime DEFAULT NULL,
+  `modified_date` datetime DEFAULT NULL,
+  `Created_User_ID` varchar(25) DEFAULT NULL,
+  `modified_user_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`blanket_prod_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;   
+
+-- add reports column in model menu master
+INSERT INTO `aspl_eng_erp`.`m_module_menu_master`
+(`menu_id`,`module_name`,`sub_module_name`,`menu_name`,`sub_menu_name`,`url_link`,`active_status`,`menu_seq_no`,`description`) 
+VALUES ( '114','Reports','Manufacturing Planning Reports','Manufacturing Planning Reports','Blanket Production New','/blanket_production_report_new','1','5408',NULL),
+( '115','Reports','Manufacturing Planning Reports','Manufacturing Planning Reports','Blanket Production Summury Report New','/blanket_production_sumury_report_new','1','5409',NULL),
+( '116','Reports','Manufacturing Planning Reports','Manufacturing Planning Reports','Shift Report New','/shift_report_report_new','1','5410',NULL);   

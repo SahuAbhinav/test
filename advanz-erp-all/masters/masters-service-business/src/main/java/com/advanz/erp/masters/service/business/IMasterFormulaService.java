@@ -1,0 +1,14 @@
+package com.advanz.erp.masters.service.business;
+
+import com.advanz.erp.common.service.business.IAdvanzErpBaseSerivce;
+import com.advanz.erp.masters.model.msg.MasterFormulaMasterInputMessage;
+import com.advanz.erp.masters.model.msg.MasterFormulaMasterOutputMessage;
+
+public interface IMasterFormulaService extends IAdvanzErpBaseSerivce {
+	public MasterFormulaMasterOutputMessage findAllMasterFormula();
+	public MasterFormulaMasterOutputMessage createMasterFormula(MasterFormulaMasterInputMessage masterFormulaMasterInputMessage);
+	public MasterFormulaMasterOutputMessage deleteMasterFormula(MasterFormulaMasterInputMessage masterFormulaMasterInputMessage);
+	public MasterFormulaMasterOutputMessage searchMasterFormula(MasterFormulaMasterInputMessage masterFormulaMasterInputMessage);
+	public MasterFormulaMasterOutputMessage findMasterFormulaById(MasterFormulaMasterInputMessage masterFormulaMasterInputMessage);
+	public MasterFormulaMasterOutputMessage updateMasterFormula(MasterFormulaMasterInputMessage masterFormulaMasterInputMessage);
+}

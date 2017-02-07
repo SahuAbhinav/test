@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Pending Gate Pass" pageWidth="1020" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="1020" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="44e3e4c4-111a-40cf-902a-11ab29748c10">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="44"/>
+	<property name="ireport.y" value="0"/>
+	<style name="style1" mode="Opaque">
+		<paragraph lineSpacing="Single"/>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 ==0)]]></conditionExpression>
+			<style backcolor="#E6F3F7" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
+				<paragraph lineSpacing="Single"/>
+			</style>
+		</conditionalStyle>
+	</style>
+	<parameter name="FromDatePrompt" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ToDatePrompt" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ItemCategoryPrompt" class="java.lang.String"/>
+	<parameter name="ItemCategoryNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ItemCategoryPrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ItemNamePrompt" class="java.lang.String"/>
+	<parameter name="ItemNameNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ItemNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PartyNamePrompt" class="java.lang.String"/>
+	<parameter name="PartyNameNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{PartyNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PendingPrompt" class="java.lang.String">
+		<defaultValueExpression><![CDATA["Yes"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PendingNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{PendingPrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Item_Status_Prompt" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Item_StatusNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{Item_Status_Prompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Gate_Pass_Type" class="java.lang.String"/>
+	<parameter name="Gate_Pass_TypeNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{Gate_Pass_Type}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT gate_m.gate_pass_number
+, gate_m.gate_pass_type
+, DATE_FORMAT(CAST(gate_m.gate_pass_date AS DATE),'%d-%m-%Y') AS gate_pass_date
+, IFNULL(prt.party_name,'') AS party_name
+, UPPER(IFNULL(itm.item_name,'')) AS item_name
+, IFNULL(gate_d.gate_pass_quantity,0) AS g_qty
+, IFNULL(gate_d.pending_quantity,0) AS p_qty
+, IFNULL(gate_m.gate_pass_purpose,'') AS purpose
+, gate_d.`remark` AS Item_detail_remark
+, UPPER(IFNULL(unit.Unit_Name,'')) AS unit_name
+FROM t_gate_pass_mast AS gate_m,t_gate_pass_detail AS gate_d
+,m_party AS prt,m_item AS itm
+LEFT JOIN
+(SELECT masters_id,m_form_name,NAME AS Unit_Name FROM m_masters WHERE m_form_name='Measurement Unit') AS unit
+ON itm.measurement_unit_id=unit.masters_id
+,m_item_category AS c
+WHERE gate_m.deleted_flag=0 AND gate_d.deleted_flag=0 AND gate_m.party_id =prt.party_id
+AND gate_m.gate_pass_number = gate_d.gate_pass_number
+AND prt.deleted_flag=0 AND gate_d.item_id=itm.item_id AND itm.deleted_flag=0
+AND itm.item_category_id=c.item_category_id AND c.deleted_flag=0
+AND CAST(gate_m.gate_pass_date AS DATE)>= $P{FromDatePrompt}
+AND CAST(gate_m.gate_pass_date AS DATE)<= $P{ToDatePrompt}
+AND (c.ITEM_CATEGORY_NAME = $P{ItemCategoryPrompt} OR 1=$P{ItemCategoryNull_FlagPrompt})
+AND(itm.item_name=$P{ItemNamePrompt} OR 1=$P{ItemNameNull_FlagPrompt})
+AND(prt.party_name=$P{PartyNamePrompt} OR 1=$P{PartyNameNull_FlagPrompt})
+AND (itm.active_status=$P{Item_Status_Prompt} OR 1=$P{Item_StatusNull_FlagPrompt})
+AND (gate_m.gate_pass_type = $P{Gate_Pass_Type} OR 1=$P{Gate_Pass_TypeNull_FlagPrompt})
+AND (CASE WHEN( $P{PendingPrompt} = 'yes')
+     THEN (gate_d.pending_quantity > 0)
+     ELSE IFNULL(gate_d.pending_quantity,0) = 0
+     END)]]>
+	</queryString>
+	<field name="gate_pass_number" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="gate_pass_type" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="gate_pass_date" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="party_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="item_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="g_qty" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="p_qty" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="purpose" class="java.lang.String"/>
+	<field name="Item_detail_remark" class="java.lang.String"/>
+	<field name="unit_name" class="java.lang.String"/>
+	<variable name="s_no" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$V{REPORT_COUNT}]]></variableExpression>
+	</variable>
+	<pageHeader>
+		<band height="63">
+			<staticText>
+				<reportElement uuid="cb9ee485-221e-4e16-bbd3-a9ef8a886ce6" x="0" y="1" width="1020" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Pending Gate Pass]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="526d4f46-ee2e-45f6-bb8b-64af0d302aa4" x="0" y="21" width="1020" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["From Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{FromDatePrompt})+"</style>"
++" To Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{ToDatePrompt})+"</style>"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="4c6072fb-0fcc-4bda-a558-d0a26bdef3d3" x="0" y="42" width="1020" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["For Party : " + ($P{PartyNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{PartyNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++", Category : " + ($P{ItemCategoryNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemCategoryPrompt}.replaceAll( "&", "&amp;" )+"</style>")
++", Item : " + ($P{ItemNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++", Pending : " + "<style forecolor='red'>"+$P{PendingPrompt}+"</style>"
++ ", Active Status : " + ($P{Item_StatusNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+ ($P{Item_Status_Prompt}.intValue()==1?"Yes":"No") +"</style>")
++", Gate Pass Type : " + ($P{Gate_Pass_TypeNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{Gate_Pass_Type}+"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="34">
+			<staticText>
+				<reportElement uuid="4ecdca86-09ac-46f0-bac3-00af323277d7" x="0" y="1" width="31" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[S.No.]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="ee131dae-7abe-4aa5-ba2a-74fa6e0a2f4c" x="0" y="0" width="1020" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="abc61d7d-448a-460c-a3db-9fdb07b9b666" x="191" y="1" width="200" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Party Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="0ef8b1f2-705a-40c4-a2eb-10daa59427a6" x="31" y="1" width="80" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Gate Pass No.]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="04d650a1-070c-431b-8ddb-16cb5857602e" x="0" y="32" width="1020" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="0139232d-7138-472d-91aa-c57cac1a98cf" x="391" y="1" width="200" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Item Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="78db2fd5-bd19-46ee-90ee-1d72d6fb8f8b" x="661" y="1" width="50" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Qty.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a33f14d1-0818-4638-bb50-7114570c15c6" x="111" y="1" width="80" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Gate Pass Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="01d63412-07e8-4102-81a3-badb98443fdf" x="711" y="1" width="60" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Pending Qty.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b57171f7-de5a-4355-bf9e-82afa127f585" x="771" y="1" width="170" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Purpose]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="01d63412-07e8-4102-81a3-badb98443fdf" x="941" y="0" width="78" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Item Remark]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="78db2fd5-bd19-46ee-90ee-1d72d6fb8f8b" x="591" y="1" width="70" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Unit]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="14">
+			<frame>
+				<reportElement uuid="352d86ef-0382-4828-9407-8a910312212f" style="style1" x="0" y="0" width="1020" height="14"/>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="679ffd99-c76f-4a94-83de-407b5d892479" x="941" y="0" width="78" height="13"/>
+					<textElement textAlignment="Center">
+						<font isBold="false"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Item_detail_remark}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="3b271290-7f08-4743-b004-e40ce7c9acbc" isPrintRepeatedValues="false" x="0" y="0" width="31" height="13"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{s_no}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement uuid="566ce273-4032-487a-a974-7b8929fa515a" x="391" y="0" width="200" height="13"/>
+					<textElement verticalAlignment="Top">
+						<font fontName="SansSerif" size="10" isBold="false"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{item_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="704f1867-7081-4674-bb5d-c5c93ca45364" x="31" y="0" width="80" height="13"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font fontName="SansSerif" size="10" isBold="false"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{gate_pass_number}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="194ddbde-2d54-4671-90c1-557ebd2a5c11" x="191" y="0" width="200" height="13"/>
+					<textElement verticalAlignment="Top">
+						<font fontName="SansSerif" size="10" isBold="false"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{party_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+					<reportElement uuid="008e98a0-a6ba-4154-8455-f536108bc9a0" x="111" y="0" width="80" height="13"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font isBold="false"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{gate_pass_date}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement uuid="5e3c2abd-c157-4c59-aa24-f01fee2005d4" x="661" y="0" width="50" height="13"/>
+					<textElement textAlignment="Right" verticalAlignment="Top">
+						<font fontName="SansSerif" size="10" isBold="false"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( ($F{g_qty}.doubleValue()-$F{g_qty}.intValue())> new Double(0) ? $F{g_qty}:
+new DecimalFormat("###0").format($F{g_qty}) )]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement uuid="76150411-f309-46d6-8ea1-5f5d0b655d72" x="711" y="0" width="60" height="13"/>
+					<textElement textAlignment="Right" verticalAlignment="Top">
+						<font isBold="false"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( ($F{p_qty}.doubleValue()-$F{p_qty}.intValue())> new Double(0) ? $F{p_qty}:
+new DecimalFormat("###0").format($F{p_qty}) )]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="679ffd99-c76f-4a94-83de-407b5d892479" x="771" y="0" width="170" height="13"/>
+					<textElement textAlignment="Center">
+						<font isBold="false"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{purpose}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement uuid="566ce273-4032-487a-a974-7b8929fa515a" x="591" y="0" width="70" height="13"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font fontName="SansSerif" size="10" isBold="false"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{unit_name}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<summary>
+		<band height="1">
+			<line>
+				<reportElement uuid="e5fb5723-ef61-49d9-bb20-c605b3169b98" x="0" y="0" width="871" height="1"/>
+			</line>
+		</band>
+	</summary>
+	<noData>
+		<band height="109">
+			<staticText>
+				<reportElement uuid="55f55455-aa95-4215-9683-266298d58c8a" x="0" y="0" width="1020" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Pending Gate Pass]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="0e7daa7c-567f-4f9f-9867-17dd22b980f2" x="0" y="60" width="1020" height="29" forecolor="#FF3300"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="20"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="eab0709e-953d-46db-9f2c-071ffdad3b7b" x="0" y="89" width="1020" height="20" forecolor="#0099FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[(Please Check Your Selection Criteria)]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="fce529cf-d359-45d5-af5d-c02b1e9e37ad" x="0" y="20" width="1020" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["From Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{FromDatePrompt})+"</style>"
++" To Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{ToDatePrompt})+"</style>"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="fc4d2fe5-4c31-4ded-a528-1e19c4405c3e" x="0" y="40" width="1020" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["For Party : " + ($P{PartyNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{PartyNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++", Category : " + ($P{ItemCategoryNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemCategoryPrompt}.replaceAll( "&", "&amp;" )+"</style>")
++", Item : " + ($P{ItemNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++", Pending : " + "<style forecolor='red'>"+$P{PendingPrompt}+"</style>"
++ ", Active Status : " + ($P{Item_StatusNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+ ($P{Item_Status_Prompt}.intValue()==1?"Yes":"No") +"</style>")
++", Gate Pass Type : " + ($P{Gate_Pass_TypeNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{Gate_Pass_Type}+"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</noData>
+</jasperReport>

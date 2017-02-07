@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Item_Stock_Detail" pageWidth="496" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="496" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="style1" mode="Opaque" lineSpacing="Single">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 ==0)]]></conditionExpression>
+			<style backcolor="#E6F3F7" lineSpacing="Single" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="FromDatePrompt" class="java.util.Date">
+		<defaultValueExpression><![CDATA["2013-02-09"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ToDatePrompt" class="java.util.Date">
+		<defaultValueExpression><![CDATA["2013-02-09"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="GroupFlagPrompt" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="GroupFlagNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{GroupFlagPrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="GroupNamePrompt" class="java.lang.String"/>
+	<parameter name="GroupNameNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{GroupNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ItemCategoryPrompt" class="java.lang.String"/>
+	<parameter name="ItemCategoryNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ItemCategoryPrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ItemNamePrompt" class="java.lang.String"/>
+	<parameter name="ItemNameNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ItemNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="GradePrompt" class="java.lang.String"/>
+	<parameter name="GradeNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{GradePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Item_Status_Prompt" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Item_StatusNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{Item_Status_Prompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT itemcode,UPPER(item_name) AS item_name,UPPER(item_group_name) AS item_group_name
+,grade_name,UPPER(unit_name) AS unit_name,
+(IFNULL(opening_stock,0)+IFNULL(qty,0)) AS opening_stock,
+IFNULL(purchase_qty,0) AS purchase_qty,IFNULL(issue_qty,0) AS issue_qty
+,(((IFNULL(opening_stock,0)+IFNULL(qty,0))+IFNULL(purchase_qty,0))-IFNULL(issue_qty,0)) AS closing_stock
+,CAST(IFNULL(stk.tran_date,$P{FromDatePrompt}) AS DATE) AS tran_date
+ FROM
+(SELECT item_id,itemcode,item_name,item_group_name,
+OPENING_STOCK,gd.NAME AS grade_name,ut.name AS unit_name,i.item_sequence_no
+FROM m_item AS i,m_item_category AS c,m_item_group AS g,
+m_item_group_flag AS f,m_masters AS gd,m_masters AS ut
+WHERE i.deleted_flag=0
+AND i.item_category_id=c.item_category_id AND c.deleted_flag=0
+AND c.item_group_id=g.item_group_id AND g.deleted_flag=0
+AND g.item_group_flag_id=f.item_group_flag_id
+AND (g.item_group_name=$P{GroupNamePrompt} OR 1=$P{GroupNameNull_FlagPrompt})
+AND (f.item_group_flag_name=$P{GroupFlagPrompt} OR 1=$P{GroupFlagNull_FlagPrompt})
+AND (c.ITEM_CATEGORY_NAME = $P{ItemCategoryPrompt} OR 1=$P{ItemCategoryNull_FlagPrompt})
+AND i.item_grade_id=gd.masters_id AND gd.m_form_name='Item Grade'
+AND gd.deleted_flag=0 AND (gd.name=$P{GradePrompt} OR 1=$P{GradeNull_FlagPrompt})
+AND i.measurement_Unit_id=ut.masters_id AND ut.m_form_name='Measurement Unit'
+AND(i.item_name=$P{ItemNamePrompt} OR 1=$P{ItemNameNull_FlagPrompt})
+AND (i.active_status=$P{Item_Status_Prompt} OR 1=$P{Item_StatusNull_FlagPrompt})
+AND ut.deleted_flag=0
+) AS item
+LEFT JOIN
+(
+SELECT m_item.item_id,$P{FromDatePrompt} AS tran_date,IFNULL(SUM(quantity),0) AS qty
+FROM m_item
+LEFT JOIN
+t_stock_ledger
+ON m_item.item_id=t_stock_ledger.item_id
+AND m_item.deleted_flag=0 AND t_stock_ledger.deleted_flag=0
+AND t_stock_ledger.transaction_date<$P{FromDatePrompt}
+AND (m_item.active_status=$P{Item_Status_Prompt} OR 1=$P{Item_StatusNull_FlagPrompt})
+GROUP BY m_item.item_id
+UNION ALL
+SELECT item_id,transaction_date  AS tran_date,((SELECT SUM(quantity)
+FROM t_stock_ledger WHERE item_id=st.item_id  AND deleted_flag=0
+AND transaction_date <=st.transaction_date
+GROUP BY item_id)-SUM(quantity))AS qty FROM t_stock_ledger AS st
+WHERE  transaction_date >=$P{FromDatePrompt} AND transaction_date <= DATE_ADD($P{ToDatePrompt},INTERVAL 1 DAY)
+--  in date time format that  end date is not taken hence 1 day add in date
+AND deleted_flag=0
+GROUP BY item_id,transaction_date
+ORDER BY item_id,tran_date
+) AS stk
+ON item.item_id=stk.item_id
+LEFT JOIN
+(SELECT item_id,transaction_date AS tran_date,SUM(quantity) AS purchase_qty FROM t_stock_ledger WHERE
+ transaction_date >= $P{FromDatePrompt} AND transaction_date <= DATE_ADD($P{ToDatePrompt},INTERVAL 1 DAY)
+--  in date time format that  end date is not taken hence 1 day add in date
+AND quantity>=0 AND deleted_flag=0
+GROUP BY item_id,tran_date) AS inwrdqty
+ON item.item_id=inwrdqty.item_id
+AND IFNULL(stk.tran_date,$P{FromDatePrompt})=inwrdqty.tran_date
+LEFT JOIN
+(SELECT item_id,transaction_date AS tran_date,SUM(quantity*-1) AS issue_qty FROM t_stock_ledger WHERE
+transaction_date  >= $P{FromDatePrompt}  AND transaction_date <= DATE_ADD($P{ToDatePrompt},INTERVAL 1 DAY)
+--  in date time format that  end date is not taken hence 1 day add in date
+AND quantity<0 AND deleted_flag=0
+GROUP BY item_id,tran_date) AS outwdqty
+ON item.item_id=outwdqty.item_id
+AND IFNULL(stk.tran_date,$P{FromDatePrompt})=outwdqty.tran_date
+HAVING opening_stock!=0 OR purchase_qty!=0 OR issue_qty!=0 OR closing_stock!=0
+ORDER BY item_group_name,item_sequence_no,item_name,stk.tran_date]]>
+	</queryString>
+	<field name="item_group_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="closing_stock" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="item_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="unit_name" class="java.lang.String"/>
+	<field name="opening_stock" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="issue_qty" class="java.lang.Double"/>
+	<field name="purchase_qty" class="java.lang.Double"/>
+	<field name="grade_name" class="java.lang.String"/>
+	<field name="tran_date" class="java.util.Date"/>
+	<sortField name="item_group_name"/>
+	<sortField name="item_name"/>
+	<variable name="s_no" class="java.lang.Integer" resetType="Group" resetGroup="item_group" calculation="Count">
+		<variableExpression><![CDATA[$V{REPORT_COUNT}==0? new java.lang.Integer(1):$V{REPORT_COUNT}]]></variableExpression>
+		<initialValueExpression><![CDATA[Integer.valueOf(1)]]></initialValueExpression>
+	</variable>
+	<variable name="Varopening_stock_g" class="java.lang.Double" resetType="Group" resetGroup="item_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{opening_stock}]]></variableExpression>
+	</variable>
+	<variable name="Varpurchase_qty_g" class="java.lang.Double" resetType="Group" resetGroup="item_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{purchase_qty}]]></variableExpression>
+	</variable>
+	<variable name="Varissue_qty_g" class="java.lang.Double" resetType="Group" resetGroup="item_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{issue_qty}]]></variableExpression>
+	</variable>
+	<variable name="Varclosing_stock_g" class="java.lang.Double" resetType="Group" resetGroup="item_name" calculation="Sum">
+		<variableExpression><![CDATA[$F{closing_stock}]]></variableExpression>
+	</variable>
+	<group name="item_group">
+		<groupExpression><![CDATA[$F{item_group_name}]]></groupExpression>
+		<groupHeader>
+			<band height="14">
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="1" width="194" height="13" forecolor="#3333FF"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10" isBold="true"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{item_group_name}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="item_name">
+		<groupExpression><![CDATA[$F{item_name}]]></groupExpression>
+		<groupHeader>
+			<band height="14">
+				<textField isStretchWithOverflow="true">
+					<reportElement x="0" y="0" width="194" height="13" forecolor="#CC0000"/>
+					<textElement verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{item_name}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="194" y="0" width="100" height="13" forecolor="#CC0000"/>
+					<textElement verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{unit_name}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<pageHeader>
+		<band height="60">
+			<staticText>
+				<reportElement x="0" y="0" width="494" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Item wise Stock Detail]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="20" width="494" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["  From Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{FromDatePrompt})+"</style>"
++" , To Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{ToDatePrompt})+"</style>"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="40" width="494" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Item Name : " + ($P{ItemNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++ ", Category : " + ($P{ItemCategoryNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemCategoryPrompt}.replaceAll( "&", "&amp;" )+"</style>")
++ ", Group : " + ($P{GroupNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{GroupNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++ ", Group Type : " + ($P{GroupFlagNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{GroupFlagPrompt}+"</style>")
++ ", Grade : " + ($P{GradeNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{GradePrompt}+"</style>")
++ ", Active Status : " + ($P{Item_StatusNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+ ($P{Item_Status_Prompt}.intValue()==1?"Yes":"No") +"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="22">
+			<line>
+				<reportElement x="0" y="0" width="494" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="33" y="1" width="61" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="1" width="33" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[S.No.]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="21" width="494" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="94" y="1" width="100" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Opening Qty.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="194" y="1" width="100" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Inward Qty.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="294" y="1" width="100" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Outward Qty.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="394" y="1" width="100" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Closing Stock]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="13">
+			<frame>
+				<reportElement style="style1" x="0" y="0" width="494" height="13"/>
+				<textField pattern="">
+					<reportElement x="194" y="0" width="100" height="13"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[( ($F{purchase_qty}.doubleValue()-$F{purchase_qty}.intValue())> new Double(0) ? $F{purchase_qty} :
+new DecimalFormat("###0").format($F{purchase_qty}) )]]></textFieldExpression>
+				</textField>
+				<textField pattern="">
+					<reportElement x="394" y="0" width="100" height="13"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[( ($F{closing_stock}.doubleValue()-$F{closing_stock}.intValue())> new Double(0) ? $F{closing_stock} :
+new DecimalFormat("###0").format($F{closing_stock}) )]]></textFieldExpression>
+				</textField>
+				<textField pattern="">
+					<reportElement x="294" y="0" width="100" height="13"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[( ($F{issue_qty}.doubleValue()-$F{issue_qty}.intValue())> new Double(0) ? $F{issue_qty} :
+new DecimalFormat("###0").format($F{issue_qty}) )]]></textFieldExpression>
+				</textField>
+				<textField pattern="">
+					<reportElement x="94" y="0" width="100" height="13"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[( ($F{opening_stock}.doubleValue()-$F{opening_stock}.intValue())> new Double(0) ? $F{opening_stock} :
+new DecimalFormat("###0").format($F{opening_stock}) )]]></textFieldExpression>
+				</textField>
+				<textField pattern="dd-MMM-yy" isBlankWhenNull="true">
+					<reportElement x="33" y="0" width="61" height="13"/>
+					<textElement verticalAlignment="Middle" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{tran_date}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="0" width="33" height="13"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$V{item_name_COUNT}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="16">
+			<staticText>
+				<reportElement x="394" y="2" width="100" height="14"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cont......]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="2" width="494" height="1"/>
+			</line>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="3">
+			<line>
+				<reportElement x="0" y="1" width="494" height="1"/>
+			</line>
+		</band>
+	</summary>
+	<noData>
+		<band height="109">
+			<staticText>
+				<reportElement x="0" y="0" width="494" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Item wise Stock Detail]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="60" width="494" height="29" forecolor="#FF3300"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="20"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="89" width="494" height="20" forecolor="#0099FF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(Please Check Your Selection Criteria)]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="20" width="494" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["  From Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{FromDatePrompt})+"</style>"
++" , To Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{ToDatePrompt})+"</style>"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="40" width="494" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Item Name : " + ($P{ItemNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++ ", Category : " + ($P{ItemCategoryNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemCategoryPrompt}.replaceAll( "&", "&amp;" )+"</style>")
++ ", Group : " + ($P{GroupNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{GroupNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++ ", Group Type : " + ($P{GroupFlagNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{GroupFlagPrompt}+"</style>")
++ ", Grade : " + ($P{GradeNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{GradePrompt}+"</style>")
++ ", Active Status : " + ($P{Item_StatusNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+ ($P{Item_Status_Prompt}.intValue()==1?"Yes":"No") +"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</noData>
+</jasperReport>

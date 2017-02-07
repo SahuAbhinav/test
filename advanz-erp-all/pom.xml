@@ -1,0 +1,131 @@
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.advanz.erp</groupId>
+	<artifactId>advanz-erp-all</artifactId>
+	<version>1_0_0</version>
+	<packaging>pom</packaging>
+	<name>All Services</name>
+
+	<build>
+		<plugins>	
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<properties>
+		
+		<!-- Dependency Versions -->
+		<spring.version>3.1.2.RELEASE</spring.version>
+		<spring.testing.version>3.1.0.RELEASE</spring.testing.version>
+		<spring.security.version>3.1.0.RELEASE</spring.security.version>
+		<junit.version>4.8.2</junit.version>
+		<log4j.version>1.2.16</log4j.version>
+		<mysql.version>5.1.6</mysql.version>
+		<commons-dbcp.version>1.4</commons-dbcp.version>
+		
+		<commons-dbcp.version>1.4</commons-dbcp.version>
+		<hibernate.version.core>3.6.10.Final</hibernate.version.core>
+		<persistence.api.version>1.0</persistence.api.version>
+		<commonsbeanutils.version>1.8.3</commonsbeanutils.version>
+		<hibernate.validator.version>4.3.0.Final</hibernate.validator.version>
+		<hibernate.search.version>3.4.0.Final</hibernate.search.version>
+		
+		
+		<!--Common Module Versions-->
+		<common.version>1_0_0</common.version>
+		<common.service>1_0_0</common.service>
+		<common.service.business>1_0_0</common.service.business>
+		<common.http>1_0_0</common.http>
+		<common.entity>1_0_0</common.entity>
+		<common.storage>1_0_0</common.storage>
+		<common.util>1_0_0</common.util>
+		<!--Masters Module Versions-->
+		<masters.version>1_0_0</masters.version>
+		<masters.service>1_0_0</masters.service>
+		<masters.service.business>1_0_0</masters.service.business>
+		<masters.http>1_0_0</masters.http>
+		<masters.entity>1_0_0</masters.entity>
+		<masters.storage>1_0_0</masters.storage>
+		<!--Sales Module Versions-->
+		<sales.version>1_0_0</sales.version>
+		<sales.service>1_0_0</sales.service>
+		<sales.service.business>1_0_0</sales.service.business>
+		<sales.http>1_0_0</sales.http>
+		<sales.entity>1_0_0</sales.entity>
+		<sales.storage>1_0_0</sales.storage>
+
+	</properties>
+	
+	<dependencies>
+		<dependency>
+	      <groupId>junit</groupId>
+	      <artifactId>junit</artifactId>
+	      <version>${junit.version}</version>
+	      <scope>test</scope>
+	  </dependency>
+	  <dependency>
+	   <groupId>org.springframework</groupId>
+	   <artifactId>spring-core</artifactId>
+	   <version>${spring.version}</version>
+	 </dependency>
+	 <dependency>
+	   <groupId>org.springframework</groupId>
+	   <artifactId>spring-web</artifactId>
+	   <version>${spring.version}</version>
+	 </dependency>
+	 <dependency>
+	   <groupId>org.springframework</groupId>
+	   <artifactId>spring-beans</artifactId>
+	   <version>${spring.version}</version>
+	 </dependency>
+	 <dependency>
+	   <groupId>org.springframework</groupId>
+	   <artifactId>spring-context</artifactId>
+	   <version>${spring.version}</version>
+	 </dependency>
+	 <dependency>
+	   <groupId>org.springframework</groupId>
+	   <artifactId>spring-aop</artifactId>
+	   <version>${spring.version}</version>
+	 </dependency>
+	 <dependency>
+	   <groupId>org.springframework</groupId>
+	   <artifactId>spring-context-support</artifactId>
+	   <version>${spring.version}</version>
+	 </dependency>
+	 <dependency>
+	   <groupId>org.springframework</groupId>
+	   <artifactId>spring-tx</artifactId>
+	   <version>${spring.version}</version>
+	 </dependency>
+	 <dependency>
+	   <groupId>org.springframework</groupId>
+	   <artifactId>spring-orm</artifactId>
+	   <version>${spring.version}</version>
+	 </dependency>
+	 <dependency>
+	   <groupId>org.springframework</groupId>
+	   <artifactId>spring-jdbc</artifactId>
+	   <version>${spring.version}</version>
+	 </dependency>
+	 <dependency>
+	   <groupId>org.springframework</groupId>
+	   <artifactId>spring-test</artifactId>
+	   <version>${spring.version}</version>
+	 </dependency>
+	</dependencies>
+	
+	<modules>
+	<module>common</module>
+	<module>masters</module>
+	<module>sales</module>
+	<module>client-online</module>
+	</modules>
+</project>

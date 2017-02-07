@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+
+	<import resource="classpath:/config/advanz-erp-client-tiles-context.xml" />
+	<import resource="classpath:/config/advanz-erp-client-jasper-views.xml" />
+	<!-- Properties configuration -->
+<bean id="placeholderConfig" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">    
+		<property name="locations">
+			<list>
+				<value>classpath:properties/services.properties</value>
+				<value>classpath:properties/database.properties</value>
+			</list>
+		</property>
+		<property name="nullValue" value="null"/>
+	</bean> 
+	
+	
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+	    <property name="driverClassName" value="${user.db.driverClassName}"/>
+	    <property name="url" value="${user.db.url}"/>
+	    <property name="username" value="${user.db.username}" />
+		<property name="password" value="${user.db.password}" />
+  	</bean>	
+</beans>

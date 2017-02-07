@@ -1,0 +1,26 @@
+package com.advanz.erp.masters.service.business;
+
+import com.advanz.erp.common.service.business.IAdvanzErpBaseSerivce;
+import com.advanz.erp.masters.model.msg.QuotationMasterInputMessage;
+import com.advanz.erp.masters.model.msg.QuotationMasterOutputMessage;
+
+public interface IQuotationMasterService extends IAdvanzErpBaseSerivce{
+
+	
+	public QuotationMasterOutputMessage createQuotationMaster(QuotationMasterInputMessage quotationMasterInputMessage);
+	
+	public QuotationMasterOutputMessage updateQuotationMaster(QuotationMasterInputMessage quotationMasterInputMessage);
+	
+	public QuotationMasterOutputMessage deleteQuotationMaster(QuotationMasterInputMessage quotationMasterInputMessage);
+	
+	public QuotationMasterOutputMessage findQuotationMasterById(QuotationMasterInputMessage quotationMasterInputMessage);
+	
+	public QuotationMasterOutputMessage findAllQuotationMasters();
+	
+	public QuotationMasterOutputMessage search(QuotationMasterInputMessage quotationMasterInputMessage);
+	
+	public QuotationMasterOutputMessage getNewQuotationSeriesNo(QuotationMasterInputMessage quotationMasterInputMessage);
+	public QuotationMasterOutputMessage checkBeforeRemove(QuotationMasterInputMessage quotationMasterInputMessage);
+	public QuotationMasterOutputMessage findQuotationForPagination(QuotationMasterInputMessage quotationMasterInputMessage);
+
+}

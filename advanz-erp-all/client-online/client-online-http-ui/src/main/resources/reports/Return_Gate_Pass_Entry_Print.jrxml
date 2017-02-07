@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Gate_Pass_Entry_Print" pageWidth="480" pageHeight="1040" whenNoDataType="NoDataSection" columnWidth="477" leftMargin="1" rightMargin="2" topMargin="2" bottomMargin="0" uuid="b9ade9ec-caa7-43b7-b20f-190c81514647">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="50"/>
+	<property name="ireport.y" value="0"/>
+	<style name="style1" mode="Opaque">
+		<paragraph lineSpacing="Single"/>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 ==0)]]></conditionExpression>
+			<style backcolor="#E6F3F7" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
+				<paragraph lineSpacing="Single"/>
+			</style>
+		</conditionalStyle>
+	</style>
+	<parameter name="ReturnGatePassNoPrompt" class="java.lang.String"/>
+	<parameter name="ReturnGatePassNoNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ReturnGatePassNoPrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT b.Branch_NAME
+, b.Branch_ADDRESS
+, r_g.return_gate_pass_number
+, DATE_FORMAT(CAST(r_g.return_gate_pass_date AS DATE),'%d-%m-%Y') AS return_gate_pass_date
+, IFNULL(r_g.return_gate_pass_received_by,'') AS return_gate_pass_received_by
+, IFNULL(r_g.return_gate_pass_time,'') AS return_gate_pass_time
+, p.party_name AS party_name
+, r_g.gate_pass_number
+, UPPER(IFNULL(i.item_name,'')) AS item_name
+, IFNULL(m.NAME,'') AS UOM
+, IFNULL(r_d.return_gate_pass_quantity,0) AS return_gate_pass_quantity
+, r_d.remark
+, IFNULL(r_g.return_gate_pass_purpose,'') AS return_gate_pass_purpose
+, IF(r_g.approved = 1, 'Approved','') AS approved
+FROM t_return_gate_pass_mast AS r_g,
+m_branch AS b, m_party AS p, m_item AS i,
+t_return_gate_pass_detail AS r_d
+LEFT JOIN (SELECT m.masters_id, m.NAME FROM m_masters AS m WHERE m.deleted_flag = 0) AS m
+ON r_d.measurement_Unit_id = m.masters_id
+WHERE r_g.deleted_flag = 0 AND r_d.deleted_flag = 0 AND b.DELETED_FLAG = 0 AND p.deleted_flag = 0 AND
+i.deleted_flag = 0
+AND r_g.return_gate_pass_number = r_d.return_gate_pass_number
+AND b.Branch_ID = r_g.branch_id
+AND p.party_id = r_g.party_id
+AND i.item_id = r_d.item_id
+AND (r_g.return_gate_pass_number = $P{ReturnGatePassNoPrompt} OR 1 = $P{ReturnGatePassNoNull_FlagPrompt})
+ORDER BY r_d.sno;]]>
+	</queryString>
+	<field name="Branch_NAME" class="java.lang.String"/>
+	<field name="Branch_ADDRESS" class="java.lang.String"/>
+	<field name="return_gate_pass_number" class="java.lang.String"/>
+	<field name="return_gate_pass_date" class="java.lang.String"/>
+	<field name="return_gate_pass_received_by" class="java.lang.String"/>
+	<field name="return_gate_pass_time" class="java.lang.String"/>
+	<field name="party_name" class="java.lang.String"/>
+	<field name="gate_pass_number" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="item_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="UOM" class="java.lang.String"/>
+	<field name="return_gate_pass_quantity" class="java.lang.Double"/>
+	<field name="remark" class="java.lang.String"/>
+	<field name="return_gate_pass_purpose" class="java.lang.String"/>
+	<field name="approved" class="java.lang.String"/>
+	<variable name="s_no" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$V{REPORT_COUNT}]]></variableExpression>
+	</variable>
+	<pageHeader>
+		<band height="172">
+			<staticText>
+				<reportElement uuid="a7accfaa-a1ee-4251-a49c-3a05fc9c01b8" x="0" y="1" width="477" height="20" forecolor="#000000"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Return Gate Pass]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e5a049d2-8061-4367-ad8f-44436b612aa2" x="257" y="101" width="120" height="15"/>
+				<textElement verticalAlignment="Top">
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Gate Pass No                  :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="aaf50940-5b4a-4e88-b64b-7ebafb505665" x="6" y="66" width="98" height="29"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Return Gate Pass Number                   :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e450c9b3-327a-401d-9f5c-284f16bad9e6" x="6" y="127" width="98" height="31"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Party Name            :]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="587753e5-e1a7-4443-a7f9-8e77b4887354" x="0" y="22" width="477" height="20"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true" isUnderline="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Branch_NAME}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="21e48704-4083-4aaa-bcf3-b4ae3921767a" x="107" y="66" width="100" height="29"/>
+				<textElement verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{return_gate_pass_number}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="de430134-40d7-47b4-962f-f46bd8da7fc0" isPrintRepeatedValues="false" x="107" y="127" width="142" height="43"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{party_name}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="da2deb7b-246e-4142-a5f9-4119797e8956" x="0" y="64" width="477" height="1"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement uuid="c6e8e4e6-a9d4-438e-abae-17e1c0f4c368" x="251" y="65" width="1" height="107"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement uuid="23bc48b4-fca0-414b-89bf-7214a15ff92d" x="0" y="0" width="1" height="172"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement uuid="aa2775a5-ff76-42d4-92ba-a5996b846914" x="477" y="0" width="1" height="172"/>
+			</line>
+			<line>
+				<reportElement uuid="42e6215b-a603-463d-817d-1f89f8f6cf64" x="0" y="0" width="477" height="1"/>
+			</line>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="07f4da91-845b-4c54-ba1d-a9ecc2ae610d" x="379" y="66" width="93" height="15"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{return_gate_pass_date}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="0173400d-bdcd-4751-add2-4912edae3b3e" x="257" y="66" width="120" height="15"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Return Gate Pass Date   :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="12b7acb8-02d2-4ed3-aa90-dee291308895" x="379" y="83" width="93" height="15"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{return_gate_pass_time}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="6959ec74-b7a8-42df-b79e-dd7a5e2429b5" x="257" y="83" width="120" height="15"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Gate Pass Return Time  :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5856e885-1a57-4a62-8a12-66a23d8db49d" x="6" y="96" width="98" height="30"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Return Gate Pass Received by           :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="b8840007-dcfe-4052-8edf-5813e8e3f4fd" x="107" y="96" width="100" height="30"/>
+				<textElement verticalAlignment="Middle">
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{return_gate_pass_received_by}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="0e12ed0c-cb3f-4c31-99de-ac8d81c1f7f9" x="379" y="101" width="93" height="15"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{gate_pass_number}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="3867ba11-4232-4736-a843-18741eac4162" x="0" y="43" width="477" height="20"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true" isUnderline="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Branch_ADDRESS}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="29">
+			<line>
+				<reportElement uuid="31b8217f-d535-4106-9116-52cbcfb4ec6b" x="0" y="0" width="477" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="03db5d6d-b1f7-4572-b5ad-b5d5d9f51346" x="2" y="1" width="16" height="26" isPrintWhenDetailOverflows="true" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[S.No.]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="a348a727-a37d-447c-9fa1-9fbb92f05804" x="0" y="28" width="477" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="04c0254e-9d36-41c0-8973-898c0d204e70" x="18" y="1" width="210" height="26" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Item Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a6bf3bfc-8f7a-4edd-b741-b9743a68361a" x="228" y="1" width="54" height="26" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10" isBold="true" isStrikeThrough="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[UOM]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b25e0014-6d59-423a-97d6-d9ce9ece57a8" x="282" y="1" width="80" height="26" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Quantity]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b0cec962-6266-4914-a107-9a2f9dabe6b1" x="362" y="1" width="115" height="26" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="SansSerif" size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Remark]]></text>
+			</staticText>
+			<line direction="BottomUp">
+				<reportElement uuid="5668bbd0-d10f-4973-ae4f-2c62a9f890bf" x="477" y="0" width="1" height="29"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement uuid="d81d4aea-a715-4ed4-856f-bc4c454bf025" x="0" y="0" width="1" height="29"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="18">
+			<frame>
+				<reportElement uuid="448d2f2f-7cf1-4a4d-b4bd-281f47495b2e" style="style1" x="0" y="0" width="478" height="18"/>
+				<line>
+					<reportElement uuid="3bdf392a-fc00-4f7e-8f5c-8842464312bb" positionType="Float" x="2" y="17" width="476" height="1" isPrintWhenDetailOverflows="true"/>
+				</line>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="2297b0ad-75e3-4a18-a8bb-5999a3429f9a" isPrintRepeatedValues="false" x="2" y="0" width="16" height="17" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{s_no}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement uuid="3a0b7747-9dd5-44c9-b8d7-f49e756683b4" x="18" y="0" width="210" height="17" isPrintWhenDetailOverflows="true"/>
+					<textElement verticalAlignment="Top">
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{item_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement uuid="7b1d1733-edca-4167-ba83-874c5744bf89" x="228" y="0" width="54" height="17" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Left" verticalAlignment="Top">
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{UOM}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement uuid="303382d2-2610-4a60-9f21-bc73dba45967" x="282" y="0" width="80" height="17" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Right" verticalAlignment="Top">
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( ($F{return_gate_pass_quantity}.doubleValue()-$F{return_gate_pass_quantity}.intValue())> new Double(0) ? $F{return_gate_pass_quantity}:
+new DecimalFormat("###0").format($F{return_gate_pass_quantity}) )]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="###0.00;-###0.00" isBlankWhenNull="true">
+					<reportElement uuid="b19fd835-b52b-415f-b118-76ff3d95d78d" x="362" y="0" width="115" height="17" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{remark}]]></textFieldExpression>
+				</textField>
+				<line direction="BottomUp">
+					<reportElement uuid="15485d2e-aa5c-4021-bb98-355700c6c1c6" stretchType="RelativeToBandHeight" x="477" y="0" width="1" height="18" isPrintWhenDetailOverflows="true"/>
+				</line>
+				<line direction="BottomUp">
+					<reportElement uuid="0e6603b8-0741-4ec8-b4e4-074f3d4b50ae" stretchType="RelativeToBandHeight" x="0" y="0" width="1" height="18" isPrintWhenDetailOverflows="true"/>
+				</line>
+			</frame>
+		</band>
+	</detail>
+	<summary>
+		<band height="79">
+			<line>
+				<reportElement uuid="875551a7-d76c-42d1-8574-fda254ff82ca" x="0" y="32" width="477" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="5e540dac-6d2b-4344-96ba-68061e3faf7c" x="4" y="2" width="50" height="19"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Purpose :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="1ffb84bd-25dc-4e2b-9ed5-cc3a1996e32b" x="56" y="2" width="213" height="30"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{return_gate_pass_purpose}]]></textFieldExpression>
+			</textField>
+			<line direction="BottomUp">
+				<reportElement uuid="31e62645-015a-4612-b276-677dc36b75e9" x="477" y="0" width="1" height="33"/>
+			</line>
+			<staticText>
+				<reportElement uuid="a26c5bfa-b8af-4780-ae47-8fd7c87956e1" x="270" y="2" width="52" height="19"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Status :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="ace8edd6-be97-4989-ada4-e9dd35bc1e6b" x="323" y="2" width="80" height="19"/>
+				<textElement>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{approved}]]></textFieldExpression>
+			</textField>
+			<line direction="BottomUp">
+				<reportElement uuid="443cab47-9a8e-414a-9dd1-13485b76680c" x="0" y="0" width="1" height="32"/>
+			</line>
+			<line>
+				<reportElement uuid="cfb2aeb2-d9e0-49b6-9d34-8003d6e81de4" x="0" y="35" width="477" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="b4af68fd-20ea-4e0d-8bde-ca4ec692ddb6" positionType="FixRelativeToBottom" x="0" y="78" width="477" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="daafb646-ba71-43a5-a84f-8db634b14816" x="1" y="63" width="158" height="14"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Signature Of Sender]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d17c6ca8-79c4-4273-9f33-993f63d5306b" x="318" y="63" width="158" height="14"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[(Approving Authority)]]></text>
+			</staticText>
+			<line direction="BottomUp">
+				<reportElement uuid="a5aef797-acf4-4329-a0cb-d970c315a4d3" x="0" y="35" width="1" height="43"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement uuid="dfd929c0-37cc-449b-838d-d35bb0c4b709" x="477" y="35" width="1" height="43"/>
+			</line>
+			<staticText>
+				<reportElement uuid="808a675c-3e7f-47c2-a3d7-5515c7602ebc" x="159" y="63" width="158" height="14"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Store Incharge Signature]]></text>
+			</staticText>
+		</band>
+	</summary>
+	<noData>
+		<band height="29">
+			<staticText>
+				<reportElement uuid="0f378e3f-b790-4307-8afb-24043ff41c3e" x="0" y="0" width="477" height="29" forecolor="#FF3300"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="20"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>

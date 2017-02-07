@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="indent" pageWidth="752" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="748" leftMargin="2" rightMargin="2" topMargin="0" bottomMargin="0" uuid="37142f7c-502a-4d0f-9839-6b248e8160b8">
+	<property name="ireport.zoom" value="5.0"/>
+	<property name="ireport.x" value="2250"/>
+	<property name="ireport.y" value="384"/>
+	<style name="style1" mode="Opaque">
+		<paragraph lineSpacing="Single"/>
+	</style>
+	<parameter name="IndentNoPrompt" class="java.lang.String"/>
+	<parameter name="IndentNoNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{IndentNoPrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT cmp.comp_name,cmp.comp_add,ism.indent_number,indent_date,UCASE(isd.indent_remark) AS indent_remark,UCASE(dep.name) AS dept
+,itemcode,UCASE(item_name) AS item_name,UCASE(unt.name) AS unit_name,indent_qty as indent_quantity,UCASE(IFNULL(raised_by,'')) AS raised_by
+,ism.indent_remark AS remark,IFNULL(isd.item_make,'') AS item_make
+FROM t_indent_master AS ism ,t_indent_detail AS isd,m_item AS itm,m_masters AS unt
+,m_masters AS dep,
+(SELECT comp_name,comp_add FROM m_company WHERE deleted_flag=0) AS cmp
+WHERE ism.deleted_flag=0
+AND dep.deleted_flag=0 AND dep.m_form_id=8
+AND isd.department_id=dep.masters_id
+AND isd.deleted_flag=0 AND itm.deleted_flag=0 AND unt.deleted_flag=0
+AND isd.item_id=itm.item_id AND isd.measurement_unit_id=unt.masters_id
+AND isd.indent_number=ism.indent_number
+AND (ism.indent_number=$P{IndentNoPrompt} OR 1=$P{IndentNoNull_FlagPrompt})]]>
+	</queryString>
+	<field name="comp_name" class="java.lang.String"/>
+	<field name="comp_add" class="java.lang.String"/>
+	<field name="indent_number" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="item_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="indent_date" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="indent_quantity" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="unit_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="indent_remark" class="java.lang.String"/>
+	<field name="dept" class="java.lang.String"/>
+	<field name="raised_by" class="java.lang.String"/>
+	<field name="itemcode" class="java.lang.String"/>
+	<field name="remark" class="java.lang.String"/>
+	<field name="item_make" class="java.lang.String"/>
+	<variable name="s_no" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$V{REPORT_COUNT}]]></variableExpression>
+	</variable>
+	<variable name="indent_count" class="java.lang.Integer" resetType="Group" resetGroup="indent_no" calculation="Count">
+		<variableExpression><![CDATA[$F{indent_number}]]></variableExpression>
+		<initialValueExpression><![CDATA[1]]></initialValueExpression>
+	</variable>
+	<group name="indent_no" isStartNewPage="true">
+		<groupExpression><![CDATA[$F{indent_number}]]></groupExpression>
+		<groupHeader>
+			<band height="59">
+				<line>
+					<reportElement uuid="1cb89516-2772-4d0e-9540-ed3db48d13c6" mode="Transparent" x="0" y="0" width="748" height="1"/>
+				</line>
+				<staticText>
+					<reportElement uuid="3cfb6c84-d2cc-4343-815c-dcdbc369d493" x="97" y="39" width="203" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[Item Name]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="fb8f9407-c0e4-4065-b40b-06664c3ce9a8" x="301" y="39" width="90" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[Unit]]></text>
+				</staticText>
+				<line>
+					<reportElement uuid="a5378e08-97b3-40ea-a68b-50c585a17c8f" mode="Transparent" x="0" y="58" width="748" height="1"/>
+				</line>
+				<staticText>
+					<reportElement uuid="1c40df00-2ec0-438f-90da-68182e7a5c41" x="492" y="39" width="81" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[Indent Qty.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="8c479d79-122f-4174-aa3f-86edbad3a7a4" x="1" y="39" width="34" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[Sr.No]]></text>
+				</staticText>
+				<textField>
+					<reportElement uuid="b4755f48-c5df-4a9a-a1fa-bbfd1372576b" x="252" y="1" width="495" height="18"/>
+					<textElement verticalAlignment="Middle">
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{dept}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="c61ba720-bfcb-4367-80b3-0891ef029481" x="150" y="1" width="102" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[Indenting Dept. :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="2440d7d5-a95a-4587-9f93-4e915b800fe6" x="1" y="1" width="78" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[ Indent No.   :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="94ae2dae-54ec-47c5-89ae-6b1ce98b906d" x="1" y="20" width="78" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[ Indent Date :]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="dd-MM-yy" isBlankWhenNull="true">
+					<reportElement uuid="e5804122-49f7-4446-9516-c24c6ce76804" x="79" y="20" width="70" height="18"/>
+					<textElement textAlignment="Justified" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yy").format($F{indent_date})]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="6da6a090-81c7-41b9-bd18-536c85e69ca5" x="79" y="1" width="70" height="18"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{indent_number}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement uuid="b26095cf-570c-445c-98f8-aa7d9f570201" mode="Transparent" x="35" y="39" width="1" height="20"/>
+				</line>
+				<line>
+					<reportElement uuid="33860572-e189-4225-864e-d303a829cf6c" mode="Transparent" x="747" y="0" width="1" height="58"/>
+				</line>
+				<line>
+					<reportElement uuid="f119550d-75c7-44fa-9f3b-839a20458c1c" mode="Transparent" x="0" y="1" width="1" height="57"/>
+				</line>
+				<line>
+					<reportElement uuid="05d9f01e-cebc-42b4-bfe7-c742d359382b" mode="Transparent" x="149" y="1" width="1" height="38"/>
+				</line>
+				<line>
+					<reportElement uuid="eff2c45d-4187-40d1-876d-f8a31c64e77f" mode="Transparent" x="300" y="39" width="1" height="19"/>
+				</line>
+				<line>
+					<reportElement uuid="bbe00192-4dcc-40e0-8aa6-31972d69e251" mode="Transparent" x="0" y="38" width="747" height="1"/>
+				</line>
+				<line>
+					<reportElement uuid="4200e39e-9df2-4bba-b9c8-10dc1d49dacb" mode="Transparent" x="1" y="19" width="746" height="1"/>
+				</line>
+				<line>
+					<reportElement uuid="b8c15daf-64ec-4b84-b06e-576dd9208367" mode="Transparent" x="573" y="39" width="1" height="20"/>
+				</line>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="38e80749-d2f4-4d0e-9d3a-2d4446b70234" x="252" y="20" width="495" height="18"/>
+					<textElement verticalAlignment="Middle">
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{raised_by}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="e6b8069f-49c6-4de7-996b-abb7a770bd15" x="150" y="20" width="102" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[Raised By          :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="093404a6-ca8e-4172-acc9-03f9b137d762" x="574" y="39" width="173" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[Purpose]]></text>
+				</staticText>
+				<line>
+					<reportElement uuid="1686247d-775e-48fe-8c69-9fb11d8bae3d" mode="Transparent" x="391" y="39" width="1" height="20"/>
+				</line>
+				<staticText>
+					<reportElement uuid="de4d68bf-f080-487e-8149-38093e80ee3f" x="36" y="39" width="60" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[Item Code]]></text>
+				</staticText>
+				<line>
+					<reportElement uuid="f734f6b9-15ef-4399-bcb9-fdbc82fb6dc8" mode="Transparent" x="96" y="39" width="1" height="19"/>
+				</line>
+				<line>
+					<reportElement uuid="b8c15daf-64ec-4b84-b06e-576dd9208367" mode="Transparent" x="491" y="38" width="1" height="20"/>
+				</line>
+				<staticText>
+					<reportElement uuid="fb8f9407-c0e4-4065-b40b-06664c3ce9a8" x="392" y="39" width="99" height="19" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[Item Make]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="70">
+				<staticText>
+					<reportElement uuid="0b210c2c-157f-4186-9716-5b82f8a86140" positionType="Float" x="216" y="51" width="275" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[Raised By]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="c1e96ba3-d816-4e2d-ae31-f74cc47bc8b2" positionType="Float" x="492" y="51" width="255" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="true"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[Store Incharge]]></text>
+				</staticText>
+				<line>
+					<reportElement uuid="b132c07d-b7db-45b4-81c8-fd5cbad1bd27" positionType="Float" mode="Transparent" x="0" y="0" width="1" height="70"/>
+				</line>
+				<line>
+					<reportElement uuid="ab8d1b7b-7c27-4921-9b0c-b4f92a71fafd" positionType="Float" mode="Transparent" x="0" y="69" width="747" height="1"/>
+				</line>
+				<line>
+					<reportElement uuid="02861ca9-565e-4134-a953-491fb6cb03c9" positionType="Float" mode="Transparent" x="747" y="0" width="1" height="70"/>
+				</line>
+				<line>
+					<reportElement uuid="98288bba-0e28-4440-b64a-2cf9b087d674" positionType="Float" mode="Transparent" x="491" y="20" width="1" height="49"/>
+				</line>
+				<line>
+					<reportElement uuid="8f7bb6ea-fdae-434e-aa80-da1ef5f22b90" positionType="Float" mode="Transparent" x="215" y="20" width="1" height="49"/>
+				</line>
+				<staticText>
+					<reportElement uuid="f4c0ca24-ed2f-4e2c-9364-bdda7789eca2" positionType="Float" x="1" y="51" width="214" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[Approved By]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="d264fb82-959e-4374-bf4a-6129a6896c25" x="0" y="0" width="52" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<text><![CDATA[Remark]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="9e2d9db1-046e-4824-8378-9a124d434a5e" x="52" y="0" width="695" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{remark}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement uuid="4acc9b18-4988-4c54-b72d-d61a23c54760" positionType="Float" mode="Transparent" x="0" y="20" width="747" height="1"/>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<pageHeader>
+		<band height="60">
+			<textField>
+				<reportElement uuid="c626ef10-c77e-4c33-aa8d-0058170f745e" x="0" y="20" width="748" height="20"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{comp_name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="98325d31-8a38-4d27-a836-947468b966ef" x="0" y="0" width="748" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Indent]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="9e42dca0-6724-4922-81dc-b19b858b3b87" x="0" y="40" width="748" height="20"/>
+				<textElement textAlignment="Center">
+					<font isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{comp_add}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="17">
+			<frame>
+				<reportElement uuid="3acb38a3-d43d-4864-88f9-8b5b3c2c24c6" style="style1" x="0" y="0" width="748" height="17"/>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="false">
+					<reportElement uuid="e48f344e-ce41-465f-b1e5-b1f31867da55" isPrintRepeatedValues="false" x="1" y="0" width="34" height="16">
+						<printWhenExpression><![CDATA[$V{indent_no_COUNT}!=null]]></printWhenExpression>
+					</reportElement>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font fontName="SansSerif" size="10"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{indent_no_COUNT}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement uuid="9f98b273-9f5c-47b3-9313-c99d4e9c4447" x="492" y="0" width="81" height="16"/>
+					<textElement textAlignment="Right" verticalAlignment="Top">
+						<font fontName="SansSerif" size="10"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( ($F{indent_quantity}.doubleValue()-$F{indent_quantity}.intValue())> new Double(0) ? $F{indent_quantity} :
+new DecimalFormat("###0").format($F{indent_quantity}) )]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement uuid="df63a17a-211f-4875-bd1d-4aea18382785" x="97" y="0" width="203" height="16"/>
+					<textElement verticalAlignment="Top">
+						<font fontName="SansSerif" size="10"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{item_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement uuid="d9f47c4d-a745-440d-a41f-89ee84a2c01a" x="301" y="0" width="90" height="16"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font fontName="SansSerif" size="10"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{unit_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement uuid="f89f8c53-c238-4318-8911-e5464428b17e" x="36" y="0" width="60" height="16"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{itemcode}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement uuid="b2c82b58-b340-48ef-b90f-0a00361689ca" stretchType="RelativeToBandHeight" mode="Transparent" x="0" y="0" width="1" height="17"/>
+				</line>
+				<line>
+					<reportElement uuid="960b09b4-209f-4ebe-a90d-2be5692b723d" stretchType="RelativeToBandHeight" mode="Transparent" x="35" y="0" width="1" height="17"/>
+				</line>
+				<line>
+					<reportElement uuid="df6e7355-67d6-4926-9f63-c3a870c308d1" stretchType="RelativeToBandHeight" mode="Transparent" x="96" y="0" width="1" height="17"/>
+				</line>
+				<line>
+					<reportElement uuid="de6c0518-f33f-4393-a581-a47843605fc3" stretchType="RelativeToBandHeight" mode="Transparent" x="300" y="0" width="1" height="17"/>
+				</line>
+				<line>
+					<reportElement uuid="f00f31e5-f4f9-45dd-b88c-79b044d79c8a" stretchType="RelativeToBandHeight" mode="Transparent" x="391" y="0" width="1" height="17"/>
+				</line>
+				<line>
+					<reportElement uuid="60ac8dab-b9df-45e8-9149-d1c2a045365a" stretchType="RelativeToBandHeight" mode="Transparent" x="573" y="0" width="1" height="17"/>
+				</line>
+				<line>
+					<reportElement uuid="351dd186-578c-4530-934c-f770158f5ad1" stretchType="RelativeToBandHeight" mode="Transparent" x="747" y="0" width="1" height="17"/>
+				</line>
+				<line>
+					<reportElement uuid="42077387-a836-4b61-8838-8f32ff171914" positionType="Float" mode="Transparent" x="0" y="16" width="747" height="1"/>
+				</line>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement uuid="2d61f3d2-c052-4462-9c5f-7f2bf98e189d" x="574" y="0" width="173" height="16"/>
+					<textElement textAlignment="Left" verticalAlignment="Top">
+						<font fontName="SansSerif" size="10"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{indent_remark}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement uuid="60ac8dab-b9df-45e8-9149-d1c2a045365a" stretchType="RelativeToBandHeight" mode="Transparent" x="491" y="0" width="1" height="17"/>
+				</line>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement uuid="d9f47c4d-a745-440d-a41f-89ee84a2c01a" x="392" y="0" width="99" height="16"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font fontName="SansSerif" size="10"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{item_make}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<noData>
+		<band height="69">
+			<staticText>
+				<reportElement uuid="a7f29537-3ca9-4f4c-b5ec-6dc2e3520415" x="0" y="0" width="748" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Indent]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e05883d7-20e5-4e24-a08d-9ffbb27d7527" x="0" y="20" width="748" height="29" forecolor="#FF3300"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="20"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7eca064b-6ffa-4b58-a4a3-dd06e3b984ce" x="0" y="49" width="748" height="20" forecolor="#0099FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[(Please Check Your Selection Criteria)]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>

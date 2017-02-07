@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Annealing_Oven_Detail_Reports" pageWidth="1310" pageHeight="842" columnWidth="1310" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="1d20c735-1e73-4a0c-a8b2-1b938a0dc956">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="513"/>
+	<property name="ireport.y" value="0"/>
+	<style name="style1" mode="Opaque">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 ==0)]]></conditionExpression>
+			<style backcolor="#E6F3F7" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="FromDatePrompt" class="java.util.Date">
+		<defaultValueExpression><![CDATA["2013-01-01"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ToDatePrompt" class="java.util.Date">
+		<defaultValueExpression><![CDATA["2013-01-01"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT oven_date, oven_time, UPPER(shift_master.name) AS shift, UPPER(shift_engineer_name) AS shift_engineer_name
+, '' AS fuel_used_type
+, ROUND(IFNULL(oven_temp_zone_1,0),2) AS oven_temp_zone_1, ROUND(IFNULL(oven_temp_zone_2,0),2) AS oven_temp_zone_2
+, ROUND(IFNULL(oven_temp_zone_3,0),2) AS oven_temp_zone_3
+, ROUND(IFNULL(oven_temp_zone_4,0),2) AS oven_temp_zone_4
+, ROUND(IFNULL(mast.hsd_dip_reading,0),2) AS hsd_dip_reading
+, ROUND(IFNULL(lpg_reading,0),2) AS lpg_reading
+, ROUND(IFNULL(initial_reading,0),2) AS initial_reading, ROUND(IFNULL(final_reading,0),2) AS final_reading
+, '' AS actual_reading
+, '' AS total_fuel_used
+, UPPER(oven_remark) AS oven_remark
+FROM t_annealing_oven_master AS mast,t_annealing_oven_detail AS det
+,(SELECT * FROM m_masters WHERE m_form_name='Shift Master' AND deleted_flag=0) AS shift_master
+WHERE mast.oven_id = det.oven_id AND mast.deleted_flag=0
+AND shift_master.masters_id=mast.shift_id
+AND mast.oven_date >= $P{FromDatePrompt}
+AND mast.oven_date <= $P{ToDatePrompt}
+ORDER BY 1]]>
+	</queryString>
+	<field name="oven_date" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="shift" class="java.lang.String"/>
+	<field name="oven_time" class="java.sql.Time">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="hsd_dip_reading" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="lpg_reading" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="shift_engineer_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="oven_temp_zone_1" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="oven_temp_zone_2" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="oven_temp_zone_3" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="oven_temp_zone_4" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="fuel_used_type" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="total_fuel_used" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="initial_reading" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="final_reading" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="actual_reading" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="oven_remark" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="s_no" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$V{REPORT_COUNT}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="54" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="5512f328-a876-44a2-9324-00d1fc24c83f" x="0" y="4" width="1308" height="20" forecolor="#3399FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Annealing Oven Details]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="bc835520-5a38-4733-9b8d-1a60f7025d03" x="0" y="24" width="1308" height="15" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" From Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{FromDatePrompt})+"</style>"
++" , To Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{ToDatePrompt})+"</style>"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="bc835520-5a38-4733-9b8d-1a60f7025d03" x="0" y="39" width="1308" height="15" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="34" splitType="Stretch">
+			<line>
+				<reportElement uuid="a4cb7d62-b069-40e4-9fe7-8b411f07801d" x="1" y="1" width="1308" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="c2604b57-de39-4de2-942f-04a789816c7b" x="34" y="2" width="60" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Oven Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c2cb5859-750f-46f5-bf7f-0a0cf53983c2" x="154" y="2" width="60" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Shift]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="9d0baaee-0c32-4ca6-9719-2570e34dd74a" x="1" y="2" width="33" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[S.No.]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="4de3a9e9-3930-48e9-92e9-cf9c4693fb3d" x="1" y="33" width="1308" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="f455776e-1869-4d80-8637-4ded33b9b4b7" x="94" y="2" width="60" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Oven Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f455776e-1869-4d80-8637-4ded33b9b4b7" x="414" y="2" width="78" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fuel Used Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f455776e-1869-4d80-8637-4ded33b9b4b7" x="1077" y="2" width="102" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Fuel Used]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f455776e-1869-4d80-8637-4ded33b9b4b7" x="214" y="2" width="200" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Shift Engineer]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f455776e-1869-4d80-8637-4ded33b9b4b7" x="492" y="2" width="65" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Zone 1]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f455776e-1869-4d80-8637-4ded33b9b4b7" x="622" y="2" width="65" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Zone 3]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f455776e-1869-4d80-8637-4ded33b9b4b7" x="557" y="2" width="65" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Zone 2]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f455776e-1869-4d80-8637-4ded33b9b4b7" x="687" y="2" width="65" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Zone 4]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f455776e-1869-4d80-8637-4ded33b9b4b7" x="752" y="2" width="65" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[HSD Dip Reading]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f455776e-1869-4d80-8637-4ded33b9b4b7" x="947" y="2" width="65" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Final Reading]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f455776e-1869-4d80-8637-4ded33b9b4b7" x="882" y="2" width="65" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Initial Reading]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f455776e-1869-4d80-8637-4ded33b9b4b7" x="817" y="2" width="65" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[LPG Reading]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f455776e-1869-4d80-8637-4ded33b9b4b7" x="1012" y="2" width="65" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Actual Reading]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f455776e-1869-4d80-8637-4ded33b9b4b7" x="1179" y="2" width="130" height="30" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Remark]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<frame>
+				<reportElement uuid="9f810390-b145-4ff7-84bb-590b95182ddd" style="style1" x="1" y="1" width="1307" height="13"/>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="f3b6e3e0-f348-4738-abf2-d11cf33b8a27" x="153" y="0" width="60" height="13"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{shift}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="479cf500-d7ae-4d5c-8bca-30dbdadab3e8" x="686" y="0" width="65" height="13"/>
+					<textElement textAlignment="Right">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{oven_temp_zone_4}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="479cf500-d7ae-4d5c-8bca-30dbdadab3e8" x="751" y="0" width="65" height="13"/>
+					<textElement textAlignment="Right">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{hsd_dip_reading}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="ba134e7f-df6b-4bc1-a98d-052b6609ab65" x="621" y="0" width="65" height="13"/>
+					<textElement textAlignment="Right">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{oven_temp_zone_3}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="ba134e7f-df6b-4bc1-a98d-052b6609ab65" x="556" y="0" width="65" height="13"/>
+					<textElement textAlignment="Right">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{oven_temp_zone_2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+					<reportElement uuid="ba134e7f-df6b-4bc1-a98d-052b6609ab65" x="33" y="0" width="60" height="13"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{oven_date}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<textField isStretchWithOverflow="true" pattern="HH.mm.ss" isBlankWhenNull="true">
+				<reportElement uuid="ba134e7f-df6b-4bc1-a98d-052b6609ab65" x="94" y="0" width="60" height="13"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{oven_time}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="fd5bddc7-9015-4c7a-b5c5-65379f692cbe" isPrintRepeatedValues="false" x="1" y="0" width="33" height="13"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{s_no}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="479cf500-d7ae-4d5c-8bca-30dbdadab3e8" x="414" y="0" width="78" height="13"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_fuel_used}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="479cf500-d7ae-4d5c-8bca-30dbdadab3e8" x="214" y="0" width="200" height="13"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{shift_engineer_name}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="ba134e7f-df6b-4bc1-a98d-052b6609ab65" x="492" y="0" width="65" height="13"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{oven_temp_zone_1}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="479cf500-d7ae-4d5c-8bca-30dbdadab3e8" x="817" y="0" width="65" height="13"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{lpg_reading}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="479cf500-d7ae-4d5c-8bca-30dbdadab3e8" x="882" y="0" width="65" height="13"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{initial_reading}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="479cf500-d7ae-4d5c-8bca-30dbdadab3e8" x="947" y="0" width="65" height="13"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{final_reading}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="479cf500-d7ae-4d5c-8bca-30dbdadab3e8" x="1012" y="0" width="65" height="13"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{actual_reading}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="479cf500-d7ae-4d5c-8bca-30dbdadab3e8" x="1077" y="0" width="102" height="13"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_fuel_used}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="479cf500-d7ae-4d5c-8bca-30dbdadab3e8" x="1179" y="0" width="130" height="13"/>
+				<textElement>
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{oven_remark}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="2">
+			<line>
+				<reportElement uuid="a4cb7d62-b069-40e4-9fe7-8b411f07801d" x="1" y="1" width="1308" height="1"/>
+			</line>
+		</band>
+	</summary>
+	<noData>
+		<band height="100">
+			<staticText>
+				<reportElement uuid="5512f328-a876-44a2-9324-00d1fc24c83f" x="1" y="0" width="1308" height="20" forecolor="#3399FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Annealing Oven Details]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="bc835520-5a38-4733-9b8d-1a60f7025d03" x="1" y="35" width="1308" height="15" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="bc835520-5a38-4733-9b8d-1a60f7025d03" x="1" y="20" width="1308" height="15" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" From Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{FromDatePrompt})+"</style>"
++" , To Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{ToDatePrompt})+"</style>"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="e693e332-eadf-4d7c-92c5-7504acaeb822" x="1" y="79" width="1307" height="20" forecolor="#0099FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(Please Check Your Selection Criteria)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="0d0028cf-be62-4971-bfc5-518016bf9ecf" x="1" y="50" width="1307" height="29" forecolor="#FF3300"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="20"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>

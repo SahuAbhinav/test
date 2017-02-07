@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Short_Inventory_Report" pageWidth="651" pageHeight="1006" whenNoDataType="NoDataSection" columnWidth="651" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="a0ea8c51-1fe3-4aff-89b9-3a7908cf4b91">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="style1" mode="Opaque">
+		<paragraph lineSpacing="Single"/>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 ==0)]]></conditionExpression>
+			<style backcolor="#E6F3F7" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
+				<paragraph lineSpacing="Single"/>
+			</style>
+		</conditionalStyle>
+	</style>
+	<parameter name="DatePrompt" class="java.util.Date">
+		<defaultValueExpression><![CDATA["2013-02-09"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="GroupNamePrompt" class="java.lang.String"/>
+	<parameter name="GroupNameNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{GroupNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ItemCategoryPrompt" class="java.lang.String"/>
+	<parameter name="ItemCategoryNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ItemCategoryPrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ReorderPrompt" class="java.lang.String"/>
+	<parameter name="ReorderNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ReorderPrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ClassPrompt" class="java.lang.String"/>
+	<parameter name="ClassNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ClassPrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="StatusPrompts" class="java.lang.String"/>
+	<parameter name="StatusNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{StatusPrompts}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Item_Status_Prompt" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Item_StatusNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{Item_Status_Prompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT * FROM
+(SELECT
+UPPER(item_group_name) AS item_group_name,
+UPPER(IFNULL(item_name,'')) AS item_name,
+UPPER(IFNULL(stki.closing_stock,0) + IFNULL(item.OPENING_STOCK,0)) AS closing_stock,
+IFNULL(item.Mi_reod_Qty,0) AS reorder_level,
+(CASE WHEN(IFNULL(item.Mi_reod_Qty,0) > (IFNULL(stki.closing_stock,0) + IFNULL(item.OPENING_STOCK,0)))
+THEN IFNULL(item.Mi_reod_Qty,0) - (IFNULL(stki.closing_stock,0) + IFNULL(item.OPENING_STOCK,0)) ELSE 0 END) AS Short_Qnty,
+UPPER(IFNULL(unit.Unit_Name,'')) AS unit_name,
+UPPER(IFNULL(party.party_name,'')) AS party_name,
+UPPER(IFNULL(class.class_name,'')) AS Class,
+IFNULL(item.Mi_reod_Qty,'') AS Mi_reod_Qty
+FROM
+(SELECT item_id,item_category_id,itemcode,item_name,suggested_vendor_id,
+measurement_unit_id,reorder_level,OPENING_STOCK,sugg_reorder_qty,item_class_id,m_item.min_stock,
+item_grade_id,(CASE WHEN ($P{ReorderPrompt} ='Reorder')
+       THEN reorder_level ELSE min_stock END) AS Mi_reod_Qty
+ FROM m_item WHERE deleted_flag=0
+ AND (m_item.active_status=$P{Item_Status_Prompt} OR 1=$P{Item_StatusNull_FlagPrompt})
+) AS item
+LEFT JOIN
+(SELECT masters_id,m_form_name,NAME AS Unit_Name FROM m_masters
+WHERE m_form_name='Measurement Unit') AS unit
+ON item.measurement_unit_id=unit.masters_id
+INNER JOIN
+(SELECT masters_id,m_form_name,NAME AS class_name FROM m_masters
+WHERE m_form_name='Item Class'
+AND (NAME = $P{ClassPrompt} OR 1=$P{ClassNull_FlagPrompt})
+) AS class
+ON item.item_class_id=class.masters_id
+INNER JOIN
+(SELECT party_id, party_name FROM m_party WHERE deleted_flag = 0) AS party
+ON item.suggested_vendor_id=party.party_id
+INNER JOIN
+(SELECT c.ITEM_CATEGORY_id,c.ITEM_CATEGORY_NAME,i.ITEM_GROUP_name
+FROM m_item_category AS c,m_item_group AS i,m_item_group_flag AS f
+WHERE c.ITEM_GROUP_ID=i.ITEM_GROUP_ID AND i.ITEM_GROUP_FLAG_ID=f.ITEM_GROUP_FLAG_ID
+AND c.deleted_flag=0 AND i.deleted_flag=0
+AND (i.item_group_name=$P{GroupNamePrompt} OR 1 = $P{GroupNameNull_FlagPrompt})
+AND (c.ITEM_CATEGORY_NAME = $P{ItemCategoryPrompt} OR 1=$P{ItemCategoryNull_FlagPrompt})
+) AS It_group
+ON item.item_category_id=it_group.ITEM_CATEGORY_id
+LEFT JOIN
+(SELECT item_id, SUM(CAST(quantity AS DECIMAL(12,5)))AS closing_stock, transaction_date
+FROM t_stock_ledger AS s
+WHERE deleted_flag=0
+AND s.transaction_date<= DATE_ADD($P{DatePrompt},INTERVAL 1 DAY)
+GROUP BY item_id) stki
+ON item.item_id=stki.item_id) AS a
+WHERE (CASE WHEN ($P{StatusPrompts} ='All') THEN 1=1
+            ELSE IFNULL(a.Short_Qnty,0) > 0
+       END)
+ORDER BY item_name;]]>
+	</queryString>
+	<field name="item_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="closing_stock" class="java.lang.Double"/>
+	<field name="reorder_level" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Short_Qnty" class="java.lang.Double"/>
+	<field name="unit_name" class="java.lang.String"/>
+	<field name="party_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="item_group_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Class" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<variable name="s_no" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$V{REPORT_COUNT}]]></variableExpression>
+	</variable>
+	<pageHeader>
+		<band height="50">
+			<staticText>
+				<reportElement uuid="a6b9fca2-5577-43f4-9101-39c8f4a50e0f" x="0" y="0" width="651" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Short Inventory Report]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="1fbc1e0a-23fc-4b56-9dea-08f5c487f83f" x="0" y="20" width="651" height="15" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" As On Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{DatePrompt})+"</style>"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="5e621161-c8c2-4d26-be2a-fbf73268e078" x="0" y="35" width="651" height="15" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Item Group : " + ($P{GroupNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+ $P{GroupNamePrompt}.replaceAll( "&", "&amp;" ) +"</style>")
++ ", Item Category : " + ($P{ItemCategoryNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+ $P{ItemCategoryPrompt}+"</style>")
++ ", Reorder/MIL : " + ($P{ReorderNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ReorderPrompt}+"</style>")
++ ", Class : " + ($P{ClassNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ClassPrompt}+"</style>")
++ ", Status : " + ($P{StatusNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{StatusPrompts}+"</style>")
++ ", Active Status : " + ($P{Item_Status_Prompt}.intValue()==1?"Yes":"<style forecolor='red'>No</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="33">
+			<line>
+				<reportElement uuid="cc6acf43-5824-4fd7-86ae-ddafa70f734b" x="0" y="0" width="651" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="7ed51b73-1d0d-4355-a99b-850e3fc73423" x="33" y="1" width="235" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Item Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ca6ae8c3-2dc1-446b-8cb4-c6416dd204c5" x="0" y="1" width="33" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[S.No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="502a1b8b-6a46-42a3-9cdf-909e0d75be33" x="439" y="1" width="67" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Unit]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="6968a165-ee24-4e65-b455-fac9d319df94" x="268" y="1" width="56" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Closing Stock]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="8c6bfa84-884b-4adc-8478-2f23000bcc42" x="324" y="1" width="59" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Reorder/ MIL level]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="2ac9101f-1fb3-45a2-adbd-8dd9205c96a2" x="506" y="1" width="145" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Sug. Supplier]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f053d330-9dc9-4a6a-8809-8e4698fcfa05" positionType="FixRelativeToBottom" x="383" y="1" width="56" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Short Quantity]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="334784e3-2f55-4540-a01d-0f7ab5ebb487" x="0" y="32" width="651" height="1"/>
+			</line>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="13">
+			<frame>
+				<reportElement uuid="c39d0d49-c7cd-495e-9d1f-3b92a164e1bc" style="style1" x="0" y="0" width="651" height="13"/>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="0046b5ab-a53f-4a0a-8949-82db13e2babe" isPrintRepeatedValues="false" x="0" y="0" width="33" height="13"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font fontName="SansSerif" size="10"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{s_no}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement uuid="95931f59-9451-416e-a1bc-f00576a0c4ec" x="439" y="0" width="67" height="13"/>
+					<textElement textAlignment="Center">
+						<font fontName="SansSerif" size="10"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{unit_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement uuid="9c1c1327-8a9d-445f-b643-06a0913f390b" x="324" y="0" width="59" height="13"/>
+					<textElement textAlignment="Right">
+						<font fontName="SansSerif" size="10"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( ($F{reorder_level}.doubleValue()-$F{reorder_level}.intValue())> new Double(0) ? $F{reorder_level} :
+new DecimalFormat("###0").format($F{reorder_level}) )]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="d919d2e6-e3b9-4622-8835-5b8f434c2a8a" x="506" y="0" width="145" height="13"/>
+					<textElement textAlignment="Left">
+						<font fontName="SansSerif" size="10"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{party_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement uuid="b77ac743-e62e-457b-b608-2dfb41fb573b" x="268" y="0" width="56" height="13"/>
+					<textElement textAlignment="Right" verticalAlignment="Top">
+						<font fontName="SansSerif" size="10"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( ($F{closing_stock}.doubleValue()-$F{closing_stock}.intValue())> new Double(0) ? $F{closing_stock} :
+new DecimalFormat("###0").format($F{closing_stock}) )]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="8087e19c-e163-4f9b-b00f-d57e44c764a9" x="33" y="0" width="235" height="13"/>
+					<textElement>
+						<font fontName="SansSerif" size="10"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{item_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement uuid="3102f123-3dc6-4bf3-a6dd-9028006f182d" x="383" y="0" width="56" height="13"/>
+					<textElement textAlignment="Right">
+						<font fontName="SansSerif" size="10"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( ($F{Short_Qnty}.doubleValue()-$F{Short_Qnty}.intValue())> new Double(0) ? $F{Short_Qnty} :
+new DecimalFormat("###0").format($F{Short_Qnty}) )]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<summary>
+		<band height="1">
+			<line>
+				<reportElement uuid="0dbfeb09-b6df-4aa6-b207-cb771df74d37" x="0" y="0" width="651" height="1"/>
+			</line>
+		</band>
+	</summary>
+	<noData>
+		<band height="101">
+			<staticText>
+				<reportElement uuid="366ba325-1dda-4935-a143-8c6a0e3c40c2" x="0" y="0" width="651" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Short Inventory Report]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d21068af-77a4-49ce-9509-3016cbb8d0e5" x="0" y="52" width="651" height="29" forecolor="#FF3300"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="20" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="23e6d675-4821-469a-a762-750c1ee8f82f" x="0" y="81" width="651" height="20" forecolor="#0099FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="14" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[(Please Check Your Selection Criteria)]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="8df1a0ea-f41f-4607-97cd-b88db617ac36" x="0" y="20" width="651" height="15" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" As On Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{DatePrompt})+"</style>"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="200923b4-34b0-4590-aa56-75b0d06528dd" x="0" y="37" width="651" height="15" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Item Group : " + ($P{GroupNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+ $P{GroupNamePrompt}.replaceAll( "&", "&amp;" ) +"</style>")
++ ", Item Category : " + ($P{ItemCategoryNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+ $P{ItemCategoryPrompt}+"</style>")
++ ", Reorder/MIL : " + ($P{ReorderNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ReorderPrompt}+"</style>")
++ ", Class : " + ($P{ClassNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ClassPrompt}+"</style>")
++ ", Status : " + ($P{StatusNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{StatusPrompts}+"</style>")
++ ", Active Status : " + ($P{Item_Status_Prompt}.intValue()==1?"Yes":"<style forecolor='red'>No</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</noData>
+</jasperReport>

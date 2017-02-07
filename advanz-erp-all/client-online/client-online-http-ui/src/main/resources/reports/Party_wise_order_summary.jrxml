@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Sales_Register" pageWidth="995" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="995" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="7b6f7ec4-da16-4a93-9936-92880e9b00bd">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="style1" mode="Opaque">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 ==0)]]></conditionExpression>
+			<style backcolor="#E6F3F7" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+		</conditionalStyle>
+	</style>
+	<queryString>
+		<![CDATA[SELECT UPPER(party.party_name) AS party_name, UPPER(party.city_name) AS city_name,mast.item_id,UPPER(itemcode)AS itemcode, UPPER(item_name) AS item_name,UPPER(unit) AS unit ,order_qty,IFNULL(despatch_qty,0) AS despatch_qty,stock_qty,(order_qty-IFNULL(despatch_qty,0)) AS pending_qty FROM
+(SELECT party_id,item_id,SUM(quantity) AS order_qty FROM t_sales_order_detail AS sod,
+t_sales_order_mast AS som WHERE sod.sales_order_auto_id=
+som.sales_order_id AND som.deleted_flag=0 AND sod.deleted_flag=0
+GROUP BY item_id) AS mast
+INNER JOIN
+(SELECT it.item_id,it.itemcode,it.item_name,unit FROM m_item AS it,
+(SELECT masters_id,NAME AS unit FROM m_masters WHERE m_form_name='Measurement Unit') AS unt
+WHERE it.measurement_Unit_id=unt.masters_id AND it.deleted_flag=0) it_detail
+ON mast.item_id=it_detail.item_id
+INNER  JOIN
+(SELECT party_id,party_name,city_name FROM
+(SELECT party_id,party_name,billing_city_id FROM m_party WHERE deleted_flag=0) AS pt
+LEFT JOIN
+(SELECT city_id,city_name FROM m_city WHERE deleted_flag=0) AS ct
+ON pt.billing_city_id=ct.city_id) AS  party
+ON mast.party_id=party.party_id
+LEFT JOIN
+(SELECT item_id,SUM(quantity*-1) AS despatch_qty FROM t_stock_ledger WHERE deleted_flag=0
+AND quantity<0
+GROUP BY item_id) AS despatch
+ON mast.item_id=despatch.item_id
+LEFT JOIN
+(SELECT item_id,SUM(quantity) AS stock_qty FROM t_stock_ledger WHERE deleted_flag=0
+GROUP BY item_id) AS stock
+ON mast.item_id=stock.item_id
+ORDER BY 1]]>
+	</queryString>
+	<field name="party_name" class="java.lang.String"/>
+	<field name="city_name" class="java.lang.String"/>
+	<field name="item_id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="itemcode" class="java.lang.String"/>
+	<field name="item_name" class="java.lang.String"/>
+	<field name="unit" class="java.lang.String"/>
+	<field name="order_qty" class="java.lang.Double"/>
+	<field name="despatch_qty" class="java.lang.Double"/>
+	<field name="stock_qty" class="java.lang.Double"/>
+	<field name="pending_qty" class="java.lang.Double"/>
+	<variable name="s_no" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$V{REPORT_COUNT}]]></variableExpression>
+	</variable>
+	<pageHeader>
+		<band height="50">
+			<staticText>
+				<reportElement uuid="8ffd8a17-b799-4fc6-8116-3b051d4b9cae" x="0" y="1" width="990" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Partywise Order Summary ]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="75677210-11c3-47e8-8aec-6eca575aeedf" x="0" y="21" width="990" height="15" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="26">
+			<line>
+				<reportElement uuid="c4aef43c-f88b-4e97-954e-f04f78b4c21e" x="0" y="1" width="990" height="2"/>
+			</line>
+			<staticText>
+				<reportElement uuid="631b3a98-d91a-4f84-812c-99826e719b48" x="325" y="3" width="80" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Product Code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b4618f5f-1cb6-47b2-94a4-8e3c047543f1" x="405" y="3" width="185" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Product Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7bfe29d4-30e7-4c46-9baa-8c9a862b38cd" x="0" y="3" width="33" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[S.No.]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="3b1f2bb0-36bd-40c2-886a-8424abce6fa2" x="0" y="23" width="990" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="57e8f5f1-da3d-4862-9c0f-1bf40dea0d69" x="690" y="3" width="100" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Unit]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="57e8f5f1-da3d-4862-9c0f-1bf40dea0d69" x="590" y="3" width="100" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Order Qty.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="57e8f5f1-da3d-4862-9c0f-1bf40dea0d69" x="790" y="3" width="100" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pending Qty.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="57e8f5f1-da3d-4862-9c0f-1bf40dea0d69" x="890" y="3" width="100" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Stock in Hand]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="631b3a98-d91a-4f84-812c-99826e719b48" x="225" y="3" width="100" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[City]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="631b3a98-d91a-4f84-812c-99826e719b48" x="33" y="3" width="192" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Party Name]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="16">
+			<frame>
+				<reportElement uuid="1ebadbcb-c30d-445f-97e2-a36fc04d1f54" style="style1" x="0" y="3" width="990" height="13"/>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement uuid="099a9eee-4f99-4cdf-9c83-9322ed89a469" x="890" y="0" width="100" height="13"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{stock_qty}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="aac487e4-fbec-4f15-8446-1d5ce06b8f26" x="405" y="0" width="185" height="13"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{item_name}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement uuid="099a9eee-4f99-4cdf-9c83-9322ed89a469" x="690" y="0" width="100" height="13"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{unit}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="aac487e4-fbec-4f15-8446-1d5ce06b8f26" x="33" y="0" width="192" height="13"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{party_name}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement uuid="099a9eee-4f99-4cdf-9c83-9322ed89a469" x="790" y="0" width="100" height="13"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{pending_qty}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="aac487e4-fbec-4f15-8446-1d5ce06b8f26" x="225" y="0" width="100" height="13"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{city_name}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="524d7b29-3862-4cb5-90aa-848c4a6792ea" x="325" y="0" width="80" height="13"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{itemcode}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="58bc397b-0ed1-4efe-a523-72e4b7b7cd51" isPrintRepeatedValues="false" x="0" y="0" width="33" height="13"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{s_no}]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement uuid="099a9eee-4f99-4cdf-9c83-9322ed89a469" x="590" y="0" width="100" height="13"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( ($F{order_qty}.doubleValue()-$F{order_qty}.intValue())> new Double(0) ? 
+$F{order_qty}:
+new DecimalFormat("###0").format($F{order_qty}) )]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<summary>
+		<band height="5">
+			<line>
+				<reportElement uuid="3b1f2bb0-36bd-40c2-886a-8424abce6fa2" x="0" y="2" width="990" height="1"/>
+			</line>
+		</band>
+	</summary>
+	<noData>
+		<band height="86">
+			<staticText>
+				<reportElement uuid="d7844125-99fc-4d6b-b89a-8e4b7199a999" x="0" y="0" width="990" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Partywise Order Summary]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a9bd359d-6b37-4940-8ed2-556b1397d05c" x="0" y="64" width="990" height="20" forecolor="#0099FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(Please Check Your Selection Criteria)]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="b31702e7-1f55-4b70-a9c7-c86f5e747f5f" x="0" y="20" width="990" height="15" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="0d0028cf-be62-4971-bfc5-518016bf9ecf" x="0" y="35" width="990" height="29" forecolor="#FF3300"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="20"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>

@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="1350" pageHeight="1000" whenNoDataType="NoDataSection" columnWidth="1350" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<style name="Crosstab Data Text" isDefault="false" hAlign="Center"/>
+	<parameter name="YearPrompt" class="java.lang.String"/>
+	<parameter name="SingleMandatoryMonthPrompt" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT a.Emp_Name,a.a_day,a.a_date,IF(a.a_status IS NULL,'Null',a.a_status)AS a_status,b.PRESENT,b.Holiday,b.Absent,b.Extra,(b.PRESENT+b.Holiday+b.Absent+b.Extra+b.non+b.nul) AS tot 
+,(b.non+b.nul) AS nul
+FROM
+(SELECT CONCAT(emp.employee_first_name,' ',emp.employee_last_name)AS Emp_Name 
+,DATE_FORMAT(atd.DATE,'%d') AS a_date,DATE_FORMAT(atd.DATE,'%a') AS a_day
+,IF(atd.day_status='Full Day',LEFT(atd.attandance_flag,1),CONCAT(LEFT(atd.attandance_flag,1),'(',LEFT(atd.day_status,1),')'))AS a_status
+,atd.employee_id
+FROM m_employee AS emp,t_attandance_master AS atd
+WHERE atd.employee_id=emp.employee_id
+AND YEAR(atd.DATE)=$P{YearPrompt}
+AND MONTHNAME(atd.DATE)=$P{SingleMandatoryMonthPrompt}
+AND emp.deleted_flag=0 AND atd.deleted_flag=0
+ORDER BY 1,2 DESC) AS a,
+(SELECT atd.employee_id,emp.employee_first_name,atd.date
+,atd.attandance_flag,atd.day_status
+,SUM(CASE WHEN atd.attandance_flag='PRESENT' AND atd.day_status='Full Day' THEN 1
+	WHEN atd.attandance_flag='PRESENT' AND atd.day_status='Half Day' THEN 0.5
+	WHEN atd.attandance_flag='Absent' AND atd.day_status='Half Day' THEN 0.5
+	WHEN atd.attandance_flag='PRESENT' AND atd.day_status IS NULL THEN 1
+	ELSE 0 END) AS PRESENT
+,SUM(CASE WHEN atd.attandance_flag='Holiday' AND atd.day_status='Full Day' THEN 1 
+	WHEN atd.attandance_flag='Weakoff' AND atd.day_status='Full Day' THEN 1 
+	WHEN atd.attandance_flag='Extra' AND atd.day_status='Full Day' THEN 1 
+	WHEN atd.attandance_flag='Extra' AND atd.day_status='Half Day' THEN 1
+	WHEN atd.attandance_flag='Holiday' AND atd.day_status IS NULL THEN 1
+	WHEN atd.attandance_flag='Weakoff' AND atd.day_status IS NULL THEN 1
+	WHEN atd.attandance_flag='Holiday' AND atd.day_status='Half Day' THEN 1
+	WHEN atd.attandance_flag='Weakoff' AND atd.day_status='Half Day' THEN 1
+        ELSE 0 END) AS Holiday
+,SUM(CASE WHEN atd.attandance_flag='Absent' AND atd.day_status='Full Day' THEN 1 
+	WHEN atd.attandance_flag='Absent' AND atd.day_status='Half Day' THEN 0.5
+	WHEN atd.attandance_flag='PRESENT' AND atd.day_status='Half Day' THEN 0.5
+	WHEN atd.attandance_flag='Absent' AND atd.day_status IS NULL THEN 0.5
+	ELSE 0 END) AS Absent
+,SUM(CASE WHEN atd.attandance_flag='Extra' AND atd.day_status='Full Day' THEN 1 
+	WHEN atd.attandance_flag='Extra' AND atd.day_status='Half Day' THEN 0.5
+	WHEN atd.attandance_flag='Extra' AND atd.day_status IS NULL THEN 1
+	ELSE 0 END) AS Extra
+,SUM(CASE WHEN atd.attandance_flag IS NULL THEN 1 
+	ELSE 0 END) AS non	
+,(SELECT COUNT(DISTINCT DATE) FROM t_attandance_master 
+WHERE YEAR(DATE)=$P{YearPrompt} AND MONTHNAME(DATE)=$P{SingleMandatoryMonthPrompt}) 
+- COUNT(DISTINCT atd.date) AS nul
+,SUM(CASE WHEN atd.attandance_flag='Weakoff'  
+          AND (SELECT  attandance_flag FROM t_attandance_master WHERE DATE=ADDDATE(atd.date,INTERVAL 1 DAY)AND employee_id=atd.employee_id)='Absent'
+          AND (SELECT day_status FROM t_attandance_master WHERE DATE=ADDDATE(atd.date,INTERVAL 1 DAY)AND employee_id=atd.employee_id)='Full Day'
+          AND (SELECT  attandance_flag FROM t_attandance_master WHERE DATE=SUBDATE(atd.date,INTERVAL 1 DAY)AND employee_id=atd.employee_id)='Absent'
+          AND (SELECT day_status FROM t_attandance_master WHERE DATE=SUBDATE(atd.date,INTERVAL 1 DAY)AND employee_id=atd.employee_id)='Full Day'
+          THEN 1
+          WHEN atd.attandance_flag='Holiday'  
+          AND (SELECT  attandance_flag FROM t_attandance_master WHERE DATE=ADDDATE(atd.date,INTERVAL 1 DAY)AND employee_id=atd.employee_id)='Absent'
+          AND (SELECT day_status FROM t_attandance_master WHERE DATE=ADDDATE(atd.date,INTERVAL 1 DAY)AND employee_id=atd.employee_id)='Full Day'          
+          AND (SELECT  attandance_flag FROM t_attandance_master WHERE DATE=SUBDATE(atd.date,INTERVAL 1 DAY)AND employee_id=atd.employee_id)='Absent'
+          AND (SELECT day_status FROM t_attandance_master WHERE DATE=SUBDATE(atd.date,INTERVAL 1 DAY)AND employee_id=atd.employee_id)='Full Day'          
+          THEN 1
+          WHEN atd.attandance_flag='Weakoff' 
+          AND (SELECT  attandance_flag FROM t_attandance_master WHERE DATE=ADDDATE(atd.date,INTERVAL 1 DAY)AND employee_id=atd.employee_id)='Weakoff'
+          AND (SELECT  attandance_flag FROM t_attandance_master WHERE DATE=ADDDATE(atd.date,INTERVAL 2 DAY)AND employee_id=atd.employee_id)='Absent'          
+          AND (SELECT day_status FROM t_attandance_master WHERE DATE=ADDDATE(atd.date,INTERVAL 2 DAY)AND employee_id=atd.employee_id)='Full Day'
+          AND (SELECT  attandance_flag FROM t_attandance_master WHERE DATE=SUBDATE(atd.date,INTERVAL 1 DAY)AND employee_id=atd.employee_id)='Absent'
+          AND (SELECT day_status FROM t_attandance_master WHERE DATE=SUBDATE(atd.date,INTERVAL 1 DAY)AND employee_id=atd.employee_id)='Full Day'
+          THEN 2
+          WHEN atd.attandance_flag='Holiday' 
+          AND (SELECT  attandance_flag FROM t_attandance_master WHERE DATE=ADDDATE(atd.date,INTERVAL 1 DAY)AND employee_id=atd.employee_id)='Holiday'
+          AND (SELECT  attandance_flag FROM t_attandance_master WHERE DATE=ADDDATE(atd.date,INTERVAL 2 DAY)AND employee_id=atd.employee_id)='Absent'          
+          AND (SELECT day_status FROM t_attandance_master WHERE DATE=ADDDATE(atd.date,INTERVAL 2 DAY)AND employee_id=atd.employee_id)='Full Day'
+          AND (SELECT  attandance_flag FROM t_attandance_master WHERE DATE=SUBDATE(atd.date,INTERVAL 1 DAY)AND employee_id=atd.employee_id)='Absent'
+          AND (SELECT day_status FROM t_attandance_master WHERE DATE=SUBDATE(atd.date,INTERVAL 1 DAY)AND employee_id=atd.employee_id)='Full Day'
+          THEN 2
+          WHEN atd.attandance_flag='Holiday' 
+          AND (SELECT  attandance_flag FROM t_attandance_master WHERE DATE=ADDDATE(atd.date,INTERVAL 1 DAY)AND employee_id=atd.employee_id)='Holiday'
+          AND (SELECT  attandance_flag FROM t_attandance_master WHERE DATE=ADDDATE(atd.date,INTERVAL 2 DAY)AND employee_id=atd.employee_id)='Holiday'          
+          AND (SELECT  attandance_flag FROM t_attandance_master WHERE DATE=ADDDATE(atd.date,INTERVAL 3 DAY)AND employee_id=atd.employee_id)='Absent'           
+          AND (SELECT day_status FROM t_attandance_master WHERE DATE=ADDDATE(atd.date,INTERVAL 3 DAY)AND employee_id=atd.employee_id)='Full Day'
+          AND (SELECT  attandance_flag FROM t_attandance_master WHERE DATE=SUBDATE(atd.date,INTERVAL 1 DAY)AND employee_id=atd.employee_id)='Absent'
+          AND (SELECT day_status FROM t_attandance_master WHERE DATE=SUBDATE(atd.date,INTERVAL 1 DAY)AND employee_id=atd.employee_id)='Full Day'
+          THEN 3
+          ELSE 0 END) AS addEA
+FROM m_employee AS emp,t_attandance_master AS atd
+WHERE atd.employee_id=emp.employee_id
+AND emp.deleted_flag=0 AND atd.deleted_flag=0
+AND YEAR(atd.DATE)=$P{YearPrompt}
+AND MONTHNAME(atd.DATE)=$P{SingleMandatoryMonthPrompt}
+GROUP BY 1) AS b
+WHERE a.employee_id=b.employee_id
+GROUP BY 1,3]]>
+	</queryString>
+	<field name="Emp_Name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="a_date" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="a_day" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="a_status" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="PRESENT" class="java.lang.String"/>
+	<field name="Absent" class="java.lang.String"/>
+	<field name="Extra" class="java.lang.String"/>
+	<field name="Holiday" class="java.lang.String"/>
+	<field name="tot" class="java.lang.String"/>
+	<field name="nul" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="23" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="1350" height="23" forecolor="#0066FF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="styled">
+					<font fontName="Arial" size="16" isBold="true" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[" Attendance Summary Report "]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="16" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="1350" height="16" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Year -  " + "<style forecolor='red'>"+ $P{YearPrompt}+"</style>"
++ ", Month -  "+ "<style forecolor='red'>"+ $P{SingleMandatoryMonthPrompt}+"</style>"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="159" splitType="Stretch">
+			<elementGroup/>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="30" width="100" height="30" backcolor="#B1D9E1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Employee]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="100" height="30" backcolor="#B1D9E6"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+			<elementGroup/>
+			<crosstab>
+				<reportElement x="0" y="0" width="2000" height="159"/>
+				<crosstabParameter name="A"/>
+				<rowGroup name="Emp_Name" width="100">
+					<bucket>
+						<bucketExpression class="java.lang.String"><![CDATA[$F{Emp_Name}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<textField>
+								<reportElement style="Crosstab Data Text" mode="Opaque" x="0" y="0" width="100" height="16" backcolor="#B1D9E1"/>
+								<textElement verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<textFieldExpression class="java.lang.String"><![CDATA[$V{Emp_Name}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<columnGroup name="a_date" height="30" totalPosition="Start">
+					<bucket order="Descending">
+						<bucketExpression class="java.lang.Integer"><![CDATA[$F{a_date}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<textField>
+								<reportElement style="Crosstab Data Text" mode="Opaque" x="0" y="0" width="30" height="30" backcolor="#B1D9E1"/>
+								<textElement verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<textFieldExpression class="java.lang.Integer"><![CDATA[$V{a_date}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents/>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<columnGroup name="a_day" height="30">
+					<bucket>
+						<bucketExpression class="java.lang.String"><![CDATA[$F{a_day}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<textField>
+								<reportElement style="Crosstab Data Text" mode="Opaque" x="0" y="0" width="30" height="30" backcolor="#B1D9E1"/>
+								<textElement verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<textFieldExpression class="java.lang.String"><![CDATA[$V{a_day}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents/>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<measure name="a_statusMeasure" class="java.lang.String" calculation="Count">
+					<measureExpression><![CDATA[$F{a_status}]]></measureExpression>
+				</measure>
+				<measure name="Tot_Pres" class="java.lang.String">
+					<measureExpression><![CDATA[$F{PRESENT}]]></measureExpression>
+				</measure>
+				<measure name="Tot_Abs" class="java.lang.String">
+					<measureExpression><![CDATA[$F{Absent}]]></measureExpression>
+				</measure>
+				<measure name="Tot_Ext" class="java.lang.String">
+					<measureExpression><![CDATA[$F{Extra}]]></measureExpression>
+				</measure>
+				<measure name="Tot_Holi" class="java.lang.String">
+					<measureExpression><![CDATA[$F{Holiday}]]></measureExpression>
+				</measure>
+				<measure name="Tot_Tot" class="java.lang.String">
+					<measureExpression><![CDATA[$F{tot}]]></measureExpression>
+				</measure>
+				<measure name="Tot_Nul" class="java.lang.String">
+					<measureExpression><![CDATA[$F{nul}]]></measureExpression>
+				</measure>
+				<crosstabCell width="30" height="16">
+					<cellContents>
+						<textField pattern="" isBlankWhenNull="false">
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="30" height="16"/>
+							<textElement verticalAlignment="Middle" markup="styled">
+								<font fontName="Arial" isBold="false" pdfFontName="Helvetica-Bold"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[( $V{a_statusMeasure}.equals( "H" ) ? "<style forecolor='#003EFF'>"+ $V{a_statusMeasure}+"</style>" 
+: $V{a_statusMeasure}.equals( "E" ) ? "<style forecolor='#00AF33'>"+ $V{a_statusMeasure}+"</style>" 
+: $V{a_statusMeasure}.equals( "A" ) ? "<style forecolor='red'>"+ $V{a_statusMeasure}+"</style>" 
+: $V{a_statusMeasure}.equals( "H(H)" ) ? "<style forecolor='#003EFF'>"+ $V{a_statusMeasure}+"</style>" 
+: $V{a_statusMeasure}.equals( "E(H)" ) ? "<style forecolor='#00AF33'>"+ $V{a_statusMeasure}+"</style>" 
+: $V{a_statusMeasure}.equals( "A(H)" ) ? "<style forecolor='red'>"+ $V{a_statusMeasure}+"</style>"
+: $V{a_statusMeasure}.equals( "W" ) ? "<style forecolor='#003EFF'>"+ $V{a_statusMeasure}+"</style>" 
+: $V{a_statusMeasure}.equals( "W(H)" ) ? "<style forecolor='#003EFF'>"+ $V{a_statusMeasure}+"</style>" 
+: $V{a_statusMeasure}.equals( "" ) ? "<style forecolor='#003EFF'>"+ $V{a_statusMeasure}+"</style>" 
+: $V{a_statusMeasure})]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell height="25" rowTotalGroup="Emp_Name">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<textField>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25"/>
+							<textElement/>
+							<textFieldExpression class="java.lang.String"><![CDATA[$V{a_statusMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="300" height="16" columnTotalGroup="a_date">
+					<cellContents backcolor="#A5A8DC" mode="Opaque">
+						<textField>
+							<reportElement style="Crosstab Data Text" x="100" y="0" width="50" height="16" forecolor="#FFFFFF"/>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$V{Tot_Pres}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement style="Crosstab Data Text" x="150" y="0" width="50" height="16" forecolor="#FFFFFF"/>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$V{Tot_Abs}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement style="Crosstab Data Text" x="250" y="0" width="50" height="16" forecolor="#FFFFFF"/>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$V{Tot_Ext}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement style="Crosstab Data Text" x="200" y="0" width="50" height="16" forecolor="#FFFFFF"/>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$V{Tot_Holi}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="16" forecolor="#FFFFFF"/>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$V{Tot_Tot}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement style="Crosstab Data Text" x="50" y="0" width="50" height="16" forecolor="#FFFFFF"/>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial"/>
+							</textElement>
+							<textFieldExpression class="java.lang.String"><![CDATA[$V{Tot_Nul}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="Emp_Name" columnTotalGroup="a_date">
+					<cellContents backcolor="#005FB3" mode="Opaque">
+						<textField>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25" forecolor="#FFFFFF"/>
+							<textElement/>
+							<textFieldExpression class="java.lang.String"><![CDATA[$V{a_statusMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="50" columnTotalGroup="a_day">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<textField>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25"/>
+							<textElement/>
+							<textFieldExpression class="java.lang.String"><![CDATA[$V{a_statusMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="Emp_Name" columnTotalGroup="a_day">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<textField>
+							<reportElement style="Crosstab Data Text" x="0" y="0" width="50" height="25"/>
+							<textElement/>
+							<textFieldExpression class="java.lang.String"><![CDATA[$V{a_statusMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+			</crosstab>
+			<staticText>
+				<reportElement mode="Opaque" x="200" y="30" width="50" height="30" backcolor="#B1D9E1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Pres.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="250" y="30" width="50" height="30" backcolor="#B1D9E1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Abs.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="300" y="30" width="50" height="30" backcolor="#B1D9E1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Holi./wknd]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="350" y="30" width="50" height="30" backcolor="#B1D9E1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Extra]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="100" y="0" width="300" height="30" backcolor="#B1D9E6"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="150" y="30" width="50" height="30" backcolor="#B1D9E1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Null]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="100" y="30" width="50" height="30" backcolor="#B1D9E1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+		</band>
+	</summary>
+	<noData>
+		<band height="100">
+			<textField>
+				<reportElement x="0" y="0" width="1350" height="23" forecolor="#0066FF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="styled">
+					<font fontName="Arial" size="16" isBold="true" isUnderline="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[" Attendance Summary Report "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="23" width="1350" height="16" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Year -  " + "<style forecolor='red'>"+ $P{YearPrompt}+"</style>"
++ ", Month -  "+ "<style forecolor='red'>"+ $P{SingleMandatoryMonthPrompt}+"</style>"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="39" width="1350" height="30" forecolor="#FF3300"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="Arial" size="20"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="69" width="1350" height="18" forecolor="#0099FF"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="Arial" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(Please Check Your Selection Criteria)]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>

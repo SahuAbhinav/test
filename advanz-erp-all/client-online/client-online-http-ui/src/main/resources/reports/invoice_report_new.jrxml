@@ -1,0 +1,1177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="invoice_report_new" pageWidth="752" pageHeight="1000" columnWidth="752" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="e8847d4f-1d02-43f9-9f70-fc9ec812775f">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="InvoiceNoPrompt" class="java.lang.String"/>
+	<parameter name="InvoiceNoNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{InvoiceNoPrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT company.*, t_bill_mast.invoice_number, t_bill_mast.invoice_date, t_bill_mast.sales_order_number, t_bill_mast.sales_order_date
+, t_bill_mast.delivery_note_no, t_bill_mast.delivery_note_date, t_bill_mast.lr_no, t_bill_mast.lr_date ,t_bill_mast.despatch_through
+, t_bill_mast.despatch_document_no, t_bill_mast.date_of_removal, t_bill_mast.time_of_removal, m_city.city_name, t_bill_mast.modified_date
+, t_bill_mast.motor_vehicle_no, t_bill_mast.terms_of_payment, consignee.party_name AS consignee_party, consignee.vat_no AS consignee_vatno
+, buyer.party_name AS buyer_party, buyer.vat_no AS buyer_vat, m_item.item_name, qty_per_packet, no_of_packet, t_bill_detail.quantity
+, t_bill_detail.sales_rate , t_bill_detail.item_value AS Amount, m_masters.NAME, t_bill_detail.excise_perc, t_bill_mast.excise_duty_amount
+, t_bill_mast.education_cess_perc, t_bill_mast.education_cess_amount, t_bill_mast.high_education_cess_perc, t_bill_mast.high_education_cess_amount
+, (CASE WHEN consignee.invoice_type='saleswithInState' THEN t_bill_detail.vat_perc ELSE t_bill_detail.cst_perc END) AS VAT_CST_NO
+, (CASE WHEN consignee.invoice_type='saleswithInState' THEN t_bill_mast.vat_amount ELSE t_bill_mast.cst_amount END) AS VAT_CST_AMT
+, t_bill_mast.packing_forwarding, t_bill_mast.freight_amt, t_bill_mast.other_amount,t_bill_mast.bill_net_amount
+FROM t_bill_detail , m_item, m_masters, t_bill_mast, m_city, m_party AS consignee, m_party AS buyer,
+( SELECT COMP_NAME, COMP_ADD, VATNO, CSTNO, EXCISEECCNO, RANGE_ADD, DIVISION
+, DIVISION AS COMMISIONRATE
+FROM M_COMPANY
+WHERE DELETED_FLAG=0 ) AS company
+WHERE t_bill_detail.deleted_flag=0 AND m_item.deleted_flag=0 AND m_masters.deleted_flag=0
+AND t_bill_detail.item_id=m_item.item_id AND t_bill_detail.measurement_Unit_id = m_masters.masters_id
+AND t_bill_detail.invoice_number = t_bill_mast.invoice_number AND t_bill_mast.deleted_flag=0
+AND t_bill_mast.city_id = m_city.city_id AND m_city.DELETED_FLAG=0
+AND t_bill_mast.party_id = consignee.party_id AND consignee.deleted_flag=0
+AND t_bill_mast.party_id = buyer.party_id
+AND (t_bill_detail.invoice_number=$P{InvoiceNoPrompt} OR 1=$P{InvoiceNoNull_FlagPrompt})
+-- and t_bill_detail.invoice_number='IN-1213-14'
+-- group by t_bill_detail.invoice_number
+ORDER BY 1]]>
+	</queryString>
+	<field name="COMP_NAME" class="java.lang.String"/>
+	<field name="COMP_ADD" class="java.lang.String"/>
+	<field name="VATNO" class="java.lang.String"/>
+	<field name="CSTNO" class="java.lang.String"/>
+	<field name="EXCISEECCNO" class="java.lang.String"/>
+	<field name="RANGE_ADD" class="java.lang.String"/>
+	<field name="DIVISION" class="java.lang.String"/>
+	<field name="COMMISIONRATE" class="java.lang.String"/>
+	<field name="invoice_number" class="java.lang.String"/>
+	<field name="invoice_date" class="java.sql.Timestamp"/>
+	<field name="sales_order_number" class="java.lang.String"/>
+	<field name="sales_order_date" class="java.sql.Timestamp"/>
+	<field name="delivery_note_no" class="java.lang.String"/>
+	<field name="delivery_note_date" class="java.sql.Timestamp"/>
+	<field name="lr_no" class="java.lang.String"/>
+	<field name="lr_date" class="java.sql.Timestamp"/>
+	<field name="despatch_through" class="java.lang.String"/>
+	<field name="despatch_document_no" class="java.lang.String"/>
+	<field name="date_of_removal" class="java.util.Date"/>
+	<field name="time_of_removal" class="java.sql.Time"/>
+	<field name="city_name" class="java.lang.String"/>
+	<field name="modified_date" class="java.sql.Timestamp"/>
+	<field name="motor_vehicle_no" class="java.lang.String"/>
+	<field name="terms_of_payment" class="java.lang.String"/>
+	<field name="consignee_party" class="java.lang.String"/>
+	<field name="consignee_vatno" class="java.lang.String"/>
+	<field name="buyer_party" class="java.lang.String"/>
+	<field name="buyer_vat" class="java.lang.String"/>
+	<field name="item_name" class="java.lang.String"/>
+	<field name="qty_per_packet" class="java.lang.Double"/>
+	<field name="no_of_packet" class="java.lang.Double"/>
+	<field name="quantity" class="java.lang.Double"/>
+	<field name="sales_rate" class="java.lang.Double"/>
+	<field name="Amount" class="java.lang.Double"/>
+	<field name="NAME" class="java.lang.String"/>
+	<field name="excise_perc" class="java.lang.Double"/>
+	<field name="excise_duty_amount" class="java.lang.Double"/>
+	<field name="education_cess_perc" class="java.lang.Double"/>
+	<field name="education_cess_amount" class="java.lang.Double"/>
+	<field name="high_education_cess_perc" class="java.lang.Double"/>
+	<field name="high_education_cess_amount" class="java.lang.Double"/>
+	<field name="VAT_CST_NO" class="java.lang.Double"/>
+	<field name="VAT_CST_AMT" class="java.lang.Double"/>
+	<field name="packing_forwarding" class="java.lang.Double"/>
+	<field name="freight_amt" class="java.lang.Double"/>
+	<field name="other_amount" class="java.lang.Double"/>
+	<field name="bill_net_amount" class="java.lang.Double"/>
+	<variable name="sub_total_amount" class="java.lang.Double" resetType="Page" calculation="Sum">
+		<variableExpression><![CDATA[$F{Amount}]]></variableExpression>
+	</variable>
+	<group name="invoice">
+		<groupExpression><![CDATA[$F{invoice_number}]]></groupExpression>
+		<groupHeader>
+			<band height="269">
+				<staticText>
+					<reportElement uuid="7c3c281e-a493-4ef5-84dc-df305f0bd629" x="2" y="85" width="58" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[TIN NO.  :]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="5ad4f886-4bf4-4470-8579-d40729f79dbb" x="60" y="85" width="192" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{consignee_vatno}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="d413e3b7-ef05-49c7-8174-ea8472e22a91" x="2" y="127" width="250" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{buyer_party}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="7c3c281e-a493-4ef5-84dc-df305f0bd629" x="2" y="106" width="250" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Buyer (if other than consignee)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="c5f8f253-25b5-4763-814a-1d0fd7bb2df1" x="254" y="147" width="121" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Mode/Terms of Payment]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="c5f8f253-25b5-4763-814a-1d0fd7bb2df1" x="254" y="127" width="157" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Date & Time of issue of invoice :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="7e099169-6a91-4ee8-902b-274c273adf53" x="564" y="127" width="123" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Motor Vehicle No.]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="d413e3b7-ef05-49c7-8174-ea8472e22a91" x="411" y="127" width="151" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yyyy hh:mm:ss a").format($F{modified_date})]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="d413e3b7-ef05-49c7-8174-ea8472e22a91" x="595" y="64" width="155" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yyyy hh:mm:ss a").format($F{lr_date})]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="d413e3b7-ef05-49c7-8174-ea8472e22a91" x="687" y="127" width="63" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{motor_vehicle_no}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="c5f8f253-25b5-4763-814a-1d0fd7bb2df1" x="254" y="64" width="72" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Supplier's Ref.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="7e099169-6a91-4ee8-902b-274c273adf53" x="564" y="106" width="74" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Destination:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="d413e3b7-ef05-49c7-8174-ea8472e22a91" x="349" y="85" width="213" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{despatch_through}]]></textFieldExpression>
+				</textField>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement uuid="d413e3b7-ef05-49c7-8174-ea8472e22a91" x="425" y="106" width="47" height="20"/>
+					<textElement textAlignment="Center">
+						<font fontName="SansSerif"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yyyy").format($F{date_of_removal})]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="d413e3b7-ef05-49c7-8174-ea8472e22a91" x="375" y="147" width="186" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{terms_of_payment}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="7e099169-6a91-4ee8-902b-274c273adf53" x="564" y="147" width="186" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[AUTHENTICATED BY]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="d413e3b7-ef05-49c7-8174-ea8472e22a91" x="326" y="64" width="236" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{lr_no}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="c5f8f253-25b5-4763-814a-1d0fd7bb2df1" x="254" y="85" width="95" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Despatched through ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="c5f8f253-25b5-4763-814a-1d0fd7bb2df1" x="254" y="106" width="171" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Date & Time of Removal of Goods :]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="d413e3b7-ef05-49c7-8174-ea8472e22a91" x="687" y="85" width="63" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{despatch_document_no}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="7e099169-6a91-4ee8-902b-274c273adf53" x="564" y="64" width="31" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Dated]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="7e099169-6a91-4ee8-902b-274c273adf53" x="564" y="85" width="123" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Despatch Document No:]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="d413e3b7-ef05-49c7-8174-ea8472e22a91" x="638" y="106" width="112" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{city_name}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="c752e73d-5175-43de-ae76-f86528c94978" x="58" y="186" width="194" height="20"/>
+					<textElement/>
+					<textFieldExpression><![CDATA[$F{buyer_vat}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="7c3c281e-a493-4ef5-84dc-df305f0bd629" x="2" y="186" width="56" height="20"/>
+					<textElement/>
+					<text><![CDATA[TIN NO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="417589dc-933b-4f15-8a2d-fdf578480741" x="686" y="207" width="64" height="61"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Amount]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="3987effc-4d39-496c-bfc2-4f5c44c46108" x="544" y="207" width="70" height="61"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Rate]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="f36dbe19-76fb-49cd-9c7e-332978e7a9ae" x="473" y="207" width="70" height="61"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[QTY]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="f36dbe19-76fb-49cd-9c7e-332978e7a9ae" x="331" y="227" width="70" height="41"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[NO. & DESCRIPTON OF PACKING]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="87a92e1c-ee00-4637-a9a0-cd40030347c2" x="331" y="207" width="141" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[PACKING
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="17c14b33-78a1-48ee-948d-6fc9e521ad10" x="59" y="207" width="193" height="60"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Description & Specification of Goods]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="7e422e99-e185-4ff5-9623-7d8d02ab671f" x="1" y="207" width="57" height="60"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Sl No.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="f36dbe19-76fb-49cd-9c7e-332978e7a9ae" x="401" y="226" width="71" height="42"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[AVG.CONTENT
+PER PKG]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="35cb0d91-6acb-47d7-ae2e-731b10a32263" x="615" y="207" width="70" height="61"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[UOM]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="d413e3b7-ef05-49c7-8174-ea8472e22a91" x="2" y="22" width="249" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{consignee_party}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="5ad4f886-4bf4-4470-8579-d40729f79dbb" x="104" y="1" width="148" height="20"/>
+					<textElement/>
+				</textField>
+				<staticText>
+					<reportElement uuid="7c3c281e-a493-4ef5-84dc-df305f0bd629" x="2" y="1" width="56" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Consignee:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="d55e30fb-1675-4e1b-9c99-7ec0da233b58" x="564" y="22" width="31" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Dated]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="d413e3b7-ef05-49c7-8174-ea8472e22a91" x="595" y="43" width="155" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yyyy hh:mm:ss a").format($F{delivery_note_date})]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="d413e3b7-ef05-49c7-8174-ea8472e22a91" x="319" y="1" width="243" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{invoice_number}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="d413e3b7-ef05-49c7-8174-ea8472e22a91" x="595" y="1" width="155" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yyyy hh:mm:ss a").format($F{invoice_date})]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="d413e3b7-ef05-49c7-8174-ea8472e22a91" x="339" y="43" width="223" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{delivery_note_no}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="7e099169-6a91-4ee8-902b-274c273adf53" x="564" y="43" width="31" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Dated]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="6356e643-c0eb-4aa4-88a1-026ac25d19a1" x="564" y="1" width="31" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Dated]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="c5f8f253-25b5-4763-814a-1d0fd7bb2df1" x="254" y="43" width="85" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Delivery Note No.]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="d413e3b7-ef05-49c7-8174-ea8472e22a91" x="344" y="22" width="218" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{sales_order_number}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="d413e3b7-ef05-49c7-8174-ea8472e22a91" x="595" y="22" width="155" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yyyy hh:mm:ss a").format($F{sales_order_date})]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="c5f8f253-25b5-4763-814a-1d0fd7bb2df1" x="254" y="1" width="65" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Invoice No. -]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="cc291712-c221-4a75-ae6e-8deca26e8503" x="254" y="22" width="90" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Buyer's Order No.]]></text>
+				</staticText>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="252" y="63" width="498" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="0" y="105" width="750" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="252" y="84" width="498" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="0" y="42" width="750" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="0" y="21" width="750" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="0" y="126" width="750" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="0" y="146" width="750" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="0" y="167" width="750" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="252" y="1" width="1" height="264"/>
+				</line>
+				<line>
+					<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="562" y="1" width="1" height="205"/>
+				</line>
+				<line>
+					<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="57" y="1" width="1" height="20"/>
+				</line>
+				<line>
+					<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="103" y="1" width="1" height="20"/>
+				</line>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="253" y="186" width="308" height="2"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="1" y="206" width="749" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="58" y="206" width="1" height="61"/>
+				</line>
+				<staticText>
+					<reportElement uuid="87a92e1c-ee00-4637-a9a0-cd40030347c2" x="253" y="207" width="77" height="60"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Tariff / HSN Classification]]></text>
+				</staticText>
+				<line>
+					<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="330" y="207" width="1" height="61"/>
+				</line>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="1" y="268" width="749" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="331" y="226" width="141" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="685" y="207" width="1" height="61"/>
+				</line>
+				<line>
+					<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="400" y="226" width="1" height="41"/>
+				</line>
+				<line>
+					<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="614" y="207" width="1" height="61"/>
+				</line>
+				<line>
+					<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="543" y="206" width="1" height="61"/>
+				</line>
+				<line>
+					<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="472" y="206" width="1" height="61"/>
+				</line>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="d413e3b7-ef05-49c7-8174-ea8472e22a91" x="-84" y="6" width="55" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{date_of_removal}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="781342c5-fa6e-44a7-93e1-e049193ec8b0" x="472" y="106" width="90" height="20"/>
+					<textElement>
+						<font fontName="SansSerif"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new SimpleDateFormat("hh:mm:ss a").format($F{time_of_removal})]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="428">
+				<staticText>
+					<reportElement uuid="cfaa60e5-b10f-49f6-9cbf-1303406e563e" x="-542" y="-203" width="91" height="20"/>
+					<textElement/>
+					<text><![CDATA[VAT Declaration :]]></text>
+				</staticText>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement uuid="593d3bd7-1d1b-42ff-ae42-7df81f7cff4d" x="687" y="231" width="62" height="20"/>
+					<textElement textAlignment="Right">
+						<font fontName="SansSerif" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{bill_net_amount}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="cfaa60e5-b10f-49f6-9cbf-1303406e563e" x="59" y="150" width="193" height="20"/>
+					<textElement textAlignment="Right">
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[PACKING & FORWARDING]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="593d3bd7-1d1b-42ff-ae42-7df81f7cff4d" x="687" y="150" width="62" height="20"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$F{packing_forwarding}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="cfaa60e5-b10f-49f6-9cbf-1303406e563e" x="59" y="170" width="193" height="20"/>
+					<textElement textAlignment="Right">
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[FREIGHT]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="6dfd372d-b5ba-4838-8f97-cd992b9da6a3" x="543" y="71" width="71" height="20"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$F{excise_perc}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="593d3bd7-1d1b-42ff-ae42-7df81f7cff4d" x="615" y="71" width="70" height="20"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA["%"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="cfaa60e5-b10f-49f6-9cbf-1303406e563e" x="59" y="71" width="193" height="20"/>
+					<textElement textAlignment="Right">
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Basic Exice Duty]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="fbb579b3-c1fc-4ffa-90c0-d52c1501b22b" x="616" y="110" width="69" height="20"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA["%"]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="1b5b9a1b-91d7-4dcf-a4f1-c70e015210c6" x="543" y="110" width="71" height="20"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$F{high_education_cess_perc}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="593d3bd7-1d1b-42ff-ae42-7df81f7cff4d" x="687" y="71" width="62" height="20"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$F{excise_duty_amount}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="48fcc61e-9bea-4a7f-adf8-8b6a12938e71" x="544" y="91" width="70" height="20"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$F{education_cess_perc}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="31a1b234-285c-43a1-85b9-91f037ad4305" x="614" y="90" width="71" height="20"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA["%"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="cfaa60e5-b10f-49f6-9cbf-1303406e563e" x="59" y="130" width="193" height="20"/>
+					<textElement textAlignment="Right">
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[CST/VAT]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="593d3bd7-1d1b-42ff-ae42-7df81f7cff4d" x="687" y="170" width="62" height="20"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$F{freight_amt}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="91aa4c68-2b53-4016-990e-e33c6418897b" x="687" y="110" width="62" height="20"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$F{high_education_cess_amount}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="cfaa60e5-b10f-49f6-9cbf-1303406e563e" x="59" y="110" width="193" height="20"/>
+					<textElement textAlignment="Right">
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Secondary & Higher Education Cess]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="cfaa60e5-b10f-49f6-9cbf-1303406e563e" x="59" y="90" width="193" height="20"/>
+					<textElement textAlignment="Right">
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[Education Cess]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="593d3bd7-1d1b-42ff-ae42-7df81f7cff4d" x="687" y="90" width="62" height="20"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$F{education_cess_amount}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="cfaa60e5-b10f-49f6-9cbf-1303406e563e" x="144" y="35" width="108" height="20"/>
+					<textElement>
+						<font fontName="SansSerif" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Sub Total	]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="a20363b1-4897-46ff-8aa3-bd962a3f089e" x="685" y="35" width="64" height="20"/>
+					<textElement textAlignment="Right">
+						<font fontName="SansSerif" isBold="true" isUnderline="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{sub_total_amount}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="593d3bd7-1d1b-42ff-ae42-7df81f7cff4d" x="687" y="190" width="62" height="40"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$F{other_amount}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="cfaa60e5-b10f-49f6-9cbf-1303406e563e" x="59" y="190" width="193" height="20"/>
+					<textElement textAlignment="Right">
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[(LESS ADVANCE) IF ANY ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="cfaa60e5-b10f-49f6-9cbf-1303406e563e" x="59" y="230" width="193" height="20"/>
+					<textElement textAlignment="Right">
+						<font fontName="SansSerif" isBold="true"/>
+					</textElement>
+					<text><![CDATA[GRAND TOTAL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="cfaa60e5-b10f-49f6-9cbf-1303406e563e" x="59" y="210" width="193" height="20"/>
+					<textElement textAlignment="Right">
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[SOLD AGAINST FROM C]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="cfaa60e5-b10f-49f6-9cbf-1303406e563e" x="2" y="273" width="179" height="20"/>
+					<textElement/>
+					<text><![CDATA[Amount Of Duty (in words) :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="cfaa60e5-b10f-49f6-9cbf-1303406e563e" x="2" y="313" width="179" height="20"/>
+					<textElement/>
+					<text><![CDATA[Serial No. in]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="cfaa60e5-b10f-49f6-9cbf-1303406e563e" x="2" y="253" width="179" height="20"/>
+					<textElement/>
+					<text><![CDATA[Amount Chargeable(in words) :]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="5cb425a3-7135-448d-b915-5d4623a7ad05" x="181" y="293" width="568" height="20"/>
+					<textElement/>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="5cb425a3-7135-448d-b915-5d4623a7ad05" x="181" y="273" width="568" height="20"/>
+					<textElement/>
+				</textField>
+				<staticText>
+					<reportElement uuid="cfaa60e5-b10f-49f6-9cbf-1303406e563e" x="2" y="293" width="179" height="20"/>
+					<textElement/>
+					<text><![CDATA[Amount Of Cess (in words) :]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="5cb425a3-7135-448d-b915-5d4623a7ad05" x="181" y="253" width="568" height="20"/>
+					<textElement/>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="5cb425a3-7135-448d-b915-5d4623a7ad05" x="181" y="313" width="568" height="20"/>
+					<textElement/>
+				</textField>
+				<line>
+					<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="57" y="1" width="1" height="250"/>
+				</line>
+				<line>
+					<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="252" y="1" width="1" height="250"/>
+				</line>
+				<line>
+					<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="330" y="1" width="1" height="250"/>
+				</line>
+				<line>
+					<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="400" y="1" width="1" height="250"/>
+				</line>
+				<line>
+					<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="685" y="1" width="1" height="250"/>
+				</line>
+				<line>
+					<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="614" y="1" width="1" height="250"/>
+				</line>
+				<line>
+					<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="543" y="1" width="1" height="250"/>
+				</line>
+				<line>
+					<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="472" y="1" width="1" height="250"/>
+				</line>
+				<staticText>
+					<reportElement uuid="cfaa60e5-b10f-49f6-9cbf-1303406e563e" x="253" y="62" width="77" height="68"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif"/>
+					</textElement>
+					<text><![CDATA[NIL RATE OF DUTY VIDE NOTN. NO.08/2006]]></text>
+				</staticText>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="253" y="62" width="77" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="253" y="131" width="77" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="91aa4c68-2b53-4016-990e-e33c6418897b" x="687" y="130" width="62" height="20"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$F{VAT_CST_AMT}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="1b5b9a1b-91d7-4dcf-a4f1-c70e015210c6" x="543" y="130" width="71" height="20"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$F{VAT_CST_NO}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement uuid="fbb579b3-c1fc-4ffa-90c0-d52c1501b22b" x="616" y="130" width="69" height="20"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA["%"]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="0" y="229" width="750" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="0" y="209" width="251" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="0" y="252" width="750" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="472" y="209" width="213" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="0" y="190" width="251" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="0" y="273" width="750" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="0" y="293" width="750" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="0" y="312" width="750" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="0" y="333" width="750" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement uuid="cfaa60e5-b10f-49f6-9cbf-1303406e563e" x="2" y="355" width="91" height="20"/>
+					<textElement/>
+					<text><![CDATA[Declaration :]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="cfaa60e5-b10f-49f6-9cbf-1303406e563e" x="2" y="375" width="541" height="32"/>
+					<textElement/>
+					<text><![CDATA[We declare to the best of our knowledge and belief that the particulars stated herein are true and correct and there is no additional consideration accruing to us either directly or indirectly in any manner other than the amounts indicated here.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="0a192982-0be2-45a2-8084-99dd94e20a8c" x="648" y="387" width="100" height="20"/>
+					<textElement/>
+					<text><![CDATA[Authorised Signatory]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="5fe08c89-1e42-4b81-95e9-62c3f5b93583" x="648" y="407" width="100" height="20"/>
+					<textElement textAlignment="Right"/>
+					<text><![CDATA[E. & O.E.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="cfaa60e5-b10f-49f6-9cbf-1303406e563e" x="2" y="335" width="91" height="20"/>
+					<textElement/>
+					<text><![CDATA[VAT Declaration :]]></text>
+				</staticText>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="1" y="407" width="749" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement uuid="cfaa60e5-b10f-49f6-9cbf-1303406e563e" x="93" y="335" width="656" height="21"/>
+					<textElement/>
+					<text><![CDATA[We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="cfaa60e5-b10f-49f6-9cbf-1303406e563e" x="544" y="356" width="205" height="31"/>
+					<textElement textAlignment="Right">
+						<font fontName="SansSerif" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FOR SHREE CERAMIC FIBERS PVT LTD.]]></text>
+				</staticText>
+				<line>
+					<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="542" y="355" width="207" height="1"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="-61" y="-99" width="1" height="250"/>
+				</line>
+				<line>
+					<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="542" y="355" width="1" height="52"/>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="144" splitType="Stretch">
+			<textField>
+				<reportElement uuid="cb057c5e-4805-4f67-8e61-bdc478d94cda" x="1" y="43" width="749" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="12" isBold="true" isUnderline="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{COMP_NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="9c953f89-e1a5-4906-bb40-e2be39331a3b" x="104" y="104" width="149" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CSTNO}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="5ad4f886-4bf4-4470-8579-d40729f79dbb" x="104" y="124" width="149" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{EXCISEECCNO}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="164aeb67-9b80-47c4-9aaf-728e12bf26bb" x="2" y="84" width="55" height="20"/>
+				<textElement>
+					<font fontName="SansSerif"/>
+				</textElement>
+				<text><![CDATA[VAT TIN :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="224e7cc7-7a16-4143-a318-6a3685936bbe" x="2" y="124" width="101" height="20"/>
+				<textElement>
+					<font fontName="SansSerif"/>
+				</textElement>
+				<text><![CDATA[Excise Regn No.:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="d413e3b7-ef05-49c7-8174-ea8472e22a91" x="104" y="84" width="148" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{VATNO}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="164aeb67-9b80-47c4-9aaf-728e12bf26bb" x="2" y="103" width="55" height="20"/>
+				<textElement>
+					<font fontName="SansSerif"/>
+				</textElement>
+				<text><![CDATA[CST No. :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="d413e3b7-ef05-49c7-8174-ea8472e22a91" x="331" y="104" width="419" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DIVISION}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="164aeb67-9b80-47c4-9aaf-728e12bf26bb" x="254" y="124" width="77" height="20"/>
+				<textElement>
+					<font fontName="SansSerif"/>
+				</textElement>
+				<text><![CDATA[Commisionrate :]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="d413e3b7-ef05-49c7-8174-ea8472e22a91" x="331" y="84" width="419" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{RANGE_ADD}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="d413e3b7-ef05-49c7-8174-ea8472e22a91" x="331" y="124" width="419" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DIVISION}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="164aeb67-9b80-47c4-9aaf-728e12bf26bb" x="254" y="84" width="77" height="20"/>
+				<textElement>
+					<font fontName="SansSerif"/>
+				</textElement>
+				<text><![CDATA[RANGE :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="164aeb67-9b80-47c4-9aaf-728e12bf26bb" x="254" y="104" width="77" height="20"/>
+				<textElement>
+					<font fontName="SansSerif"/>
+				</textElement>
+				<text><![CDATA[Division :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="4f37a67d-83c3-41be-899a-af753ee0a50a" x="1" y="2" width="749" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[EXCISE INVOICE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="4f37a67d-83c3-41be-899a-af753ee0a50a" x="1" y="22" width="749" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<text><![CDATA[(ISSUE OF INVOICE UNDER RULE 11 OF CENTRAL EXCISE RULES 2002)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="4f37a67d-83c3-41be-899a-af753ee0a50a" x="651" y="2" width="100" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Extra Copy]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="cb057c5e-4805-4f67-8e61-bdc478d94cda" x="1" y="63" width="749" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="12" isBold="true" isUnderline="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{COMP_ADD}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="0" y="42" width="750" height="1"/>
+				<graphicElement>
+					<pen lineWidth="1.0"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="0" y="83" width="750" height="1"/>
+				<graphicElement>
+					<pen lineWidth="1.0"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="0" y="103" width="750" height="1"/>
+				<graphicElement>
+					<pen lineWidth="1.0"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="0" y="123" width="750" height="1"/>
+				<graphicElement>
+					<pen lineWidth="1.0"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="0" y="143" width="750" height="1"/>
+				<graphicElement>
+					<pen lineWidth="1.0"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="330" y="84" width="1" height="59"/>
+			</line>
+			<line>
+				<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="252" y="84" width="1" height="59"/>
+			</line>
+			<line>
+				<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="103" y="84" width="1" height="59"/>
+			</line>
+			<line>
+				<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="57" y="84" width="1" height="39"/>
+			</line>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="22" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="22a32a3b-e34d-4a57-b1b0-2a1ff33be80c" x="615" y="1" width="70" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="22a32a3b-e34d-4a57-b1b0-2a1ff33be80c" x="544" y="1" width="70" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sales_rate}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="22a32a3b-e34d-4a57-b1b0-2a1ff33be80c" x="331" y="1" width="70" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{no_of_packet}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="22a32a3b-e34d-4a57-b1b0-2a1ff33be80c" x="253" y="1" width="77" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[69031090]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="22a32a3b-e34d-4a57-b1b0-2a1ff33be80c" x="1" y="1" width="57" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="22a32a3b-e34d-4a57-b1b0-2a1ff33be80c" x="473" y="1" width="70" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="22a32a3b-e34d-4a57-b1b0-2a1ff33be80c" x="686" y="1" width="63" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{Amount}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="22a32a3b-e34d-4a57-b1b0-2a1ff33be80c" x="401" y="1" width="71" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{qty_per_packet}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="22a32a3b-e34d-4a57-b1b0-2a1ff33be80c" x="59" y="1" width="193" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{item_name}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="fb53ce0d-5172-4006-b2bc-6579c4bb63a8" x="0" y="21" width="750" height="1"/>
+				<graphicElement>
+					<pen lineWidth="1.0"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="58" y="1" width="1" height="20"/>
+			</line>
+			<line>
+				<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="252" y="1" width="1" height="20"/>
+			</line>
+			<line>
+				<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="330" y="1" width="1" height="20"/>
+			</line>
+			<line>
+				<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="400" y="1" width="1" height="21"/>
+			</line>
+			<line>
+				<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="685" y="0" width="1" height="22"/>
+			</line>
+			<line>
+				<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="614" y="1" width="1" height="21"/>
+			</line>
+			<line>
+				<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="543" y="1" width="1" height="21"/>
+			</line>
+			<line>
+				<reportElement uuid="604c6a34-f0ba-4c48-b388-d20a285e8ae2" x="472" y="1" width="1" height="21"/>
+			</line>
+		</band>
+	</detail>
+</jasperReport>

@@ -1,0 +1,853 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="FINISH STOCK WITH SALES ORDER" pageWidth="1900" pageHeight="800" whenNoDataType="NoDataSection" columnWidth="1900" leftMargin="0" rightMargin="0" topMargin="10" bottomMargin="10" uuid="93f21acb-d1b6-4ae6-b198-006304294ed3">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Crosstab Data Text" hAlign="Center">
+		<paragraph lineSpacing="Single"/>
+	</style>
+	<parameter name="FromDatePrompt" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ToDatePrompt" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ItemNamePrompt" class="java.lang.String"/>
+	<parameter name="ItemNameNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ItemNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ItemCategoryPrompt" class="java.lang.String"/>
+	<parameter name="ItemCategoryNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ItemCategoryPrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Item_Status_Prompt" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Item_StatusNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{Item_Status_Prompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PartyNamePrompt" class="java.lang.String"/>
+	<parameter name="PartyNameNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{PartyNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DesireDelDatePrompt" class="java.util.Date"/>
+	<parameter name="DesireDelDateNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{DesireDelDatePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT o.ITEM_CATEGORY_NAME
+, o.ITEM_NAME
+, o.itemcode
+, o.item_length
+, o.item_width
+, o.item_thikness
+, o.item_density
+, o.Grade
+, o.UOM
+, o.balance_qty
+, IFNULL(o.sales_order_date,remove_null.sales_order_date) AS sales_order_date
+, IFNULL(o.party_name, remove_null.party_name) AS party_name
+, o.desire_delivery_date
+, o.p_qty
+, o.total_balance_qty
+, o.item_sequence_no
+FROM
+(SELECT 1 AS map, c.ITEM_CATEGORY_NAME
+, UPPER(itm.item_name) AS ITEM_NAME
+, IFNULL(itm.itemcode,'') AS itemcode
+,IFNULL(itm.item_length,'') AS item_length
+,IFNULL(itm.item_width,'') AS item_width
+,IFNULL(itm.item_thikness,'') AS item_thikness
+,IFNULL(itm.item_density,'') AS item_density
+,gr.NAME AS Grade
+,unit.NAME AS UOM
+,IFNULL(itm.opening_stock,0) + IFNULL(ledger_qty,0) AS balance_qty
+,order_list.sales_order_date AS sales_order_date
+,order_list.party_name AS party_name
+,order_list.desire_delivery_date AS desire_delivery_date
+,SUM((order_list.pending_qty)) AS p_qty
+,(SELECT SUM(opening_qty) AS total_balance_qty
+  FROM(SELECT itm.item_id
+       ,IFNULL(itm.opening_stock,0) + IFNULL(ledger_qty,0) AS opening_qty
+       FROM t_sales_order_mast AS sale_m,t_sales_order_detail AS sale_d,m_party AS prt,m_item_category AS c
+       ,m_item AS itm LEFT JOIN (SELECT item_id,SUM(t_stock_ledger.quantity) AS ledger_qty
+                                 FROM t_stock_ledger
+                                 WHERE deleted_flag=0 AND transaction_date<=$P{ToDatePrompt}
+                                 GROUP BY item_id) AS stock_ledger
+                      ON itm.item_id=stock_ledger.item_id
+       WHERE sale_m.deleted_flag=0 AND sale_d.deleted_flag=0 AND sale_m.party_id =prt.party_id
+       AND sale_m.sales_order_number = sale_d.sales_order_number AND prt.deleted_flag=0 AND sale_d.item_id=itm.item_id
+       AND itm.deleted_flag=0 AND itm.item_category_id=c.item_category_id AND c.deleted_flag=0
+       AND sale_m.sales_order_date>=$P{FromDatePrompt}
+       AND sale_m.sales_order_date<=$P{ToDatePrompt}
+       AND (sale_m.desire_delivery_date=$P{DesireDelDatePrompt} OR 1=$P{DesireDelDateNull_FlagPrompt})
+       AND (c.ITEM_CATEGORY_NAME = $P{ItemCategoryPrompt} OR 1=$P{ItemCategoryNull_FlagPrompt})
+       AND(itm.item_name=$P{ItemNamePrompt} OR 1=$P{ItemNameNull_FlagPrompt})
+       AND(prt.party_name=$P{PartyNamePrompt} OR 1=$P{PartyNameNull_FlagPrompt})
+       AND (itm.active_status=$P{Item_Status_Prompt} OR 1=$P{Item_StatusNull_FlagPrompt})
+       AND sale_d.pending_qty > 0
+       GROUP BY itm.item_id
+       ) AS bal_qty
+  ) AS total_balance_qty
+,item_sequence_no
+FROM m_item_category AS c
+, m_item AS itm LEFT JOIN (SELECT sale_m.desire_delivery_date, sales_order_date, prt.party_id
+                           , sale_d.item_id, prt.party_name, sale_d.pending_qty
+                           FROM t_sales_order_mast AS sale_m, t_sales_order_detail AS sale_d, m_party AS prt
+                           WHERE sale_m.deleted_flag=0 AND sale_d.deleted_flag=0
+                           AND sale_m.party_id =prt.party_id
+                           AND sale_m.sales_order_number = sale_d.sales_order_number
+                           AND prt.deleted_flag=0
+                           AND sale_d.pending_qty > 0
+                           AND sale_m.sales_order_date>=$P{FromDatePrompt}
+                           AND sale_m.sales_order_date<=$P{ToDatePrompt}
+                           AND(prt.party_name=$P{PartyNamePrompt} OR 1=$P{PartyNameNull_FlagPrompt})
+                           AND (sale_m.desire_delivery_date=$P{DesireDelDatePrompt} OR 1=$P{DesireDelDateNull_FlagPrompt})
+                           ) AS order_list
+                ON itm.item_id = order_list.item_id
+LEFT JOIN
+(SELECT item_id,SUM(t_stock_ledger.quantity) AS ledger_qty
+FROM t_stock_ledger
+WHERE deleted_flag=0 AND transaction_date<=$P{ToDatePrompt}
+GROUP BY item_id) AS stock_ledger
+ON itm.item_id=stock_ledger.item_id
+,(SELECT masters_id ,NAME FROM m_masters WHERE m_form_name='Item Grade' AND deleted_flag=0) AS gr
+,(SELECT masters_id ,NAME FROM m_masters WHERE m_form_name='Measurement Unit' AND deleted_flag=0) AS unit
+WHERE itm.deleted_flag=0 AND itm.item_category_id=c.item_category_id AND c.deleted_flag=0
+AND gr.masters_id=itm.item_grade_id
+AND unit.masters_id=itm.measurement_Unit_id
+AND (c.ITEM_CATEGORY_NAME = $P{ItemCategoryPrompt} OR 1=$P{ItemCategoryNull_FlagPrompt})
+AND(itm.item_name=$P{ItemNamePrompt} OR 1=$P{ItemNameNull_FlagPrompt})
+AND (itm.active_status=$P{Item_Status_Prompt} OR 1=$P{Item_StatusNull_FlagPrompt})
+GROUP BY itm.item_id,order_list.sales_order_date,order_list.party_id
+ORDER BY itm.item_sequence_no) AS o
+LEFT JOIN
+(SELECT 1 AS map,sale_m.desire_delivery_date, sales_order_date, sale_d.item_id, prt.party_name
+                           FROM t_sales_order_mast AS sale_m, t_sales_order_detail AS sale_d, m_party AS prt
+                           WHERE sale_m.deleted_flag=0 AND sale_d.deleted_flag=0
+                           AND sale_m.party_id =prt.party_id
+                           AND sale_m.sales_order_number = sale_d.sales_order_number
+                           AND prt.deleted_flag=0
+                           AND sale_d.pending_qty > 0
+                           AND sale_m.sales_order_date>=$P{FromDatePrompt}
+                           AND sale_m.sales_order_date<=$P{ToDatePrompt}
+                           LIMIT 1) AS remove_null
+ON o.map = remove_null.map;]]>
+	</queryString>
+	<field name="ITEM_NAME" class="java.lang.String"/>
+	<field name="desire_delivery_date" class="java.util.Date"/>
+	<field name="sales_order_date" class="java.util.Date"/>
+	<field name="party_name" class="java.lang.String"/>
+	<field name="UOM" class="java.lang.String"/>
+	<field name="item_length" class="java.lang.Double"/>
+	<field name="item_width" class="java.lang.Double"/>
+	<field name="item_thikness" class="java.lang.Double"/>
+	<field name="item_density" class="java.lang.Double"/>
+	<field name="Grade" class="java.lang.String"/>
+	<field name="item_sequence_no" class="java.lang.Double"/>
+	<field name="balance_qty" class="java.lang.Float"/>
+	<field name="p_qty" class="java.lang.Float"/>
+	<field name="total_balance_qty" class="java.lang.Float"/>
+	<field name="itemcode" class="java.lang.String"/>
+	<background>
+		<band/>
+	</background>
+	<title>
+		<band height="48">
+			<staticText>
+				<reportElement uuid="d4ee81fe-9180-4ce0-9a03-038898077664" x="2" y="0" width="1900" height="20" forecolor="#0066FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[FINISH STOCK WITH SALES ORDER]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="1d5199ab-4b68-46ff-a7e6-d02a498caf31" x="2" y="24" width="1900" height="20" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" From Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{FromDatePrompt})+"</style>"
++" ,  To Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{ToDatePrompt})+"</style>"
++ ", Item Category : " + ($P{ItemCategoryNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemCategoryPrompt}+"</style>")
++ ", Desire Delivery Date : " + ($P{DesireDelDateNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{DesireDelDatePrompt})+"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<summary>
+		<band height="104">
+			<crosstab>
+				<reportElement uuid="162ec885-c14a-4dec-9307-77ccf9c091b1" x="2" y="0" width="1900" height="104"/>
+				<crosstabHeaderCell>
+					<cellContents backcolor="#F0F8FF" mode="Opaque">
+						<staticText>
+							<reportElement uuid="43ececa7-56a5-4c28-9ca3-de7d331301f4" x="0" y="0" width="659" height="25"/>
+							<box>
+								<pen lineWidth="0.25"/>
+								<topPen lineWidth="0.25"/>
+								<leftPen lineWidth="0.25"/>
+								<bottomPen lineWidth="0.25"/>
+								<rightPen lineWidth="0.25"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="12" isBold="true"/>
+								<paragraph lineSpacing="Single"/>
+							</textElement>
+							<text><![CDATA[DESIRE DELIVERY DATE]]></text>
+						</staticText>
+						<staticText>
+							<reportElement uuid="43ececa7-56a5-4c28-9ca3-de7d331301f4" x="0" y="25" width="659" height="25"/>
+							<box>
+								<pen lineWidth="0.25"/>
+								<topPen lineWidth="0.25"/>
+								<leftPen lineWidth="0.25"/>
+								<bottomPen lineWidth="0.25"/>
+								<rightPen lineWidth="0.25"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="12" isBold="true"/>
+								<paragraph lineSpacing="Single"/>
+							</textElement>
+							<text><![CDATA[ORDER DATE]]></text>
+						</staticText>
+						<staticText>
+							<reportElement uuid="43ececa7-56a5-4c28-9ca3-de7d331301f4" stretchType="RelativeToBandHeight" x="0" y="50" width="101" height="25"/>
+							<box>
+								<pen lineWidth="0.25"/>
+								<topPen lineWidth="0.25"/>
+								<leftPen lineWidth="0.25"/>
+								<bottomPen lineWidth="0.25"/>
+								<rightPen lineWidth="0.25"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="12" isBold="true"/>
+								<paragraph lineSpacing="Single"/>
+							</textElement>
+							<text><![CDATA[  ITEM Code]]></text>
+						</staticText>
+						<staticText>
+							<reportElement uuid="43ececa7-56a5-4c28-9ca3-de7d331301f4" stretchType="RelativeToBandHeight" x="284" y="50" width="75" height="25"/>
+							<box>
+								<pen lineWidth="0.25"/>
+								<topPen lineWidth="0.25"/>
+								<leftPen lineWidth="0.25"/>
+								<bottomPen lineWidth="0.25"/>
+								<rightPen lineWidth="0.25"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="12" isBold="true"/>
+								<paragraph lineSpacing="Single"/>
+							</textElement>
+							<text><![CDATA[DIMENSION]]></text>
+						</staticText>
+						<staticText>
+							<reportElement uuid="43ececa7-56a5-4c28-9ca3-de7d331301f4" stretchType="RelativeToBandHeight" x="359" y="50" width="75" height="25"/>
+							<box>
+								<pen lineWidth="0.25"/>
+								<topPen lineWidth="0.25"/>
+								<leftPen lineWidth="0.25"/>
+								<bottomPen lineWidth="0.25"/>
+								<rightPen lineWidth="0.25"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="12" isBold="true"/>
+								<paragraph lineSpacing="Single"/>
+							</textElement>
+							<text><![CDATA[THIK/DENS.]]></text>
+						</staticText>
+						<staticText>
+							<reportElement uuid="43ececa7-56a5-4c28-9ca3-de7d331301f4" stretchType="RelativeToBandHeight" x="434" y="50" width="75" height="25"/>
+							<box>
+								<pen lineWidth="0.25"/>
+								<topPen lineWidth="0.25"/>
+								<leftPen lineWidth="0.25"/>
+								<bottomPen lineWidth="0.25"/>
+								<rightPen lineWidth="0.25"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="12" isBold="true"/>
+								<paragraph lineSpacing="Single"/>
+							</textElement>
+							<text><![CDATA[UOM]]></text>
+						</staticText>
+						<staticText>
+							<reportElement uuid="43ececa7-56a5-4c28-9ca3-de7d331301f4" stretchType="RelativeToBandHeight" x="509" y="50" width="75" height="25"/>
+							<box>
+								<pen lineWidth="0.25"/>
+								<topPen lineWidth="0.25"/>
+								<leftPen lineWidth="0.25"/>
+								<bottomPen lineWidth="0.25"/>
+								<rightPen lineWidth="0.25"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="12" isBold="true"/>
+								<paragraph lineSpacing="Single"/>
+							</textElement>
+							<text><![CDATA[GRADE]]></text>
+						</staticText>
+						<staticText>
+							<reportElement uuid="43ececa7-56a5-4c28-9ca3-de7d331301f4" stretchType="RelativeToBandHeight" x="584" y="50" width="75" height="25"/>
+							<box>
+								<pen lineWidth="0.25"/>
+								<topPen lineWidth="0.25"/>
+								<leftPen lineWidth="0.25"/>
+								<bottomPen lineWidth="0.25"/>
+								<rightPen lineWidth="0.25"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="12" isBold="true"/>
+								<paragraph lineSpacing="Single"/>
+							</textElement>
+							<text><![CDATA[BALANCE]]></text>
+						</staticText>
+						<staticText>
+							<reportElement uuid="43ececa7-56a5-4c28-9ca3-de7d331301f4" stretchType="RelativeToBandHeight" x="101" y="50" width="183" height="25"/>
+							<box>
+								<pen lineWidth="0.25"/>
+								<topPen lineWidth="0.25"/>
+								<leftPen lineWidth="0.25"/>
+								<bottomPen lineWidth="0.25"/>
+								<rightPen lineWidth="0.25"/>
+							</box>
+							<textElement verticalAlignment="Middle">
+								<font size="12" isBold="true"/>
+								<paragraph lineSpacing="Single"/>
+							</textElement>
+							<text><![CDATA[  ITEM NAME]]></text>
+						</staticText>
+					</cellContents>
+				</crosstabHeaderCell>
+				<rowGroup name="seq_no" width="1" totalPosition="End">
+					<bucket class="java.lang.Double">
+						<bucketExpression><![CDATA[$F{item_sequence_no}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="edfa650c-0b9c-4805-b8d7-4415e30619ce" style="Crosstab Data Text" x="0" y="0" width="0" height="25">
+									<printWhenExpression><![CDATA[1==0]]></printWhenExpression>
+								</reportElement>
+								<textElement textAlignment="Left" verticalAlignment="Middle">
+									<paragraph lineSpacing="Single"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{seq_no}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents backcolor="#BFE1FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<staticText>
+								<reportElement uuid="bf8c7dde-9e10-4e89-b8d8-8dfe9105f891" stretchType="RelativeToBandHeight" x="0" y="0" width="484" height="30"/>
+								<box>
+									<pen lineWidth="0.25"/>
+									<topPen lineWidth="0.25"/>
+									<leftPen lineWidth="0.25"/>
+									<bottomPen lineWidth="0.25"/>
+									<rightPen lineWidth="0.25"/>
+								</box>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="12" isBold="true"/>
+									<paragraph lineSpacing="Single"/>
+								</textElement>
+								<text><![CDATA[TOTAL]]></text>
+							</staticText>
+							<textField>
+								<reportElement uuid="0568cdef-70c0-466b-b5c4-3e8fe56e9eb5" stretchType="RelativeToBandHeight" x="484" y="0" width="75" height="30"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+									<font size="11" isBold="true"/>
+									<paragraph lineSpacing="Single"/>
+								</textElement>
+								<textFieldExpression><![CDATA[( ($V{TotalBalanceQtyMeasure}.doubleValue()-$V{TotalBalanceQtyMeasure}.intValue())> new Double(0) ? $V{TotalBalanceQtyMeasure}:
+new DecimalFormat("###0").format($V{TotalBalanceQtyMeasure}) )]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="item_code" width="100">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{itemcode}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+                            <box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="fedb470e-fadb-4295-b1ef-830637cc06ba" style="Crosstab Data Text" x="0" y="0" width="100" height="25"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="11" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{item_code}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="item_name" width="183" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{ITEM_NAME}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+								<reportElement uuid="3125a565-5f1b-4473-a72b-0179ade1d21a" style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="3" y="0" width="180" height="25" forecolor="#000000" backcolor="#FFFFFF"/>
+								<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" markup="none">
+									<font fontName="SansSerif" size="11" isBold="true" isItalic="false"/>
+									<paragraph lineSpacing="Single"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{item_name}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="size" width="75">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[( ($F{item_length}.doubleValue()-$F{item_length}.intValue())> new Double(0) ? $F{item_length} :
+new DecimalFormat("###0").format($F{item_length}) ) + " / " + ( ($F{item_width}.doubleValue()-$F{item_width}.intValue())> new Double(0) ? $F{item_width} :
+new DecimalFormat("###0").format($F{item_width}) )]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField isStretchWithOverflow="true">
+								<reportElement uuid="f5bf59fa-bd2d-410a-aa73-184030eb02f2" style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="75" height="25"/>
+								<textElement verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$V{size}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="thickness_density" width="75">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[( ($F{item_thikness}.doubleValue()-$F{item_thikness}.intValue())> new Double(0) ? $F{item_thikness} : new DecimalFormat("###0").format($F{item_thikness}) ) + " / " + ( ($F{item_density}.doubleValue()-$F{item_density}.intValue())> new Double(0) ? $F{item_density} :new DecimalFormat("###0").format($F{item_density}) )]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField isStretchWithOverflow="true">
+								<reportElement uuid="2d9737fb-6e20-41a8-aeac-8f2da38e5abc" style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="75" height="25"/>
+								<textElement verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$V{thickness_density}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="unit" width="75">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{UOM}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField isStretchWithOverflow="true">
+								<reportElement uuid="4aeb3911-fe2c-4a17-b3e8-cd590ae9823a" style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="75" height="25"/>
+								<textElement verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$V{unit}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="grade" width="75">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{Grade}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField isStretchWithOverflow="true">
+								<reportElement uuid="d4ec001a-925c-4739-9aec-0c0b49ad72da" style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="75" height="25"/>
+								<textElement verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$V{grade}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents mode="Opaque"/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="balance_qty" width="75">
+					<bucket class="java.lang.Float">
+						<bucketExpression><![CDATA[$F{balance_qty}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="73748dcf-c930-4a6d-bc25-fa56c18a63db" style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="70" height="25"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[( ($V{balance_qty}.doubleValue()-$V{balance_qty}.intValue())> new Double(0) ? $V{balance_qty}:
+new DecimalFormat("###0").format($V{balance_qty}) )]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<columnGroup name="desire_delivery_date" height="0" totalPosition="End">
+					<bucket class="java.util.Date">
+						<bucketExpression><![CDATA[$F{desire_delivery_date}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField pattern="dd/MM/yyyy">
+								<reportElement uuid="c8185cc1-9e5f-468f-95ec-a7d32f4479e3" style="Crosstab Data Text" x="0" y="0" width="80" height="0"/>
+								<textElement>
+									<font isBold="true"/>
+									<paragraph lineSpacing="Single"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{desire_delivery_date}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents backcolor="#005FB3" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<staticText>
+								<reportElement uuid="a9c3e463-a0ef-4b8a-ba9a-9c92278ee33c" x="0" y="0" width="70" height="75" forecolor="#FFFFFF"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="12" isBold="true"/>
+									<paragraph lineSpacing="Single"/>
+								</textElement>
+								<text><![CDATA[C / S]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<columnGroup name="sales_order_date" height="0">
+					<bucket class="java.util.Date">
+						<bucketExpression><![CDATA[$F{sales_order_date}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+								<reportElement uuid="17678185-f812-42ba-afe5-ba03475df20b" style="Crosstab Data Text" x="0" y="0" width="80" height="0"/>
+								<textElement verticalAlignment="Middle" markup="none">
+									<font isBold="true"/>
+									<paragraph lineSpacing="Single"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{sales_order_date}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents backcolor="#BFE1FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+						</cellContents>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<columnGroup name="party_name" height="75">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{party_name}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<textField pattern="dd-MMM-yy" isBlankWhenNull="true">
+								<reportElement uuid="8fa24407-27e8-42cc-8fbd-854e0a8a2de8" style="Crosstab Data Text" x="0" y="25" width="80" height="25"/>
+								<box>
+									<pen lineWidth="0.25"/>
+									<topPen lineWidth="0.25"/>
+									<leftPen lineWidth="0.25"/>
+									<bottomPen lineWidth="0.25"/>
+									<rightPen lineWidth="0.25"/>
+								</box>
+								<textElement verticalAlignment="Middle">
+									<font size="12" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{sales_order_date}]]></textFieldExpression>
+							</textField>
+							<textField pattern="dd-MMM-yy" isBlankWhenNull="true">
+								<reportElement uuid="8fa24407-27e8-42cc-8fbd-854e0a8a2de8" style="Crosstab Data Text" x="0" y="0" width="80" height="25"/>
+								<box>
+									<pen lineWidth="0.25"/>
+									<topPen lineWidth="0.25"/>
+									<leftPen lineWidth="0.25"/>
+									<bottomPen lineWidth="0.25"/>
+									<rightPen lineWidth="0.25"/>
+								</box>
+								<textElement verticalAlignment="Middle">
+									<font size="11" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{desire_delivery_date}]]></textFieldExpression>
+							</textField>
+							<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+								<reportElement uuid="8fa24407-27e8-42cc-8fbd-854e0a8a2de8" style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="50" width="80" height="25"/>
+								<box>
+									<pen lineWidth="0.25"/>
+									<topPen lineWidth="0.25"/>
+									<leftPen lineWidth="0.25"/>
+									<bottomPen lineWidth="0.25"/>
+									<rightPen lineWidth="0.25"/>
+								</box>
+								<textElement verticalAlignment="Middle">
+									<font size="11" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{party_name}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents/>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<measure name="BalanceQtyMeasure" class="java.lang.Float">
+					<measureExpression><![CDATA[$F{balance_qty}]]></measureExpression>
+				</measure>
+				<measure name="PendingQtymeasure" class="java.lang.Float" calculation="Sum">
+					<measureExpression><![CDATA[$F{p_qty}]]></measureExpression>
+				</measure>
+				<measure name="TotalBalanceQtyMeasure" class="java.lang.Float">
+					<measureExpression><![CDATA[$F{total_balance_qty}]]></measureExpression>
+				</measure>
+				<crosstabCell width="80" height="25">
+					<cellContents>
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField pattern="" isBlankWhenNull="true">
+							<reportElement uuid="580f8884-045b-4072-af35-c218c8db1a33" style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="70" height="25"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<paragraph lineSpacing="Single"/>
+							</textElement>
+							<textFieldExpression><![CDATA[( ($V{PendingQtymeasure}.doubleValue()-$V{PendingQtymeasure}.intValue())> new Double(0) ? $V{PendingQtymeasure} :
+new DecimalFormat("###0").format($V{PendingQtymeasure}) )]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="80" height="30" rowTotalGroup="seq_no">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField pattern="" isBlankWhenNull="true">
+							<reportElement uuid="ba7f0517-b4b1-434f-965d-00dc0deb2ee3" style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="70" height="30"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="11" isBold="true"/>
+								<paragraph lineSpacing="Single"/>
+							</textElement>
+							<textFieldExpression><![CDATA[( ($V{PendingQtymeasure}.doubleValue()-$V{PendingQtymeasure}.intValue())> new Double(0) ? $V{PendingQtymeasure} :
+new DecimalFormat("###0").format($V{PendingQtymeasure}) )]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="70" height="25" columnTotalGroup="desire_delivery_date">
+					<cellContents backcolor="#005FB3" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField pattern="" isBlankWhenNull="true">
+							<reportElement uuid="bede9a16-c8be-4821-9c4e-cca3f872262b" style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="65" height="25" forecolor="#FFFFFF"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="11" isBold="true"/>
+								<paragraph lineSpacing="Single"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{BalanceQtyMeasure}-$V{PendingQtymeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="70" height="30" rowTotalGroup="seq_no" columnTotalGroup="desire_delivery_date">
+					<cellContents backcolor="#005FB3" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField pattern="" isBlankWhenNull="true">
+							<reportElement uuid="332d171f-e08f-4075-8280-b8f94c226969" style="Crosstab Data Text" stretchType="RelativeToBandHeight" x="0" y="0" width="65" height="30" forecolor="#FFFFFF"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="12" isBold="true"/>
+								<paragraph lineSpacing="Single"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{TotalBalanceQtyMeasure}-$V{PendingQtymeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="0" height="25" columnTotalGroup="sales_order_date">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="0" height="25" rowTotalGroup="seq_no" columnTotalGroup="sales_order_date">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="80" height="0" rowTotalGroup="item_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell width="70" height="0" rowTotalGroup="item_name" columnTotalGroup="desire_delivery_date">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell width="0" height="0" rowTotalGroup="item_name" columnTotalGroup="sales_order_date">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="size">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="size" columnTotalGroup="desire_delivery_date">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="size" columnTotalGroup="sales_order_date">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="thickness_density">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="thickness_density" columnTotalGroup="desire_delivery_date">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="thickness_density" columnTotalGroup="sales_order_date">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="grade">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="grade" columnTotalGroup="desire_delivery_date">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="grade" columnTotalGroup="sales_order_date">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="unit">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="unit" columnTotalGroup="desire_delivery_date">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="unit" columnTotalGroup="sales_order_date">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="balance_qty">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="balance_qty" columnTotalGroup="desire_delivery_date">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="balance_qty" columnTotalGroup="sales_order_date">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell columnTotalGroup="party_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="seq_no" columnTotalGroup="party_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="item_name" columnTotalGroup="party_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="size" columnTotalGroup="party_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="thickness_density" columnTotalGroup="party_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="unit" columnTotalGroup="party_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="grade" columnTotalGroup="party_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="balance_qty" columnTotalGroup="party_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="item_code">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="item_code" columnTotalGroup="desire_delivery_date">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="item_code" columnTotalGroup="sales_order_date">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="item_code" columnTotalGroup="party_name">
+					<cellContents/>
+				</crosstabCell>
+			</crosstab>
+		</band>
+	</summary>
+	<noData>
+		<band height="123">
+			<staticText>
+				<reportElement uuid="26096e9a-5d5b-4b09-a798-8da7c4f5cfec" x="2" y="5" width="1900" height="20" forecolor="#0066FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[FINISH STOCK WITH SALES ORDER]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="4f6684b2-7058-474c-86d8-5c87a6a74040" x="2" y="96" width="1900" height="20" forecolor="#0099FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[(Please Check Your Selection Criteria)]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="d495b948-74d4-46f0-a26b-7972cc650287" x="2" y="27" width="1900" height="20" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" From Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{FromDatePrompt})+"</style>"
++" ,  To Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{ToDatePrompt})+"</style>"
++ ", Item Category : " + ($P{ItemCategoryNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemCategoryPrompt}+"</style>")
++ ", Desire Delivery Date : " + ($P{DesireDelDateNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{DesireDelDatePrompt})+"</style>")]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="ff891620-2e6d-4d77-b6b6-962155d80664" x="2" y="67" width="1900" height="29" forecolor="#FF3300"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="20"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>

@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Master_Formula_Print" pageWidth="672" pageHeight="1040" whenNoDataType="NoDataSection" columnWidth="669" leftMargin="1" rightMargin="2" topMargin="2" bottomMargin="0">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="style1" mode="Opaque" lineSpacing="Single">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 ==0)]]></conditionExpression>
+			<style backcolor="#E6F3F7" lineSpacing="Single" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="FinishProductPrompt" class="java.lang.String"/>
+	<parameter name="FinishProductNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{FinishProductPrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT finish.itemname AS finish_prod
+, IFNULL(finish.pack,'') AS pack
+, IFNULL(finish.UOM,'') AS UOM
+, IFNULL(mas_f.standard_batch_size,0) AS standard_batch_size
+, IFNULL(mas_f.formula_batch_size,0) AS formula_batch_size
+, DATE_FORMAT(CAST(mas_f.created_date AS DATE),'%d-%m-%Y') AS date_entered
+, DATE_FORMAT(CAST(mas_f.modified_date AS DATE),'%d-%m-%Y') AS date_modified
+, IFNULL(mas_f.created_by,'') AS created_by
+, IFNULL(mas_f.approved_by,'') AS approved_by
+, IFNULL(mas_f.formula_remark,'') AS formula_remark
+, IF(IFNULL(mas_f.active_status,0) = 1, 'Active','') AS formula_status
+, UPPER(flag.ITEM_GROUP_FLAG_Name) AS ITEM_GROUP_FLAG_Name
+, UPPER(i.item_name) AS item_name
+, i.itemcode
+, IFNULL(d.quantity,0) AS quantity
+, m.NAME AS d_UOM
+, IFNULL(d.item_remark,'') AS item_remark
+FROM  m_master_formula_detail AS d, m_item_group_flag AS flag, m_item AS i, m_masters AS m
+, m_master_formula AS mas_f
+LEFT JOIN
+(SELECT i.item_id, i.item_name AS itemname, pack.NAME AS pack, UOM.NAME AS UOM
+FROM m_item AS i
+LEFT JOIN (SELECT m.masters_id, m.NAME FROM m_masters AS m
+WHERE m.deleted_flag = 0 AND m.m_form_name = 'Pack Type') AS pack
+ON i.pack_type_id = pack.masters_id
+LEFT JOIN (SELECT m.masters_id, m.NAME FROM m_masters AS m
+WHERE m.deleted_flag = 0 AND m.m_form_name = 'Measurement Unit') AS UOM
+ON i.measurement_Unit_id = UOM.masters_id
+WHERE i.deleted_flag = 0
+) AS finish
+ON mas_f.item_id = finish.item_id
+WHERE mas_f.deleted_flag = 0 AND d.deleted_flag = 0 AND i.deleted_flag = 0
+AND flag.ITEM_GROUP_FLAG_ID = d.item_group_flag_id
+AND i.item_id = d.item_id
+AND m.masters_id = i.measurement_Unit_id
+AND mas_f.master_formula_auto_id = d.master_formula_auto_id
+AND (finish.itemname = $P{FinishProductPrompt} OR 1 = $P{FinishProductNull_FlagPrompt});]]>
+	</queryString>
+	<field name="finish_prod" class="java.lang.String"/>
+	<field name="pack" class="java.lang.String"/>
+	<field name="UOM" class="java.lang.String"/>
+	<field name="standard_batch_size" class="java.lang.Double"/>
+	<field name="formula_batch_size" class="java.lang.Double"/>
+	<field name="date_entered" class="java.lang.String"/>
+	<field name="date_modified" class="java.lang.String"/>
+	<field name="created_by" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="approved_by" class="java.lang.String"/>
+	<field name="formula_remark" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="formula_status" class="java.lang.String"/>
+	<field name="ITEM_GROUP_FLAG_Name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="item_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="itemcode" class="java.lang.String"/>
+	<field name="quantity" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="d_UOM" class="java.lang.String"/>
+	<field name="item_remark" class="java.lang.String"/>
+	<sortField name="item_name"/>
+	<variable name="s_no" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$V{REPORT_COUNT}]]></variableExpression>
+	</variable>
+	<pageHeader>
+		<band height="108">
+			<staticText>
+				<reportElement x="0" y="1" width="668" height="20" forecolor="#000000"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Master Formula Sheet]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="354" y="75" width="105" height="15"/>
+				<textElement verticalAlignment="Top" lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date Modified            :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="25" width="93" height="15"/>
+				<textElement lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Finished Product :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="43" width="133" height="15"/>
+				<textElement lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pack Type                            :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="75" width="133" height="15"/>
+				<textElement lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date Entered                       :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="95" y="25" width="573" height="15"/>
+				<textElement verticalAlignment="Top" lineSpacing="Single"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{finish_prod}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement isPrintRepeatedValues="false" x="139" y="75" width="80" height="15"/>
+				<textElement lineSpacing="Single"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{date_entered}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="139" y="43" width="80" height="15"/>
+				<textElement lineSpacing="Single"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{pack}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="22" width="668" height="1"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="349" y="42" width="1" height="66"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="0" y="0" width="1" height="108"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="668" y="0" width="1" height="108"/>
+			</line>
+			<line>
+				<reportElement x="0" y="0" width="668" height="1"/>
+			</line>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="460" y="43" width="80" height="15"/>
+				<textElement lineSpacing="Single"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{UOM}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="354" y="43" width="105" height="15"/>
+				<textElement lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Unit                             :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="460" y="59" width="80" height="15"/>
+				<textElement lineSpacing="Single"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[( ($F{formula_batch_size}.doubleValue()-$F{formula_batch_size}.intValue())> new Double(0) ? $F{formula_batch_size} :
+new DecimalFormat("###0").format($F{formula_batch_size}) )]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="354" y="59" width="105" height="15"/>
+				<textElement lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Formula Batch Size  :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="354" y="91" width="105" height="15"/>
+				<textElement lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Approved by              :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="460" y="91" width="208" height="15"/>
+				<textElement lineSpacing="Single"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{approved_by}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="5" y="59" width="133" height="15"/>
+				<textElement lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Standard Batch Size           :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="139" y="59" width="80" height="15"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[( ($F{standard_batch_size}.doubleValue()-$F{standard_batch_size}.intValue())> new Double(0) ? $F{standard_batch_size} :
+new DecimalFormat("###0").format($F{standard_batch_size}) )]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="460" y="75" width="80" height="15"/>
+				<textElement lineSpacing="Single"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{date_modified}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="5" y="91" width="133" height="15"/>
+				<textElement lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Created by                           :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement isPrintRepeatedValues="false" x="139" y="91" width="209" height="15" isPrintWhenDetailOverflows="true"/>
+				<textElement lineSpacing="Single"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{created_by}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="41" width="668" height="1"/>
+			</line>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="29">
+			<line>
+				<reportElement x="0" y="0" width="668" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="2" y="1" width="16" height="26" isPrintWhenDetailOverflows="true" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top" lineSpacing="Single">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[S.No.]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="28" width="668" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="138" y="1" width="210" height="26" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top" lineSpacing="Single">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Item Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="498" y="1" width="60" height="26" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" lineSpacing="Single">
+					<font fontName="SansSerif" size="10" isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[UOM]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="418" y="1" width="80" height="26" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Quantity]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="558" y="1" width="110" height="26" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top" lineSpacing="Single">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Remark]]></text>
+			</staticText>
+			<line direction="BottomUp">
+				<reportElement x="668" y="0" width="1" height="29"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="0" y="0" width="1" height="29"/>
+			</line>
+			<staticText>
+				<reportElement x="18" y="1" width="120" height="26" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top" lineSpacing="Single">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Item Group Flag]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="348" y="1" width="70" height="26" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top" lineSpacing="Single">
+					<font fontName="SansSerif" size="10" isBold="true" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[Item Code]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="18">
+			<frame>
+				<reportElement style="style1" x="0" y="0" width="669" height="18"/>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement isPrintRepeatedValues="false" x="2" y="0" width="16" height="17" isPrintWhenDetailOverflows="true"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$V{s_no}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement isPrintRepeatedValues="false" x="138" y="0" width="210" height="17"/>
+					<textElement verticalAlignment="Top" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{item_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="498" y="0" width="60" height="17"/>
+					<textElement textAlignment="Center" verticalAlignment="Top" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{d_UOM}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement x="418" y="0" width="80" height="17"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[( ($F{quantity}.doubleValue()-$F{quantity}.intValue())> new Double(0) ? $F{quantity} :
+new DecimalFormat("###0").format($F{quantity}) )]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="###0.00;-###0.00" isBlankWhenNull="true">
+					<reportElement x="558" y="0" width="110" height="17"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{item_remark}]]></textFieldExpression>
+				</textField>
+				<line direction="BottomUp">
+					<reportElement stretchType="RelativeToBandHeight" x="668" y="0" width="1" height="18" isPrintWhenDetailOverflows="true"/>
+				</line>
+				<line direction="BottomUp">
+					<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="1" height="18" isPrintWhenDetailOverflows="true"/>
+				</line>
+				<textField isStretchWithOverflow="true">
+					<reportElement isPrintRepeatedValues="false" x="18" y="0" width="120" height="17"/>
+					<textElement verticalAlignment="Top" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{ITEM_GROUP_FLAG_Name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="348" y="0" width="70" height="17"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" lineSpacing="Single"/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{itemcode}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<summary>
+		<band height="74">
+			<line>
+				<reportElement x="0" y="32" width="668" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="5" y="2" width="50" height="19"/>
+				<textElement lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Remark]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="57" y="2" width="291" height="30"/>
+				<textElement lineSpacing="Single"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{formula_remark}]]></textFieldExpression>
+			</textField>
+			<line direction="BottomUp">
+				<reportElement x="668" y="0" width="1" height="33"/>
+			</line>
+			<staticText>
+				<reportElement x="354" y="2" width="100" height="19"/>
+				<textElement lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Formula Status       :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="455" y="2" width="80" height="19"/>
+				<textElement lineSpacing="Single"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{formula_status}]]></textFieldExpression>
+			</textField>
+			<line direction="BottomUp">
+				<reportElement x="0" y="0" width="1" height="32"/>
+			</line>
+			<line>
+				<reportElement x="0" y="35" width="668" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="73" width="668" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="490" y="57" width="178" height="15"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(Approving Authority)]]></text>
+			</staticText>
+			<line direction="BottomUp">
+				<reportElement x="0" y="35" width="1" height="39"/>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="668" y="35" width="1" height="39"/>
+			</line>
+			<line>
+				<reportElement x="0" y="0" width="668" height="1"/>
+			</line>
+		</band>
+	</summary>
+	<noData>
+		<band height="29">
+			<staticText>
+				<reportElement x="0" y="0" width="668" height="29" forecolor="#FF3300"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="SansSerif" size="20"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>

@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
+           	
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
+    <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
+           	
+	<!-- This bean responsible for company access services with JPA specific pattern --> 
+	<bean id="companyDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageCompanyDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	<bean id="itemGruopDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageItemGroupDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	<bean id="itemCategoryDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageItemCategoryDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	<bean id="itemDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageItemDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	<bean id="batchDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageBatchDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	<bean id="branchDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageBranchDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	<bean id="countryDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageCountryDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<!-- <bean id="userDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageUserDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean> -->
+	<bean id="partyTypeDAOImpl" class="com.advanz.erp.masters.storage.jpa.StoragePartyTypeDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="ItemGroupFlagDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageItemGroupFlagDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="zoneDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageZoneDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="areaDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageAreaDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="cityDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageCityDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="stateDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageStateDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	<bean id="regionDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageRegionDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	<bean id="mastersDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageMastersDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="salaryHeadDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageSalaryHeadDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="leaveTypeMastDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageLeaveTypeMastDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="storeLocationDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageStoreLocationDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="transporterDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageTransporterDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="partyDAOImpl" class="com.advanz.erp.masters.storage.jpa.StoragePartyDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="employeeDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageEmployeeDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="salesOrderMasterDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageSalesOrderMasterDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="transactionTypeDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageTransactionTypeDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	
+	<bean id="professionalTaxDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageProfessionalTaxDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="professionalTaxDeductTypeDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageProfessionalTaxDeductTypeDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+
+	<bean id="quotationMasterDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageQuotationMasterDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+
+
+	<bean id="finishedGoodsMasterDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageFinishedGoodsMasterDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+
+	<bean id="purchaseOrderMasterDAOImpl" class="com.advanz.erp.masters.storage.jpa.StoragePurchaseOrderMasterDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+
+	
+	
+	<bean id="billDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageBillDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	<bean id="billDetailDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageBillDetailDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	
+	
+	<bean id="proformaMasterDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageProformaMasterDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	<bean id="proformaDetailDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageProformaDetailDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	
+	
+	
+	<bean id="stockLedgerDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageStockLedgerDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+
+	<bean id="blanketProductionMasterDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageBlanketProductionMasterDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="blanketProductionMasterNewDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageBlanketProductionMasterNewDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="barcodeLedgerDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageBarcodeLedgerDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="dispatchDetailDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageDispatchDetailDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	<bean id="dispatchMasterDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageDispatchMasterDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="issueTypeMasterDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageIssueTypeMasterDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="annealingOvenDAOImpl"
+		class="com.advanz.erp.masters.storage.jpa.StorageAnnealingOvenDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+	
+
+	<bean id="issueDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageIssueMasterDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+
+<bean id="salesOrderDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageSalesOrderDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="grnMasterDAOImpl"
+		class="com.advanz.erp.masters.storage.jpa.StorageGrnMasterDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+	
+	<bean id="melterLogSummaryDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageMelterLogSummaryDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="melterTrollyLogDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageMelterTrollyLogDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+
+	<bean id="melterLogBookDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageMelterLogBookDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="userMasterRoleDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageUserMasterRoleDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="userRoleDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageUserRoleDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="roleMasterDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageRoleMasterDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="shiftReportMasterDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageShiftReportMasterDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+
+
+	<bean id="moduleMenuMasterDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageModuleMenuMasterDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+
+	<bean id="exciseLedgerDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageExciseLedgerDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+
+	<bean id="debitDutyMasterDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageDebitDutyMasterDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+    <bean id="masterFormulaDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageMasterFormulaDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	 <bean id="getPassMasterDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageGetPassMasterDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>	 
+	<bean id="returnGetPassMasterDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageReturnGetPassMasterDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>	 
+	
+	<bean id="attandanceMasterDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageAttandanceMasterDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>	 
+	<bean id="advanceAmountDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageAdvanceAmountDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>	 
+	
+	<bean id="salaryNoteDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageSalaryNoteDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>	 
+	
+	<!-- <bean id="moduleMenuDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageModuleMenuDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean> 
+	
+	<bean id="menuRoleDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageMenuRoleDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="roleDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageRoleDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+ -->	
+	<bean id="roleAndRightsDAOImpl" class="com.advanz.erp.masters.storage.jpa.StrorageRoleAndRightsDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+<bean id="isssueReturnDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageIsssueReturnDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+	<bean id="bulkFiberMasterDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageBulkFiberMasterDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+
+<bean id="leaveApplicationDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageLeaveApplicationDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+	
+<bean id="indentMasterDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageIndentMasterDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+
+<bean id="salaryMasterDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageSalaryMasterDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+
+<bean id="capativeConsuptionDAOImpl" class="com.advanz.erp.masters.storage.jpa.StorageCapativeConsuptionDAO">
+		<property name="entityManagerFactory" ref="entityManagerFactory" /> 
+	</bean>
+
+	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+    	<property name="dataSource" ref="dataSource"/>
+	    <property name="jpaVendorAdapter">
+		<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+		<property name="databasePlatform" value="org.hibernate.dialect.MySQLDialect" />
+		</bean>
+	    </property>
+	    <property name="jpaProperties">
+			<props>
+			<!--	<prop key="hibernate.hbm2ddl.auto">${user.db.ddl}</prop> !-->
+				<prop key="hibernate.show_sql">${user.db.show_sql}</prop>
+				<prop key="hibernate.cache.provider_class">${user.db.cache}</prop>
+			</props>
+		</property>
+  	</bean>
+  	
+  	
+  	
+  	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+    	<property name="entityManagerFactory" ref="entityManagerFactory"/>
+    	<property name="dataSource" ref="dataSource"/>
+  	</bean>
+  	
+  	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+	    <property name="driverClassName" value="${user.db.driverClassName}"/>
+	    <property name="url" value="${user.db.url}"/>
+	    <property name="username" value="${user.db.username}" />
+		<property name="password" value="${user.db.password}" />
+		
+		<property name="initialSize" value="40" />
+        <property name="maxActive" value="500" />
+        
+  	</bean>	
+  	
+  	<!-- Add by me  -->
+	<bean id="defaultDaoTransactionProxy" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean" abstract="true">
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="save*">PROPAGATION_REQUIRED</prop>
+				<prop key="create*">PROPAGATION_REQUIRED</prop>				
+				<prop key="update*">PROPAGATION_REQUIRED</prop>
+				<prop key="delete*">PROPAGATION_REQUIRED</prop>
+				<prop key="remove*">PROPAGATION_REQUIRED</prop>				
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly</prop>			
+			</props>
+		</property>
+	</bean>
+	<tx:annotation-driven />
+	
+</beans>

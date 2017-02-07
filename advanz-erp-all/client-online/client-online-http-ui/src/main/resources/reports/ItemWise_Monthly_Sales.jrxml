@@ -1,0 +1,591 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="PartyWise_Monthly_Sales1" pageWidth="1200" pageHeight="800" whenNoDataType="NoDataSection" columnWidth="1200" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="93f21acb-d1b6-4ae6-b198-006304294ed3">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="340"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Crosstab Data Text" hAlign="Center">
+		<paragraph lineSpacing="Single"/>
+	</style>
+	<parameter name="FromDatePrompt" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ToDatePrompt" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ItemNamePrompt" class="java.lang.String"/>
+	<parameter name="ItemNameNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ItemNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ItemCategoryPrompt" class="java.lang.String"/>
+	<parameter name="ItemCategoryNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ItemCategoryPrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Item_Status_Prompt" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Item_StatusNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{Item_Status_Prompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT UPPER(m_item.item_name) AS ITEM_NAME , MONTH(t_bill_mast.invoice_date) AS MONTH_NO, MONTHNAME(t_bill_mast.invoice_date) AS MONTH_NAME
+, UPPER(m_masters.NAME) AS UOM , SUM(IFNULL(t_bill_detail.primary_unit,0)) AS QTY, SUM(IFNULL(t_bill_detail.item_value,0)) AS SALES
+,IFNULL(m_item.item_length,'') AS item_length
+,IFNULL(m_item.item_width,'') AS item_width
+,IFNULL(m_item.item_thikness,'') AS item_thikness
+,IFNULL(m_item.item_density,'') AS item_density
+,gr.NAME AS Grade
+,m_item.item_sequence_no
+FROM m_item, m_item_category AS c, t_bill_mast , t_bill_detail , (SELECT * FROM m_masters WHERE m_form_name='Measurement Unit' AND deleted_flag=0) AS m_masters
+,(SELECT  masters_id ,NAME FROM m_masters WHERE m_form_name='Item Grade' AND deleted_flag=0) AS gr
+WHERE m_item.deleted_flag=0 AND t_bill_mast.deleted_flag=0 AND t_bill_detail.deleted_flag=0 AND m_masters.deleted_flag=0
+AND m_item.item_id = t_bill_detail.item_id
+AND m_item.item_category_id=c.item_category_id AND c.deleted_flag=0
+AND t_bill_mast.invoice_number = t_bill_detail.invoice_number
+AND t_bill_detail.primary_uom = m_masters.masters_id AND gr.masters_id=m_item.item_grade_id
+AND (c.ITEM_CATEGORY_NAME = $P{ItemCategoryPrompt} OR 1=$P{ItemCategoryNull_FlagPrompt})
+AND (m_item.item_name=$P{ItemNamePrompt} OR 1=$P{ItemNameNull_FlagPrompt})
+AND (m_item.active_status=$P{Item_Status_Prompt} OR 1=$P{Item_StatusNull_FlagPrompt})
+AND t_bill_mast.invoice_date >=$P{FromDatePrompt}
+AND t_bill_mast.invoice_date <=$P{ToDatePrompt}
+GROUP BY 1 ,MONTH(t_bill_mast.invoice_date)
+ORDER BY m_item.item_sequence_no,MONTH(t_bill_mast.invoice_date)]]>
+	</queryString>
+	<field name="ITEM_NAME" class="java.lang.String"/>
+	<field name="MONTH_NO" class="java.lang.Integer"/>
+	<field name="MONTH_NAME" class="java.lang.String"/>
+	<field name="UOM" class="java.lang.String"/>
+	<field name="SALES" class="java.lang.Double"/>
+	<field name="QTY" class="java.lang.Float"/>
+	<field name="item_length" class="java.lang.Double"/>
+	<field name="item_width" class="java.lang.Double"/>
+	<field name="item_thikness" class="java.lang.Double"/>
+	<field name="item_density" class="java.lang.Double"/>
+	<field name="Grade" class="java.lang.String"/>
+	<field name="item_sequence_no" class="java.lang.Double"/>
+	<background>
+		<band/>
+	</background>
+	<title>
+		<band height="98">
+			<staticText>
+				<reportElement uuid="d4ee81fe-9180-4ce0-9a03-038898077664" x="2" y="4" width="1198" height="20" forecolor="#0066FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Item wise Monthly Sales
+]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="1d5199ab-4b68-46ff-a7e6-d02a498caf31" x="2" y="26" width="1198" height="20" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" From Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{FromDatePrompt})+"</style>"
++" ,  To Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{ToDatePrompt})+"</style>"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="792b8d7e-9cce-4798-aad8-fc01d7fb8f6f" x="2" y="46" width="1198" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Category : " + ($P{ItemCategoryNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemCategoryPrompt}.replaceAll( "&", "&amp;" )+"</style>")
++ ", Item : " + ($P{ItemNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++ ", Active Status : " + ($P{Item_StatusNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+ ($P{Item_Status_Prompt}.intValue()==1?"Yes":"No") +"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<summary>
+		<band height="119">
+			<crosstab>
+				<reportElement uuid="162ec885-c14a-4dec-9307-77ccf9c091b1" x="0" y="0" width="1202" height="104"/>
+				<crosstabHeaderCell>
+					<cellContents mode="Opaque"/>
+				</crosstabHeaderCell>
+				<rowGroup name="seq_no" width="1" totalPosition="End">
+					<bucket class="java.lang.Double">
+						<bucketExpression><![CDATA[$F{item_sequence_no}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="edfa650c-0b9c-4805-b8d7-4415e30619ce" style="Crosstab Data Text" x="0" y="0" width="0" height="25"/>
+								<textElement textAlignment="Left" verticalAlignment="Middle">
+									<paragraph lineSpacing="Single"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{seq_no}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents backcolor="#BFE1FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<staticText>
+								<reportElement uuid="bf8c7dde-9e10-4e89-b8d8-8dfe9105f891" x="0" y="0" width="499" height="25"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="10" isBold="true"/>
+									<paragraph lineSpacing="Single"/>
+								</textElement>
+								<text><![CDATA[Item Wise Total]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="item_name" width="183" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{ITEM_NAME}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+								<reportElement uuid="3125a565-5f1b-4473-a72b-0179ade1d21a" style="Crosstab Data Text" x="0" y="0" width="183" height="25" forecolor="#000000" backcolor="#FFFFFF"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" markup="none">
+									<font fontName="SansSerif" isBold="false" isItalic="false"/>
+									<paragraph lineSpacing="Single"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{item_name}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="size" width="75">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[( ($F{item_length}.doubleValue()-$F{item_length}.intValue())> new Double(0) ? $F{item_length} :
+new DecimalFormat("###0").format($F{item_length}) ) + " / " + ( ($F{item_width}.doubleValue()-$F{item_width}.intValue())> new Double(0) ? $F{item_width} :
+new DecimalFormat("###0").format($F{item_width}) )]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="f5bf59fa-bd2d-410a-aa73-184030eb02f2" style="Crosstab Data Text" x="0" y="0" width="75" height="25"/>
+								<textElement verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$V{size}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="thickness_density" width="75">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[( ($F{item_thikness}.doubleValue()-$F{item_thikness}.intValue())> new Double(0) ? $F{item_thikness} : new DecimalFormat("###0").format($F{item_thikness}) ) + " / " + ( ($F{item_density}.doubleValue()-$F{item_density}.intValue())> new Double(0) ? $F{item_density} :new DecimalFormat("###0").format($F{item_density}) )]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="2d9737fb-6e20-41a8-aeac-8f2da38e5abc" style="Crosstab Data Text" x="0" y="0" width="75" height="25"/>
+								<textElement verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$V{thickness_density}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="grade" width="75">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{Grade}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="d4ec001a-925c-4739-9aec-0c0b49ad72da" style="Crosstab Data Text" x="0" y="0" width="75" height="25"/>
+								<textElement verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$V{grade}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents mode="Opaque"/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<rowGroup name="unit" width="90">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{UOM}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="4aeb3911-fe2c-4a17-b3e8-cd590ae9823a" style="Crosstab Data Text" x="0" y="0" width="90" height="25"/>
+								<textElement verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$V{unit}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<columnGroup name="MONTH_NO" height="0" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{MONTH_NO}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="c8185cc1-9e5f-468f-95ec-a7d32f4479e3" style="Crosstab Data Text" x="0" y="0" width="92" height="0"/>
+								<textElement>
+									<paragraph lineSpacing="Single"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{MONTH_NO}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents backcolor="#005FB3" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<staticText>
+								<reportElement uuid="a9c3e463-a0ef-4b8a-ba9a-9c92278ee33c" x="0" y="0" width="157" height="20" forecolor="#FFFFFF"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="10" isBold="true"/>
+									<paragraph lineSpacing="Single"/>
+								</textElement>
+								<text><![CDATA[Total]]></text>
+							</staticText>
+							<staticText>
+								<reportElement uuid="fd1225f9-886d-4dc1-bd95-9cc847b3095c" style="Crosstab Data Text" x="85" y="19" width="71" height="20" forecolor="#FFFFFF"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="10" isBold="true"/>
+									<paragraph lineSpacing="Single"/>
+								</textElement>
+								<text><![CDATA[Sales Amt]]></text>
+							</staticText>
+							<staticText>
+								<reportElement uuid="95d9d56d-6321-4ff4-a410-bc9673c397f8" style="Crosstab Data Text" x="0" y="19" width="85" height="20" forecolor="#FFFFFF"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="10" isBold="true"/>
+									<paragraph lineSpacing="Single"/>
+								</textElement>
+								<text><![CDATA[Primary QTY]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<columnGroup name="MONTH_NAME" height="39" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{MONTH_NAME}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents backcolor="#F0F8FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="503213fe-9a30-4188-ba5c-cdbaa8851c84" style="Crosstab Data Text" x="0" y="0" width="156" height="20"/>
+								<textElement verticalAlignment="Middle">
+									<font size="10" isBold="true" isUnderline="true"/>
+									<paragraph lineSpacing="Single"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{MONTH_NAME}]]></textFieldExpression>
+							</textField>
+							<staticText>
+								<reportElement uuid="7109afc3-1854-47ab-a7db-c851521915c9" style="Crosstab Data Text" x="0" y="19" width="85" height="20"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="10" isBold="true"/>
+									<paragraph lineSpacing="Single"/>
+								</textElement>
+								<text><![CDATA[Primary QTY]]></text>
+							</staticText>
+							<staticText>
+								<reportElement uuid="2d26bb40-a9be-478d-885d-37cb076ddfdb" style="Crosstab Data Text" x="85" y="19" width="71" height="20"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="10" isBold="true"/>
+									<paragraph lineSpacing="Single"/>
+								</textElement>
+								<text><![CDATA[Sales Amt]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents backcolor="#BFE1FF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+						</cellContents>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<measure name="SALESMeasure" class="java.lang.Double" calculation="Sum">
+					<measureExpression><![CDATA[$F{SALES}]]></measureExpression>
+				</measure>
+				<measure name="QTYmeasure" class="java.lang.Float" calculation="Sum">
+					<measureExpression><![CDATA[$F{QTY}]]></measureExpression>
+				</measure>
+				<crosstabCell width="156" height="25">
+					<cellContents>
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField pattern="###0.00" isBlankWhenNull="true">
+							<reportElement uuid="8a352e6c-928f-44c1-be6e-6a8f5afd2ff8" style="Crosstab Data Text" x="85" y="0" width="71" height="25"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="10"/>
+								<paragraph lineSpacing="Single"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{SALESMeasure}]]></textFieldExpression>
+						</textField>
+						<textField pattern="" isBlankWhenNull="true">
+							<reportElement uuid="580f8884-045b-4072-af35-c218c8db1a33" style="Crosstab Data Text" x="0" y="0" width="85" height="25"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="10"/>
+								<paragraph lineSpacing="Single"/>
+							</textElement>
+							<textFieldExpression><![CDATA[( ($V{QTYmeasure}.doubleValue()-$V{QTYmeasure}.intValue())> new Double(0) ? $V{QTYmeasure} :
+new DecimalFormat("###0").format($V{QTYmeasure}) )]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="156" height="25" rowTotalGroup="seq_no">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField pattern="###0.00" isBlankWhenNull="true">
+							<reportElement uuid="9afec04c-72bb-4dd7-b978-94ae0b53dd72" style="Crosstab Data Text" x="85" y="0" width="71" height="25"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="10" isBold="true"/>
+								<paragraph lineSpacing="Single"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{SALESMeasure}]]></textFieldExpression>
+						</textField>
+						<textField pattern="" isBlankWhenNull="true">
+							<reportElement uuid="ba7f0517-b4b1-434f-965d-00dc0deb2ee3" style="Crosstab Data Text" x="0" y="0" width="85" height="24"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="10" isBold="true"/>
+								<paragraph lineSpacing="Single"/>
+							</textElement>
+							<textFieldExpression><![CDATA[( ($V{QTYmeasure}.doubleValue()-$V{QTYmeasure}.intValue())> new Double(0) ? $V{QTYmeasure} :
+new DecimalFormat("###0").format($V{QTYmeasure}) )]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="157" height="25" columnTotalGroup="MONTH_NO">
+					<cellContents backcolor="#005FB3" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField pattern="###0.00" isBlankWhenNull="true">
+							<reportElement uuid="e0f7dc03-cb65-4f17-9d7b-ae640a75c03f" style="Crosstab Data Text" x="85" y="0" width="71" height="25" forecolor="#FFFFFF"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="10"/>
+								<paragraph lineSpacing="Single"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{SALESMeasure}]]></textFieldExpression>
+						</textField>
+						<textField pattern="" isBlankWhenNull="true">
+							<reportElement uuid="bede9a16-c8be-4821-9c4e-cca3f872262b" style="Crosstab Data Text" x="0" y="0" width="85" height="25" forecolor="#FFFFFF"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="10"/>
+								<paragraph lineSpacing="Single"/>
+							</textElement>
+							<textFieldExpression><![CDATA[( ($V{QTYmeasure}.doubleValue()-$V{QTYmeasure}.intValue())> new Double(0) ? $V{QTYmeasure} :
+new DecimalFormat("###0").format($V{QTYmeasure}) )]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="157" height="25" rowTotalGroup="seq_no" columnTotalGroup="MONTH_NO">
+					<cellContents backcolor="#005FB3" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField pattern="###0.00" isBlankWhenNull="true">
+							<reportElement uuid="b2d4e7c6-c4d4-4e83-9247-a41e30ed9adf" style="Crosstab Data Text" x="85" y="0" width="71" height="25" forecolor="#FFFFFF"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="10" isBold="true"/>
+								<paragraph lineSpacing="Single"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{SALESMeasure}]]></textFieldExpression>
+						</textField>
+						<textField pattern="" isBlankWhenNull="true">
+							<reportElement uuid="332d171f-e08f-4075-8280-b8f94c226969" style="Crosstab Data Text" x="0" y="0" width="85" height="25" forecolor="#FFFFFF"/>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="10" isBold="true"/>
+								<paragraph lineSpacing="Single"/>
+							</textElement>
+							<textFieldExpression><![CDATA[( ($V{QTYmeasure}.doubleValue()-$V{QTYmeasure}.intValue())> new Double(0) ? $V{QTYmeasure} :
+new DecimalFormat("###0").format($V{QTYmeasure}) )]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="0" height="25" columnTotalGroup="MONTH_NAME">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="0" height="25" rowTotalGroup="seq_no" columnTotalGroup="MONTH_NAME">
+					<cellContents backcolor="#BFE1FF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="156" height="0" rowTotalGroup="item_name">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell width="157" height="0" rowTotalGroup="item_name" columnTotalGroup="MONTH_NO">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell width="0" height="0" rowTotalGroup="item_name" columnTotalGroup="MONTH_NAME">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="size">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="size" columnTotalGroup="MONTH_NO">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="size" columnTotalGroup="MONTH_NAME">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="thickness_density">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="thickness_density" columnTotalGroup="MONTH_NO">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="thickness_density" columnTotalGroup="MONTH_NAME">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="grade">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="grade" columnTotalGroup="MONTH_NO">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="grade" columnTotalGroup="MONTH_NAME">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="unit">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="unit" columnTotalGroup="MONTH_NO">
+					<cellContents/>
+				</crosstabCell>
+				<crosstabCell rowTotalGroup="unit" columnTotalGroup="MONTH_NAME">
+					<cellContents/>
+				</crosstabCell>
+			</crosstab>
+			<staticText>
+				<reportElement uuid="43ececa7-56a5-4c28-9ca3-de7d331301f4" x="184" y="9" width="75" height="31"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Size]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="059d0929-c977-4a3a-bd5a-369c6b210ccf" x="0" y="9" width="184" height="31"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Item Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="43ececa7-56a5-4c28-9ca3-de7d331301f4" x="259" y="9" width="75" height="31"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Density]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="43ececa7-56a5-4c28-9ca3-de7d331301f4" x="334" y="9" width="75" height="31"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Grade]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="43ececa7-56a5-4c28-9ca3-de7d331301f4" x="408" y="9" width="90" height="31"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Unit]]></text>
+			</staticText>
+		</band>
+	</summary>
+	<noData>
+		<band height="123">
+			<staticText>
+				<reportElement uuid="26096e9a-5d5b-4b09-a798-8da7c4f5cfec" x="2" y="5" width="1198" height="20" forecolor="#0066FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Item wise Monthly Sales
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="4f6684b2-7058-474c-86d8-5c87a6a74040" x="2" y="96" width="1198" height="20" forecolor="#0099FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[(Please Check Your Selection Criteria)]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="d495b948-74d4-46f0-a26b-7972cc650287" x="2" y="27" width="1198" height="20" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" From Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{FromDatePrompt})+"</style>"
++" ,  To Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{ToDatePrompt})+"</style>"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="ff891620-2e6d-4d77-b6b6-962155d80664" x="2" y="67" width="1198" height="29" forecolor="#FF3300"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="20"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="10e6622a-e3d9-4e98-8619-4d02b11e5083" x="2" y="47" width="1198" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Category : " + ($P{ItemCategoryNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemCategoryPrompt}.replaceAll( "&", "&amp;" )+"</style>")
++ ", Item : " + ($P{ItemNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++ ", Active Status : " + ($P{Item_StatusNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+ ($P{Item_Status_Prompt}.intValue()==1?"Yes":"No") +"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</noData>
+</jasperReport>

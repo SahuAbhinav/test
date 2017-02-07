@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Pending Sales Order" pageWidth="1342" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="1342" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="67fb66bb-c6a3-4774-91e3-c7b398b4b884">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="388"/>
+	<property name="ireport.y" value="0"/>
+	<style name="style1" mode="Opaque">
+		<paragraph lineSpacing="Single"/>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 ==0)]]></conditionExpression>
+			<style backcolor="#E6F3F7" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false">
+				<paragraph lineSpacing="Single"/>
+			</style>
+		</conditionalStyle>
+	</style>
+	<parameter name="FromDatePrompt" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ToDatePrompt" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ItemCategoryPrompt" class="java.lang.String"/>
+	<parameter name="ItemCategoryNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ItemCategoryPrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ItemNamePrompt" class="java.lang.String"/>
+	<parameter name="ItemNameNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ItemNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PartyNamePrompt" class="java.lang.String"/>
+	<parameter name="PartyNameNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{PartyNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PendingPrompt" class="java.lang.String"/>
+	<parameter name="PendingNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{PendingPrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Item_Status_Prompt" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Item_StatusNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{Item_Status_Prompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Order_By_Options" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT sale_m.sales_order_number,
+DATE_FORMAT(CAST(sale_m.sales_order_date AS DATE),'%d-%m-%Y') AS sales_order_date,
+IFNULL(prt.party_name,'') AS party_name,
+UPPER(IFNULL(itm.item_name,'')) AS item_name,
+IFNULL(sale_d.quantity,0) AS o_qty,
+IFNULL(sale_d.invoice_number,'') AS inv_no,
+IFNULL(sale_d.pending_qty,0) AS p_qty,
+DATE_FORMAT(CAST(sale_m.so_valid_upto_date AS DATE),'%d-%m-%Y') AS valid_till_date,
+IFNULL(sale_m.sales_order_remark,'') AS so_remark
+,IFNULL(itm.item_length,'') AS item_length
+,IFNULL(itm.item_width,'') AS item_width
+,IFNULL(itm.item_thikness,'') AS item_thikness
+,IFNULL(itm.item_density,'') AS item_density
+,gr.NAME AS Grade
+FROM t_sales_order_mast AS sale_m,t_sales_order_detail AS sale_d
+,m_party AS prt,m_item AS itm,m_item_category AS c
+,(SELECT  masters_id ,NAME FROM m_masters WHERE m_form_name='Item Grade' AND deleted_flag=0) AS gr
+WHERE sale_m.deleted_flag=0 AND sale_d.active_status=1 AND sale_d.deleted_flag=0 AND sale_m.party_id =prt.party_id
+AND sale_m.sales_order_number = sale_d.sales_order_number
+AND prt.deleted_flag=0 AND sale_d.item_id=itm.item_id AND itm.deleted_flag=0
+AND itm.item_category_id=c.item_category_id AND c.deleted_flag=0 AND gr.masters_id=itm.item_grade_id
+AND sale_m.sales_order_date>=$P{FromDatePrompt}
+AND sale_m.sales_order_date<=$P{ToDatePrompt}
+AND (c.ITEM_CATEGORY_NAME = $P{ItemCategoryPrompt} OR 1=$P{ItemCategoryNull_FlagPrompt})
+AND(itm.item_name=$P{ItemNamePrompt} OR 1=$P{ItemNameNull_FlagPrompt})
+AND(prt.party_name=$P{PartyNamePrompt} OR 1=$P{PartyNameNull_FlagPrompt})
+AND (itm.active_status=$P{Item_Status_Prompt} OR 1=$P{Item_StatusNull_FlagPrompt})
+AND (CASE WHEN( $P{PendingPrompt} = 'yes')
+     THEN (sale_d.pending_qty > 0)
+     ELSE IFNULL(sale_d.pending_qty,0) = 0
+     END)
+ORDER BY $P!{Order_By_Options} DESC, sale_m.item_value DESC;]]>
+	</queryString>
+	<field name="sales_order_number" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="sales_order_date" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="party_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="item_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="o_qty" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="inv_no" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="p_qty" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="valid_till_date" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="so_remark" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="item_length" class="java.lang.Double"/>
+	<field name="item_width" class="java.lang.Double"/>
+	<field name="item_thikness" class="java.lang.Double"/>
+	<field name="item_density" class="java.lang.Double"/>
+	<field name="Grade" class="java.lang.String"/>
+	<variable name="s_no" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$V{REPORT_COUNT}]]></variableExpression>
+	</variable>
+	<pageHeader>
+		<band height="63">
+			<staticText>
+				<reportElement uuid="57db361e-6b9e-4588-9de0-82c4f09449da" x="0" y="1" width="1342" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Pending Sales Order]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="b9e7d6d8-10ef-45e3-b4b1-1a60d92eff26" x="0" y="21" width="1342" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["From Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{FromDatePrompt})+"</style>"
++" To Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{ToDatePrompt})+"</style>"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="470554cb-ef25-4dad-8e58-2e14d1cd6e84" x="0" y="42" width="1342" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["For Party : " + ($P{PartyNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{PartyNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++", Category : " + ($P{ItemCategoryNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemCategoryPrompt}.replaceAll( "&", "&amp;" )+"</style>")
++", Item : " + ($P{ItemNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++", Pending : " + ($P{PendingNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{PendingPrompt}+"</style>")
++ ", Active Status : " + ($P{Item_StatusNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+ ($P{Item_Status_Prompt}.intValue()==1?"Yes":"No") +"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="34">
+			<staticText>
+				<reportElement uuid="13ca3a98-14cd-4936-a14d-7556f94fe79e" x="0" y="1" width="31" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[S.No.]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="e0a500fa-73ac-4503-b5c2-abc604d19cbf" x="0" y="0" width="1342" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="59968c88-7090-404d-8d1b-5b13dd6c51f4" x="191" y="1" width="200" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Party Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="10394251-f6ce-4e5e-a7c3-8d19198a474d" x="31" y="1" width="80" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Sales Order No.]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="e6d7d9e0-24cb-44a5-87dd-f1bd7de3404f" x="0" y="32" width="1342" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="4f201dba-cb36-4b5f-8cef-45b76f6ccbea" x="391" y="1" width="200" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Item Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="11254bc9-4c1e-4d4b-aaa3-1c2fc6db7831" x="791" y="1" width="100" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Order Qty.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="31b6d179-c932-4880-9edd-caaf08bf3df7" x="111" y="1" width="80" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Sal.Ord.Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b9e9888a-09cd-4f84-9b35-fce78602b119" x="891" y="1" width="100" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Invoice No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="9e6b8ee8-28b6-4547-8d12-9bc0663b8146" x="991" y="1" width="100" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Pending Qty.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="df157a42-f0c6-4f56-bc9b-0eddbe6c8a64" x="1091" y="1" width="100" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Valid Till Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f0eb9b41-1b60-46ac-8b1e-b0aa9afe3ab2" x="1191" y="1" width="151" height="31" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Remark]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="27a4ab9e-22cf-43ba-abdd-b130463d8967" x="592" y="1" width="75" height="31"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Size]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="d9444657-a367-4e91-8182-777fda3fc293" x="751" y="1" width="40" height="31"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Grade]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="873d4715-6053-4dc4-a8a6-3d07653e5aaa" x="667" y="1" width="84" height="31"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Thick/Density]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="14">
+			<frame>
+				<reportElement uuid="09857b82-f9c7-4156-be3d-c0ab1c8b33a7" style="style1" x="0" y="0" width="1342" height="14"/>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="8b4b6022-2dbf-41bc-bf87-bfbc98a599e9" isPrintRepeatedValues="false" x="0" y="0" width="31" height="13"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{s_no}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement uuid="527b776b-e137-4444-8422-9ac35042460e" x="391" y="0" width="200" height="13"/>
+					<textElement verticalAlignment="Top">
+						<font fontName="SansSerif" size="10" isBold="false"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{item_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="f4456c9c-4fe9-4f83-9e72-8c4304bee210" x="31" y="0" width="80" height="13"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font fontName="SansSerif" size="10" isBold="false"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{sales_order_number}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="6e0558e7-0b19-4c5c-be98-22a7da27a5f3" x="191" y="0" width="200" height="13"/>
+					<textElement verticalAlignment="Top">
+						<font fontName="SansSerif" size="10" isBold="false"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{party_name}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+					<reportElement uuid="ff90333c-74c7-4266-b72f-8b871376096d" x="111" y="0" width="80" height="13"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font isBold="false"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{sales_order_date}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement uuid="ef73fe8a-a589-4b33-923f-882c61f4c36e" x="791" y="0" width="100" height="13"/>
+					<textElement textAlignment="Right" verticalAlignment="Top">
+						<font fontName="SansSerif" size="10" isBold="false"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( ($F{o_qty}.doubleValue()-$F{o_qty}.intValue())> new Double(0) ? $F{o_qty}:
+new DecimalFormat("###0").format($F{o_qty}) )]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="05326435-f984-42f7-b95b-96f8243cb715" x="891" y="0" width="100" height="13"/>
+					<textElement textAlignment="Right" verticalAlignment="Top">
+						<font isBold="false"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{inv_no}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement uuid="fa3a47ae-3349-492c-879c-e4bda005d745" x="991" y="0" width="100" height="13"/>
+					<textElement textAlignment="Right" verticalAlignment="Top">
+						<font isBold="false"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( ($F{p_qty}.doubleValue()-$F{p_qty}.intValue())> new Double(0) ? $F{p_qty}:
+new DecimalFormat("###0").format($F{p_qty}) )]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+					<reportElement uuid="d593f10f-10a9-45a5-b08e-44273bb3d9e5" x="1091" y="0" width="100" height="13"/>
+					<textElement textAlignment="Center">
+						<font isBold="false"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{valid_till_date}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="7d37ddfa-48c1-493a-858c-38e2c5950543" x="1191" y="0" width="151" height="13"/>
+					<textElement>
+						<font isBold="false"/>
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{so_remark}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="83b97352-7df4-4dd6-95fa-52301bb50680" x="592" y="0" width="75" height="13"/>
+					<textElement textAlignment="Center">
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( ($F{item_length}.doubleValue()-$F{item_length}.intValue())> new Double(0) ? $F{item_length} :
+new DecimalFormat("###0").format($F{item_length}) ) + " / " + ( ($F{item_width}.doubleValue()-$F{item_width}.intValue())> new Double(0) ? $F{item_width} :
+new DecimalFormat("###0").format($F{item_width}) )]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="2e70d4f7-70f7-4661-890e-878c2cb62a55" x="751" y="0" width="40" height="13"/>
+					<textElement textAlignment="Center">
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Grade}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="1c5be504-106e-4a79-a1a4-e55b21848f7e" x="667" y="0" width="84" height="13"/>
+					<textElement textAlignment="Center">
+						<paragraph lineSpacing="Single"/>
+					</textElement>
+					<textFieldExpression><![CDATA[( ($F{item_thikness}.doubleValue()-$F{item_thikness}.intValue())> new Double(0) ? $F{item_thikness} : new DecimalFormat("###0").format($F{item_thikness}) )
++ " / " +
+( ($F{item_density}.doubleValue()-$F{item_density}.intValue())> new Double(0) ? $F{item_density} :new DecimalFormat("###0").format($F{item_density}) )]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<summary>
+		<band height="1">
+			<line>
+				<reportElement uuid="bb44f54d-f84b-492f-b3c1-ab431aa71601" x="0" y="0" width="1342" height="1"/>
+			</line>
+		</band>
+	</summary>
+	<noData>
+		<band height="109">
+			<staticText>
+				<reportElement uuid="9cb070ec-84f9-4049-af49-e9f72116835d" x="0" y="0" width="1342" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Pending Sales Order]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ff448a7a-65bd-4ad6-8e07-36612da37aa9" x="0" y="60" width="1342" height="29" forecolor="#FF3300"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="20"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="6d73182b-735e-4e3b-bf33-b6d6ade2f409" x="0" y="89" width="1342" height="20" forecolor="#0099FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[(Please Check Your Selection Criteria)]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="e8e7fca7-cc74-4ac6-afc9-a4c34a31522a" x="0" y="20" width="1342" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["From Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{FromDatePrompt})+"</style>"
++" To Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{ToDatePrompt})+"</style>"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="6f0da0e0-1d87-4713-8a16-babf3faffe6d" x="0" y="40" width="1342" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["For Party : " + ($P{PartyNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{PartyNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++", Category : " + ($P{ItemCategoryNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemCategoryPrompt}.replaceAll( "&", "&amp;" )+"</style>")
++", Item : " + ($P{ItemNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{ItemNamePrompt}.replaceAll( "&", "&amp;" )+"</style>")
++", Pending : " + ($P{PendingNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{PendingPrompt}+"</style>")
++ ", Active Status : " + ($P{Item_StatusNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+ ($P{Item_Status_Prompt}.intValue()==1?"Yes":"No") +"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</noData>
+</jasperReport>

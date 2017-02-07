@@ -1,0 +1,1005 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Shift Report" pageWidth="420" pageHeight="830" whenNoDataType="NoDataSection" columnWidth="400" leftMargin="10" rightMargin="10" topMargin="0" bottomMargin="10" isIgnorePagination="true" uuid="4d3b5f31-863d-4237-b3bd-a7b7b499f120">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="603"/>
+	<parameter name="FromDate" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ToDate" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Shift" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ShiftNullFlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[($P{Shift}==null? new java.lang.Integer(1) :new java.lang.Integer(0))]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT m_masters.name AS shift
+,SUM(IFNULL(total_weight,0)) AS total_production
+
+,SUM(IFNULL(total_weight,0)) - SUM(IFNULL(edge_trim_weight,0)) - SUM(IFNULL(short_length_blankets_weight,0)) - SUM(IFNULL(weight_rejection,0)) - SUM(IFNULL(bulk_fibre_weight,0)) AS blanket_production
+
+,SUM(IFNULL(edge_trim_weight,0)) AS edge_trim
+,SUM(IFNULL(short_length_blankets_weight,0)) AS short_length
+,SUM(IFNULL(weight_rejection,0)) AS rejection
+,SUM(IFNULL(weight_RA,0)) AS RA
+,SUM(IFNULL(bulk_fibre_weight,0)) AS bulk_fibre
+,SUM(IFNULL(total_rm_consuption_weight,0)) AS rm_consumption
+,SUM(IFNULL(diesel_used,0)) AS diesel_used
+,SUM(IFNULL(lpg_used,0)) AS lpg_used
+,SUM(IFNULL(lt_panel,0)) AS lt_panel
+,SUM(IFNULL(blanket_power,0)) AS blanket_power
+,SUM(IFNULL(dg_power_option,0)) AS dg_power_option
+,SUM(IFNULL(melter_power,0)) AS melter_power
+,SUM(IFNULL(kwh,0)) AS Total_power_KWH
+
+,(SUM(IFNULL(total_weight,0)) - SUM(IFNULL(edge_trim_weight,0)) - SUM(IFNULL(short_length_blankets_weight,0)) - SUM(IFNULL(weight_rejection,0)) - (SUM(IFNULL(total_weight,0))-SUM(IFNULL(nominal_weight,0)))) AS saleable_production
+
+,SUM(IFNULL(RA_Qty,0)) AS Re_Annealing_Blanket_nos
+,SUM(IFNULL(total_weight,0))-SUM(IFNULL(nominal_weight,0)) AS over_weight
+,(SUM(IFNULL(total_weight,0))/SUM(IFNULL(total_rm_consuption_weight,0)))*100 AS R_M_To_Total_Production_perc
+
+,((SUM(IFNULL(total_weight,0)) - SUM(IFNULL(edge_trim_weight,0)) - SUM(IFNULL(short_length_blankets_weight,0)) - SUM(IFNULL(weight_rejection,0)) - (SUM(IFNULL(total_weight,0))-SUM(IFNULL(nominal_weight,0))))/SUM(IFNULL(total_rm_consuption_weight,0)))*100 AS R_M_To_Saleable_Production_perc
+
+,SUM(IFNULL(melter_power,0))/SUM(IFNULL(total_rm_consuption_weight,0)) AS Melter_Power_R_M
+,SUM(IFNULL(kwh,0))/SUM(IFNULL(total_weight,0)) AS Total_power_Total_production_perc
+
+,(SUM(IFNULL(diesel_used,0))/(SUM(IFNULL(total_weight,0))-SUM(IFNULL(bulk_fibre_weight,0)))) AS Diesel_Blanket_Production_perc
+
+,(SUM(IFNULL(weight_RA,0))/(SUM(IFNULL(total_weight,0))-SUM(IFNULL(bulk_fibre_weight,0))))*100 AS R_A_Blanket_Production_perc
+
+,((SUM(IFNULL(total_weight,0))-SUM(IFNULL(nominal_weight,0)))/(SUM(IFNULL(total_weight,0))-SUM(IFNULL(bulk_fibre_weight,0))))*100 AS Over_wt_Blanket_Production_perc
+
+,(SUM(IFNULL(edge_trim_weight,0))/(SUM(IFNULL(total_weight,0))-SUM(IFNULL(bulk_fibre_weight,0))))*100 AS Edge_Trim_Blanket_Production_perc
+
+,(SUM(IFNULL(short_length_blankets_weight,0))/(SUM(IFNULL(total_weight,0))-SUM(IFNULL(bulk_fibre_weight,0))))*100 AS Short_Length_Blanket_Production_perc
+
+,(SUM(IFNULL(weight_rejection,0))/(SUM(IFNULL(total_weight,0))-SUM(IFNULL(bulk_fibre_weight,0))))*100 AS Rejection_Blanket_Production_perc
+
+,(SUM(IFNULL(blanket_power,0))/SUM(IFNULL(total_weight,0))) AS Blanket_power_totoal_production_perc
+
+,SUM(IFNULL(ok_roll,0)) AS Total_Ok_production_Roll
+,SUM(IFNULL(carton_used,0)) AS Carton_used
+,SUM(IFNULL(roll_packed,0)) AS Roll_packed
+,(SELECT CAST(CAST(SUM(eng_duration) AS TIME) AS CHAR) AS Eng_Break_down
+FROM t_shift_report_mast,t_shift_eng_interruption_detail,m_masters
+WHERE t_shift_report_mast.shift_report_id=t_shift_eng_interruption_detail.shift_report_id
+AND t_shift_report_mast.deleted_flag = 0 AND t_shift_eng_interruption_detail.deleted_flag=0
+AND t_shift_report_mast.shift_id=m_masters.masters_id
+AND m_form_name='Shift Master' AND m_masters.deleted_flag=0
+AND t_shift_report_mast.shift_report_date >= $P{FromDate}
+AND t_shift_report_mast.shift_report_date <= $P{ToDate}
+AND (m_masters.NAME=$P{Shift} OR 1=$P{ShiftNullFlagPrompt})) AS Eng_Break_down
+,CAST(CAST(SUM(pouting_time) AS TIME) AS CHAR) AS pouting_time
+,CAST(CAST(SUM(melting_time) AS TIME) AS CHAR) AS melting_time
+,CAST(CAST(SUM(spining_time) AS TIME) AS CHAR) AS spining_time
+,(SELECT CAST(CAST(SUM(spin_duration) AS TIME) AS CHAR) AS Spinning_intereption
+FROM t_shift_report_mast,t_shift_spin_interruption_detail,m_masters
+WHERE t_shift_report_mast.shift_report_id=t_shift_spin_interruption_detail.shift_report_id
+AND t_shift_report_mast.deleted_flag = 0 AND t_shift_spin_interruption_detail.deleted_flag=0
+AND t_shift_report_mast.shift_id=m_masters.masters_id
+AND m_form_name='Shift Master' AND m_masters.deleted_flag=0
+AND t_shift_report_mast.shift_report_date >= $P{FromDate}
+AND t_shift_report_mast.shift_report_date <= $P{ToDate}
+AND (m_masters.NAME=$P{Shift} OR 1=$P{ShiftNullFlagPrompt})) AS Spinning_intereption
+,(SELECT REPLACE((GROUP_CONCAT(item_name)),',',',\n') AS item_name
+FROM
+(SELECT CONCAT(UPPER(IFNULL(item_name,'')),'(', CAST(SUM(IFNULL(quantity,0)) AS SIGNED),')') AS item_name
+FROM t_shift_report_mast,t_shift_consumed_detail,m_masters,m_item
+WHERE t_shift_report_mast.shift_report_id=t_shift_consumed_detail.shift_report_id
+AND t_shift_report_mast.deleted_flag = 0 AND t_shift_consumed_detail.deleted_flag=0
+AND t_shift_consumed_detail.item_id = m_item.item_id AND m_item.deleted_flag = 0
+AND t_shift_report_mast.shift_id=m_masters.masters_id
+AND m_form_name='Shift Master' AND m_masters.deleted_flag=0
+AND t_shift_report_mast.shift_report_date >= $P{FromDate}
+AND t_shift_report_mast.shift_report_date <= $P{ToDate}
+AND (m_masters.NAME=$P{Shift} OR 1=$P{ShiftNullFlagPrompt})
+GROUP BY m_item.item_id) AS itm) AS bussiness_info
+,(SUM(IFNULL(lpg_used,0)) / (SUM(IFNULL(total_weight,0)) - SUM(IFNULL(bulk_fibre_weight,0)))) AS Wood_Consumption_Blanket_production
+FROM m_masters,t_shift_report_mast
+LEFT JOIN
+(SELECT shift_id,blanket_prod_date
+,SUM(left_weight_rejection) AS weight_rejection
+,SUM(left_weight_RA) AS weight_RA
+,SUM(left_RA_Qty) AS RA_Qty
+,SUM(left_ok_roll) AS ok_roll
+,SUM(carton_used) AS carton_used
+,SUM(roll_packed) AS roll_packed
+,SUM(nominal_weight) AS nominal_weight
+FROM(SELECT shift_id,blanket_prod_date
+,SUM(IF(t_blanket_production_detail_left.blanket_type='Rejection',weight_l,0)) AS left_weight_rejection
+,SUM(IF(t_blanket_production_detail_left.blanket_type='R.A.',weight_l,0)) AS left_weight_RA
+,COUNT(IF(t_blanket_production_detail_left.blanket_type='R.A.',1,NULL)) AS left_RA_Qty
+,COUNT(IF(t_blanket_production_detail_left.blanket_type='OK',1,NULL)) AS left_ok_roll
+,IFNULL(t_blanket_production_mast.carton_used,0) AS carton_used
+,IFNULL(t_blanket_production_mast.roll_packed,0) AS roll_packed
+,SUM(IFNULL(nominal_weight,0)) AS nominal_weight
+FROM t_blanket_production_mast,t_blanket_production_detail_left,m_masters,m_item
+WHERE t_blanket_production_mast.blanket_prod_id=t_blanket_production_detail_left.blanket_prod_id
+AND t_blanket_production_mast.deleted_flag=0 AND t_blanket_production_detail_left.deleted_flag=0
+AND t_blanket_production_detail_left.item_id=m_item.item_id AND m_item.deleted_flag=0
+AND t_blanket_production_mast.shift_id=m_masters.masters_id
+AND m_form_name='Shift Master' AND m_masters.deleted_flag=0
+AND (m_masters.NAME=$P{Shift} OR 1=$P{ShiftNullFlagPrompt})
+AND blanket_prod_date>=$P{FromDate}
+AND blanket_prod_date<=$P{ToDate}
+GROUP BY shift_id,blanket_prod_date
+UNION ALL
+SELECT shift_id,blanket_prod_date
+,SUM(IF(t_blanket_production_detail_right.blanket_type='Rejection',weight_r,0)) AS right_weight_rejection
+,SUM(IF(t_blanket_production_detail_right.blanket_type='R.A.',weight_r,0)) AS right_weight_RA
+,COUNT(IF(t_blanket_production_detail_right.blanket_type='R.A.',1,NULL)) AS right_RA_Qty
+,COUNT(IF(t_blanket_production_detail_right.blanket_type='OK',1,NULL)) AS right_ok_roll
+,0 AS carton_used
+,0 AS roll_packed
+,SUM(IFNULL(nominal_weight,0)) AS nominal_weight
+FROM t_blanket_production_mast,t_blanket_production_detail_right,m_masters,m_item
+WHERE t_blanket_production_mast.blanket_prod_id=t_blanket_production_detail_right.blanket_prod_id
+AND t_blanket_production_mast.deleted_flag=0 AND t_blanket_production_detail_right.deleted_flag=0
+AND t_blanket_production_detail_right.item_id=m_item.item_id AND m_item.deleted_flag=0
+AND t_blanket_production_mast.shift_id=m_masters.masters_id
+AND m_form_name='Shift Master' AND m_masters.deleted_flag=0
+AND (m_masters.NAME=$P{Shift} OR 1=$P{ShiftNullFlagPrompt})
+AND blanket_prod_date>=$P{FromDate}
+AND blanket_prod_date<=$P{ToDate}
+GROUP BY shift_id,blanket_prod_date) AS blanket_prod) AS blanket_production
+ON t_shift_report_mast.shift_id=blanket_production.shift_id
+AND t_shift_report_mast.shift_report_date=blanket_production.blanket_prod_date
+WHERE t_shift_report_mast.shift_id=m_masters.masters_id
+AND m_form_name='Shift Master' AND m_masters.deleted_flag=0
+AND (m_masters.NAME=$P{Shift} OR 1=$P{ShiftNullFlagPrompt})
+AND t_shift_report_mast.shift_report_date>=$P{FromDate}
+AND t_shift_report_mast.shift_report_date<=$P{ToDate}]]>
+	</queryString>
+	<field name="shift" class="java.lang.String"/>
+	<field name="total_production" class="java.lang.Double"/>
+	<field name="blanket_production" class="java.lang.Double"/>
+	<field name="edge_trim" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="short_length" class="java.lang.Double"/>
+	<field name="rejection" class="java.lang.Double"/>
+	<field name="RA" class="java.lang.Double"/>
+	<field name="bulk_fibre" class="java.lang.Double"/>
+	<field name="rm_consumption" class="java.lang.Double"/>
+	<field name="diesel_used" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="lpg_used" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="lt_panel" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="blanket_power" class="java.lang.Double"/>
+	<field name="dg_power_option" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="melter_power" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Total_power_KWH" class="java.lang.Double"/>
+	<field name="saleable_production" class="java.lang.Double"/>
+	<field name="Re_Annealing_Blanket_nos" class="java.math.BigDecimal"/>
+	<field name="over_weight" class="java.lang.Double"/>
+	<field name="R_M_To_Total_Production_perc" class="java.lang.Double"/>
+	<field name="R_M_To_Saleable_Production_perc" class="java.lang.Double"/>
+	<field name="Melter_Power_R_M" class="java.lang.Double"/>
+	<field name="Total_power_Total_production_perc" class="java.lang.Double"/>
+	<field name="Diesel_Blanket_Production_perc" class="java.lang.Double"/>
+	<field name="R_A_Blanket_Production_perc" class="java.lang.Double"/>
+	<field name="Over_wt_Blanket_Production_perc" class="java.lang.Double"/>
+	<field name="Edge_Trim_Blanket_Production_perc" class="java.lang.Double"/>
+	<field name="Short_Length_Blanket_Production_perc" class="java.lang.Double"/>
+	<field name="Rejection_Blanket_Production_perc" class="java.lang.Double"/>
+	<field name="Total_Ok_production_Roll" class="java.math.BigDecimal"/>
+	<field name="Carton_used" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Roll_packed" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Eng_Break_down" class="java.lang.String"/>
+	<field name="pouting_time" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="melting_time" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="spining_time" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Spinning_intereption" class="java.lang.String"/>
+	<field name="bussiness_info" class="java.lang.String"/>
+	<field name="Blanket_power_totoal_production_perc" class="java.lang.Double"/>
+	<field name="Wood_Consumption_Blanket_production" class="java.lang.Double"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="50">
+			<staticText>
+				<reportElement uuid="4197f7a0-3da0-4fb9-81e8-b2ae52897782" x="0" y="10" width="400" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Shift Report]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="ee231dc4-6910-48cf-98fb-714a731244be" x="0" y="35" width="400" height="15" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["  From Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{FromDate})+"</style>"
++" , To Date : <style forecolor='red'>"+new SimpleDateFormat("dd-MMM-yy").format( $P{ToDate})+"</style>"
++ ", Shift : " + ($P{ShiftNullFlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{Shift}+"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="745" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="40" y="2" width="180" height="18"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Particular]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="40" y="21" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Total Production ( kg )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="40" y="39" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Blanket Production ( kg )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="40" y="57" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Edge Trim  ( kg )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="40" y="75" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Short Length ( kg )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="40" y="93" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Rejection  ( kg )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="40" y="111" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[RA ( kg )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="40" y="147" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[R/M consum]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="40" y="165" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Diesel consum]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="40" y="255" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Melter power KWH]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="40" y="273" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Total power KWH]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="40" y="291" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Saleable Production]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="40" y="309" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Re Annealing Blanket  (nos.)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="40" y="327" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Over weight (kg)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="40" y="345" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[R/M  To Total Production %]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="40" y="363" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[R/M  To Saleable Production %]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="220" y="2" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Standard ]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="988a02b6-95af-464d-9995-a6ad7a441d67" x="300" y="2" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Shift : " + ($P{ShiftNullFlagPrompt}.intValue()==1?"All":$P{Shift})+" "]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="40" y="381" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Melter Power /  R/M  ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="40" y="399" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Total power / Total production]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="40" y="417" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Diesel / Blanket Production %]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="40" y="435" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[R/A  / Blanket Production  %]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="40" y="453" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Over wt /  Blanket Production %]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="40" y="471" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Edge Trim  /  Blanket Production %]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="40" y="489" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Short Length /  Blanket Production %]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="40" y="507" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Rejection / Blanket Production  %]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="40" y="525" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Total Ok production  Roll]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="40" y="543" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Carton used  ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="adbfaaab-5444-41f2-b37c-e129768f8606" x="40" y="561" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Roll packed ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="adbfaaab-5444-41f2-b37c-e129768f8606" x="1" y="617" width="220" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Remark]]></text>
+			</staticText>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="21" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{total_production}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="39" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{blanket_production}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="57" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{edge_trim}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="75" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{short_length}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="93" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{rejection}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="111" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{RA}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="147" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{rm_consumption}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="165" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{diesel_used}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="255" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{melter_power}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="273" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Total_power_KWH}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="291" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{saleable_production}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="309" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Re_Annealing_Blanket_nos}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="327" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{over_weight}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="345" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{R_M_To_Total_Production_perc}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="363" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{R_M_To_Saleable_Production_perc}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="381" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Melter_Power_R_M}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="399" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Total_power_Total_production_perc}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="417" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Diesel_Blanket_Production_perc}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="435" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{R_A_Blanket_Production_perc}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="453" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Over_wt_Blanket_Production_perc}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="471" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Edge_Trim_Blanket_Production_perc}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="489" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Short_Length_Blanket_Production_perc}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="507" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Rejection_Blanket_Production_perc}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="525" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Total_Ok_production_Roll}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="543" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Carton_used}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="561" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Roll_packed}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="adbfaaab-5444-41f2-b37c-e129768f8606" x="1" y="636" width="220" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Break Down ]]></text>
+			</staticText>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="301" y="636" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Eng_Break_down}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="adbfaaab-5444-41f2-b37c-e129768f8606" x="1" y="654" width="220" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Pouring Time]]></text>
+			</staticText>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="301" y="654" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{pouting_time}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="adbfaaab-5444-41f2-b37c-e129768f8606" x="1" y="672" width="220" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Melting Time]]></text>
+			</staticText>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="301" y="672" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{melting_time}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="adbfaaab-5444-41f2-b37c-e129768f8606" x="1" y="690" width="220" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Spinning Time ]]></text>
+			</staticText>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="301" y="690" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{spining_time}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="adbfaaab-5444-41f2-b37c-e129768f8606" x="1" y="708" width="220" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Spinning Interuption]]></text>
+			</staticText>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="301" y="708" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Spinning_intereption}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="3f596cb3-cb40-4d9b-a9bc-dd45820059e0" x="-3" y="1" width="407" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="3f596cb3-cb40-4d9b-a9bc-dd45820059e0" x="-2" y="20" width="405" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="2" width="40" height="18"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Sr. No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="0" y="435" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[24]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="363" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[20]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="129" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[7]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="75" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[4]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="381" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[21]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="39" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[2]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="0" y="489" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[27]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="0" y="525" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[29]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="93" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[5]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="0" y="543" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[30]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="0" y="453" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[25]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="327" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[18]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="237" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[13]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="255" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[14]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="417" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[23]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="57" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[3]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="165" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[9]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="399" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[22]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="0" y="507" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[28]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="147" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[8]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="21" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[1]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="291" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[16]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="273" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[15]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="0" y="471" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[26]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="345" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[19]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="111" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[6]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="40" y="129" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Bulk fiber ( kg )]]></text>
+			</staticText>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="129" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{bulk_fibre}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="220" y="363" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[82%]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="220" y="399" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[2.0]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="220" y="273" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[-]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="220" y="417" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[0.12]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="220" y="525" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Nos.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="220" y="129" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[-]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="220" y="147" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[-]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="220" y="255" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[-]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="220" y="21" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[-]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="220" y="489" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[0.0]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="adbfaaab-5444-41f2-b37c-e129768f8606" x="220" y="561" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Nos.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="220" y="39" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[-]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="220" y="507" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[0.0]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="220" y="543" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Nos.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="220" y="309" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[-]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="220" y="453" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[2%]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="220" y="345" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[85%]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="220" y="471" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[4]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="220" y="435" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[0.00]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="220" y="381" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[1.6]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="220" y="291" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[-]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="220" y="165" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[-]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="221" y="726" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{bussiness_info}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="adbfaaab-5444-41f2-b37c-e129768f8606" x="1" y="726" width="220" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Business info]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="140fe61e-520b-42a5-b3bd-059e342ce79e" x="-2" y="615" width="406" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="140fe61e-520b-42a5-b3bd-059e342ce79e" x="403" y="2" width="1" height="611"/>
+			</line>
+			<line>
+				<reportElement uuid="140fe61e-520b-42a5-b3bd-059e342ce79e" x="-3" y="2" width="1" height="611"/>
+			</line>
+			<line>
+				<reportElement uuid="140fe61e-520b-42a5-b3bd-059e342ce79e" x="-2" y="616" width="407" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="140fe61e-520b-42a5-b3bd-059e342ce79e" positionType="Float" x="-2" y="744" width="407" height="1"/>
+			</line>
+			<line>
+				<reportElement uuid="140fe61e-520b-42a5-b3bd-059e342ce79e" stretchType="RelativeToBandHeight" x="-3" y="613" width="1" height="131"/>
+			</line>
+			<line>
+				<reportElement uuid="140fe61e-520b-42a5-b3bd-059e342ce79e" stretchType="RelativeToBandHeight" x="403" y="613" width="1" height="131"/>
+			</line>
+			<line>
+				<reportElement uuid="140fe61e-520b-42a5-b3bd-059e342ce79e" x="-2" y="635" width="406" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="309" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[17]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="0" y="561" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[31]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="adbfaaab-5444-41f2-b37c-e129768f8606" x="40" y="579" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Blanket Power/ Total Production ]]></text>
+			</staticText>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="579" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Blanket_power_totoal_production_perc}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="adbfaaab-5444-41f2-b37c-e129768f8606" x="220" y="579" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="220" y="183" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[-]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="183" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[10]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="40" y="183" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Wood consumtion (in Kg)]]></text>
+			</staticText>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="183" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{lpg_used}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="220" y="201" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[-]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="201" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[11]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="40" y="201" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[VF Power]]></text>
+			</staticText>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="201" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{lt_panel}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="237" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{dg_power_option}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="0" y="219" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[12]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="40" y="237" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[DG Power]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="220" y="237" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[-]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="40" y="219" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Blanket Power]]></text>
+			</staticText>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="219" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{blanket_power}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="5ed935ea-4838-41d7-945f-d3bc25b6f7b0" x="221" y="219" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[-]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="-1" y="579" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[32]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="adbfaaab-5444-41f2-b37c-e129768f8606" x="220" y="597" width="80" height="18"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="adbfaaab-5444-41f2-b37c-e129768f8606" x="40" y="597" width="180" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Wood Consumption / Blanket production]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f150402f-2f1a-466c-a453-575db99ca1c1" x="-1" y="597" width="40" height="18"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[33]]></text>
+			</staticText>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement uuid="311c396e-8e0c-4941-bd2f-6b37e05f9609" x="300" y="597" width="100" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{Wood_Consumption_Blanket_production}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+</jasperReport>

@@ -1,0 +1,21 @@
+package com.advanz.erp.masters.service.business;
+import com.advanz.erp.common.service.business.IAdvanzErpBaseSerivce;
+import com.advanz.erp.masters.model.msg.DispatchMasterInputMessage;
+import com.advanz.erp.masters.model.msg.DispatchMasterOutMessage;
+
+
+public interface IDispatchMasterService extends IAdvanzErpBaseSerivce{
+	
+    public DispatchMasterOutMessage createDispatchMaster(DispatchMasterInputMessage dispatchMasterInputMessage);
+	public DispatchMasterOutMessage updateDispatchMaster(DispatchMasterInputMessage dispatchMasterInputMessage);
+	public DispatchMasterOutMessage deleteDispatchMaster(DispatchMasterInputMessage dispatchMasterInputMessage);
+	//public ItemCategoryOutMessage findItemCategoryByCriteria(ItemCategoryInputMessage itemCategoryInputMessage);
+	public DispatchMasterOutMessage findById(DispatchMasterInputMessage dispatchMasterInputMessage);
+	public DispatchMasterOutMessage findAllDispatchMaster();
+	public DispatchMasterOutMessage findDispatchMaster(DispatchMasterInputMessage dispatchMasterInputMessage);
+	public DispatchMasterOutMessage findBillByBillName(DispatchMasterInputMessage dispatchMasterInputMessage);
+	public DispatchMasterOutMessage getMaxId();
+	
+	public DispatchMasterOutMessage searchDispatch(DispatchMasterInputMessage dispatchMasterInputMessage);
+	public DispatchMasterOutMessage getNewDispatchMasterSeriesNo(DispatchMasterInputMessage dispatchMasterInputMessage);
+}

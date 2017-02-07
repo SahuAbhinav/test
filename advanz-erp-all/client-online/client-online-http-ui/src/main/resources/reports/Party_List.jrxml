@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Party_List" pageWidth="1339" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="1339" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="0.75"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="style1" lineSpacing="Single">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 ==0)]]></conditionExpression>
+			<style mode="Opaque" backcolor="#E6F3F7" lineSpacing="Single" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="StateNamePrompt" class="java.lang.String"/>
+	<parameter name="StateNameNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{StateNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CityNamePrompt" class="java.lang.String"/>
+	<parameter name="CityNameNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{CityNamePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PartyTypePrompt" class="java.lang.String"/>
+	<parameter name="PartyTypeNull_FlagPrompt" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{PartyTypePrompt}==null? new java.lang.Integer(1) :new java.lang.Integer(0)]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT party_name,billing_address,email,phone,vat_no,cst_no,exciseeccno,range_add,
+division,UPPER(city_name) AS city_name,UPPER(state_name) AS state_name,party_type, party_type_flag
+FROM
+(SELECT UPPER(party_name) AS party_name,UPPER(billing_address) AS billing_address ,
+billing_city_id AS city_id
+,IFNULL(vat_no,0) AS vat_no,IFNULL(cst_no,0) AS cst_no,IFNULL(exciseeccno,0) AS exciseeccno,
+range_add,division,t.party_type_desc AS party_type,
+t.party_type_flag AS party_type_flag,
+contact_1_e_mail AS email,phone_o_1 AS phone FROM m_party AS p,
+m_party_type AS t
+WHERE p.deleted_flag=0 AND  t.deleted_flag=0
+AND t.party_type_id=p.party_type_id
+AND (t.party_type_desc = $P{PartyTypePrompt} OR 1=$P{PartyTypeNull_FlagPrompt})
+) AS mast
+LEFT JOIN
+(SELECT city_id,city_name,area_id FROM m_city) AS ct
+ON mast.city_id=ct.city_id
+INNER JOIN
+(
+SELECT s.state_id AS state_id,s.state_name AS state_name,a.area_id AS area_id FROM m_region AS r,
+m_area AS a,m_state AS s
+WHERE a.region_id=r.region_id AND a.deleted_flag=0
+AND r.state_id=s.state_id AND r.deleted_flag=0 AND s.deleted_flag=0
+AND (s.State_NAME = $P{StateNamePrompt} OR 1=$P{StateNameNull_FlagPrompt})
+GROUP BY s.state_id,s.state_name,a.area_id
+) AS stat
+ON ct.area_id=stat.area_id
+WHERE (ct.city_name = $P{CityNamePrompt} OR 1=$P{CityNameNull_FlagPrompt})
+ORDER BY party_type, party_type_flag,party_name]]>
+	</queryString>
+	<field name="party_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="billing_address" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="email" class="java.lang.String"/>
+	<field name="phone" class="java.lang.String"/>
+	<field name="vat_no" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="cst_no" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="exciseeccno" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="range_add" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="division" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="city_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="state_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="party_type" class="java.lang.String"/>
+	<field name="party_type_flag" class="java.lang.String"/>
+	<variable name="s_no" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$V{REPORT_COUNT}]]></variableExpression>
+	</variable>
+	<group name="Party_Type">
+		<groupExpression><![CDATA[$F{party_type}]]></groupExpression>
+		<groupHeader>
+			<band height="20">
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="218" height="16" forecolor="#CC0000"/>
+					<textElement verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="11" isBold="true"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[($F{party_type}) + "   " + ($F{party_type_flag})]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<pageHeader>
+		<band height="40">
+			<staticText>
+				<reportElement x="0" y="0" width="1339" height="20" forecolor="#3333FF"/>
+				<box topPadding="0" leftPadding="0" rightPadding="0">
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Party List]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="20" width="1339" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" lineSpacing="Single" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["  State : " + ($P{StateNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{StateNamePrompt}+"</style>")
++ ",  City : " + ($P{CityNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{CityNamePrompt}+"</style>")
++ ",  Party Type : " + ($P{PartyTypeNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{PartyTypePrompt}+"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="21">
+			<line>
+				<reportElement x="0" y="1" width="1339" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="33" y="2" width="185" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Party Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="218" y="2" width="227" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Address]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="2" width="33" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[S.No.]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="20" width="1339" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="445" y="2" width="96" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[City]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="637" y="2" width="86" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[VAT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="723" y="2" width="100" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CST No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="823" y="2" width="100" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ECC No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1023" y="2" width="100" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Division]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1123" y="2" width="133" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Email]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="541" y="2" width="96" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[State]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="923" y="2" width="100" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Range]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1256" y="2" width="83" height="18" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Middle" lineSpacing="Single">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Phone]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="13">
+			<frame>
+				<reportElement style="style1" x="0" y="0" width="1339" height="13"/>
+				<textField>
+					<reportElement x="33" y="0" width="185" height="13"/>
+					<textElement lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{party_name}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="218" y="0" width="227" height="13"/>
+					<textElement lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{billing_address}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement isPrintRepeatedValues="false" x="0" y="0" width="33" height="13"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$V{s_no}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement x="445" y="0" width="96" height="13"/>
+					<textElement lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{city_name}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="1023" y="0" width="100" height="13"/>
+					<textElement lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{division}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="923" y="0" width="100" height="13"/>
+					<textElement textAlignment="Center" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{range_add}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="823" y="0" width="100" height="13"/>
+					<textElement textAlignment="Right" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{exciseeccno}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="723" y="0" width="100" height="13"/>
+					<textElement textAlignment="Right" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{cst_no}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="637" y="0" width="86" height="13"/>
+					<textElement textAlignment="Right" lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{vat_no}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="1123" y="0" width="133" height="13"/>
+					<textElement lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{email}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="1256" y="0" width="83" height="13"/>
+					<textElement lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{phone}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="541" y="0" width="96" height="13"/>
+					<textElement lineSpacing="Single">
+						<font fontName="SansSerif" size="10"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{state_name}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<summary>
+		<band height="1">
+			<line>
+				<reportElement x="0" y="0" width="1339" height="1"/>
+			</line>
+		</band>
+	</summary>
+	<noData>
+		<band height="89">
+			<staticText>
+				<reportElement x="0" y="0" width="1339" height="20" forecolor="#3333FF"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="SansSerif" size="15" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Party List]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="69" width="1339" height="20" forecolor="#0099FF"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(Please Check Your Selection Criteria)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="40" width="1339" height="29" forecolor="#FF3300"/>
+				<textElement textAlignment="Center" lineSpacing="Single">
+					<font fontName="SansSerif" size="20"/>
+				</textElement>
+				<text><![CDATA[No Data Available]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="0" y="20" width="1339" height="20" isPrintWhenDetailOverflows="true" forecolor="#660000"/>
+				<textElement textAlignment="Center" lineSpacing="Single" markup="styled">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["  State : " + ($P{StateNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{StateNamePrompt}+"</style>")
++ ",  City : " + ($P{CityNameNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{CityNamePrompt}+"</style>")
++ ",  Party Type : " + ($P{PartyTypeNull_FlagPrompt}.intValue()==1?"All":"<style forecolor='red'>"+$P{PartyTypePrompt}+"</style>")]]></textFieldExpression>
+			</textField>
+		</band>
+	</noData>
+</jasperReport>
